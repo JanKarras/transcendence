@@ -3,7 +3,7 @@ const fastify = require('fastify')({ logger });
 
 fastify.decorate('logger', logger);
 
-fastify.get('/', async (request, reply) => {
+fastify.get('/api/', async (request, reply) => {
 	logger.info('Root route accessed');
 	return { hello: 'world' };
 });

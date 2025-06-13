@@ -1,0 +1,19 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "nodemon --watch src --ext js,json --exec node src/server/index.js"
+  },
+  "dependencies": {
+    "@fastify/static": "^6",
+    "fastify": "^4",
+    "pino": "^9.7.0",
+    "pino-multi-stream": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
