@@ -5,7 +5,7 @@ fastify.decorate('logger', logger);
 
 fastify.get('/api/', async (request, reply) => {
 	logger.info('Root route accessed');
-	return { hello: 'world' };
+	return { hello: 'world4654654654654654' };
 });
 
 const start = async () => {

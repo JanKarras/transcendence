@@ -6,6 +6,22 @@
 	<title>Index</title>
 </head>
 <body>
-	Was geht ab
+	Was geht ab 12321321321
+	<script>
+		// Direkt nach Laden der Seite eine GET Anfrage an /spi/ schicken
+		fetch('/api/')
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Netzwerkantwort war nicht ok');
+				}
+				return response.json(); // JSON zurückerwarten
+			})
+			.then(data => {
+				console.log('Antwort vom Backend:', data);
+			})
+			.catch(error => {
+				console.error('Fehler bei der Anfrage:', error);
+			});
+	</script>
 </body>
 </html>

@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE 4001
 
-CMD ["yarn", "start"]
+CMD ["yarn", "dev"]
