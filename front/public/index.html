@@ -3,25 +3,29 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Index</title>
+	<title>Login</title>
+	<script src="./assets/js/index/index.js"></script>
+	<script src="./assets/js/all/remote_storage.js"></script>
 </head>
-<body>
-	Was geht ab 12321321321
-	<script>
-		// Direkt nach Laden der Seite eine GET Anfrage an /spi/ schicken
-		fetch('/api/')
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Netzwerkantwort war nicht ok');
-				}
-				return response.json(); // JSON zurückerwarten
-			})
-			.then(data => {
-				console.log('Antwort vom Backend:', data);
-			})
-			.catch(error => {
-				console.error('Fehler bei der Anfrage:', error);
-			});
-	</script>
+<body onload="indexInit()">
+
+  <h2>Registrieren</h2>
+  <form id="registerForm">
+    <label>Username: <input type="text" name="username" required></label><br />
+    <label>Email: <input type="email" name="email" required></label><br />
+    <label>Passwort: <input type="password" name="password" required></label><br />
+    <label>Passwort bestätigen: <input type="password" name="password2" required></label><br />
+    <button type="submit">Registrieren</button>
+  </form>
+
+  <hr>
+
+  <h2>Login</h2>
+  <form id="loginForm">
+    <label>Username oder Email: <input type="text" name="user" required></label><br />
+    <label>Passwort: <input type="password" name="password" required></label><br />
+    <button type="submit">Einloggen</button>
+  </form>
+
 </body>
 </html>

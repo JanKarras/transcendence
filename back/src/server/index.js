@@ -3,9 +3,13 @@ const fastify = require('fastify')({ logger });
 
 fastify.decorate('logger', logger);
 
-fastify.get('/api/', async (request, reply) => {
-	logger.info('Root route accessed');
-	return { hello: 'world4654654654654654' };
+fastify.register(require('../routes/getters/'), { prefix: '/api/get' });
+fastify.register(require('../routes/setters/'), { prefix: '/api/set' });
+
+fastify.setNotFoundHandler((request, reply) => {
+  reply
+    .code(404)
+    .send({ error: 'Not Found', message: `Route ${request.method} ${request.url} not found.` });
 });
 
 const start = async () => {
