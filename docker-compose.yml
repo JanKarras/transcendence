@@ -22,6 +22,7 @@ services:
     volumes:
       - ./back:/app         # bind mount des backend-codes
       - /app/node_modules  # node_modules im container, damit es nicht vom Host überschrieben wird (bei nodejs)
+      - ../data/db:/app/database
     working_dir: /app
     restart: unless-stopped
 
