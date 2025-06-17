@@ -1,14 +1,11 @@
 const path = require('path');
 const logger = require('../logger/logger');
 const fastify = require('fastify')({ logger });
-const fastifyStatic = require('@fastify/static'); 
+const fastifyStatic = require('@fastify/static');
 
 fastify.decorate('logger', logger);
 
-fastify.register(fastifyStatic, {
-  root: path.join(__dirname, '../../public'),
-  prefix: '/',
-});
+fastify.register(fastifyStatic, {root: path.join(__dirname, '../../public'),prefix: '/',});
 
 fastify.register(require('../routers/pages'));
 
