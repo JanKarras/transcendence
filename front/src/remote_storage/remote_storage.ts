@@ -103,10 +103,30 @@ export async function is_logged_in_api(): Promise<boolean> {
 	}
 }
 
+export async function two_fa_api(): Promise<boolean> {
+	try {
+		const res = await fetch("/api/get/two_fa", {
+			method: "GET",
+			credentials: "include",
+		});
+
+		if (!res.ok) {
+			return false;
+		}
+
+		const data = await res.json();
+		return data.twoFAEnabled === true;
+	} catch (err) {
+		console.error("2FA check failed:", err);
+		return false;
+	}
+}
 
 export const api = {
 	createUser,
 	logInApi,
 	logOutApi,
-	emailValidationApi
+	emailValidationApi,
+	is_logged_in_api,
+	two_fa_api
 };

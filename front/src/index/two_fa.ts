@@ -1,3 +1,3 @@
-async function two_fa() {
+export async function two_fa() {
 	
 }

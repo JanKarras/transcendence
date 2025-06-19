@@ -8,3 +8,7 @@ const logger = require('../../logger/logger');
 exports.is_logged_in = async (req, reply) => {
 	reply.code(200).send({ loggedIn: true });
 };
+
+exports.two_fa = async (req, reply) => {
+	
+}

@@ -112,9 +112,30 @@ export function is_logged_in_api() {
         }
     });
 }
+export function two_fa_api() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch("/api/get/two_fa", {
+                method: "GET",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                return false;
+            }
+            const data = yield res.json();
+            return data.twoFAEnabled === true;
+        }
+        catch (err) {
+            console.error("2FA check failed:", err);
+            return false;
+        }
+    });
+}
 export const api = {
     createUser,
     logInApi,
     logOutApi,
-    emailValidationApi
+    emailValidationApi,
+    is_logged_in_api,
+    two_fa_api
 };
