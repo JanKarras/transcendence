@@ -8,6 +8,7 @@ services:
     volumes:
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./front/public:/usr/share/nginx/html:ro
     depends_on:
       - back
       - front
@@ -20,8 +21,8 @@ services:
     expose:
       - "4000"
     volumes:
-      - ./back:/app         # bind mount des backend-codes
-      - /app/node_modules  # node_modules im container, damit es nicht vom Host überschrieben wird (bei nodejs)
+      - ./back:/app
+      - /app/node_modules
       - ./db:/app/database
     working_dir: /app
     restart: unless-stopped
@@ -33,7 +34,7 @@ services:
     expose:
       - "4001"
     volumes:
-      - ./front:/app         # bind mount des frontend-codes
+      - ./front:/app
       - /app/node_modules
     working_dir: /app
     restart: unless-stopped

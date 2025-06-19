@@ -7,20 +7,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { is_logged_in_api } from "../remote_storage/remote_storage.js";
-import { render_dashboard } from "../view/render_dashboard.js";
-import { render_login } from "../view/render_login.js";
-document.addEventListener("DOMContentLoaded", () => {
-    indexInit();
-});
-function indexInit() {
+import { logInApi } from "../remote_storage/remote_storage.js";
+export function logIn(event) {
     return __awaiter(this, void 0, void 0, function* () {
-        const flag = yield is_logged_in_api();
-        if (flag) {
-            render_dashboard();
+        event.preventDefault();
+        const form = event.target;
+        const username = form.elements.namedItem("user").value;
+        const password = form.elements.namedItem("password").value;
+        const res = yield logInApi(username, password);
+        if (res.success) {
+            console.log(`User "${username}" logged in successfully.`);
         }
         else {
-            render_login();
+            console.error('Login failed:', res.error);
+            alert(`Login failed: ${res.error}`);
         }
     });
 }

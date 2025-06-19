@@ -1,22 +1,14 @@
 {
-  "name": "back",
+  "name": "frontend",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node src/server/index.js",
-    "dev": "nodemon --watch src --ext js,json --exec node src/server/index.js"
-  },
-  "dependencies": {
-    "@fastify/cors": "^11.0.1",
-    "@fastify/static": "^6",
-    "fastify": "^4",
-    "pino": "^9.7.0",
-    "pino-multi-stream": "^6.0.0",
-	"jsonwebtoken": "^9.0.0",
-	"dotenv": "^16.0.0"
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc --watch"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "typescript": "^5.1.6"
   }
 }

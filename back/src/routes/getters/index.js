@@ -1,7 +1,6 @@
 const gettersController = require('../../controller/getters');
+const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {
-  fastify.get('/hello', gettersController.getHello);
-  fastify.get('/user', gettersController.getUser);
-  fastify.get('/stats', gettersController.getStats);
+  fastify.get('/is_logged_in', {preHandler: authMiddleware}, gettersController.is_logged_in);
 };

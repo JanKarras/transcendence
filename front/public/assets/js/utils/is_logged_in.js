@@ -7,20 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { is_logged_in_api } from "../remote_storage/remote_storage.js";
-import { render_dashboard } from "../view/render_dashboard.js";
-import { render_login } from "../view/render_login.js";
-document.addEventListener("DOMContentLoaded", () => {
-    indexInit();
-});
-function indexInit() {
+import { is_logged_in_api } from "../remote_storage/remote_storage";
+export function is_logged_in() {
     return __awaiter(this, void 0, void 0, function* () {
-        const flag = yield is_logged_in_api();
-        if (flag) {
-            render_dashboard();
-        }
-        else {
-            render_login();
-        }
+        const res = yield is_logged_in_api();
+        return (res);
     });
 }

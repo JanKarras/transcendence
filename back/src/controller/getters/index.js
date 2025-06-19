@@ -1,3 +1,10 @@
-exports.getHello = async (req, res) => { return { msg: 'hello' }; };
-exports.getUser = async (req, res) => { return { user: 'Max' }; };
-exports.getStats = async (req, res) => { return { stats: [1, 2, 3] }; };
+const db = require("../../db");
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
+const logger = require('../../logger/logger');
+
+
+exports.is_logged_in = async (req, reply) => {
+	reply.code(200).send({ loggedIn: true });
+};

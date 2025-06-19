@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,20 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { is_logged_in_api } from "../remote_storage/remote_storage.js";
-import { render_dashboard } from "../view/render_dashboard.js";
-import { render_login } from "../view/render_login.js";
-document.addEventListener("DOMContentLoaded", () => {
-    indexInit();
-});
-function indexInit() {
+function (params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const flag = yield is_logged_in_api();
-        if (flag) {
-            render_dashboard();
-        }
-        else {
-            render_login();
-        }
     });
 }

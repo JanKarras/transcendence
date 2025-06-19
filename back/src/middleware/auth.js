@@ -1,0 +1,34 @@
+const jwt = require('jsonwebtoken');
+const logger = require('../logger/logger');
+const JWT_SECRET = process.env.JWT_SECRET
+
+async function authMiddleware(request, reply) {
+  const token = request.cookies.auth_token;
+  logger.info(`Middleware: Checking token for user`);
+
+  if (!token) {
+    logger.warn(`Middleware: No token found for user`);
+    return reply.redirect('/'); // Oder: reply.code(401).send({ error: 'Unauthorized' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    request.user = decoded;
+    logger.info(`Middleware: Token verified for user: ${decoded.email}`);
+
+    const newToken = jwt.sign({ email: decoded.email }, JWT_SECRET, { expiresIn: '3h' });
+    reply.setCookie('auth_token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      path: '/',
+      maxAge: 3 * 60 * 60
+    });
+
+  } catch (err) {
+    logger.warn(`Middleware: Token verification failed: ${err.message}`);
+    return reply.redirect('/');
+  }
+}
+
+module.exports = authMiddleware;

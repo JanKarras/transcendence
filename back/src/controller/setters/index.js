@@ -1,6 +1,10 @@
 const db = require("../../db");
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 const transporter = require("../../email")
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
+const logger = require('../../logger/logger');
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -71,7 +75,6 @@ exports.createUser = async (request, reply) => {
 
     return reply.code(201).send({ message: 'User created successfully' });
   } catch (err) {
-	console.log(err.code);
     if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       return reply.code(409).send({ error: 'Username or email already exists' });
     }
@@ -105,9 +108,32 @@ exports.login = async (request, reply) => {
 		return reply.code(401).send({ error: 'Incorrect password.' });
 	}
 
+	const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+
+	reply.setCookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 3600
+    });
+
 	return reply.code(200).send({ message: 'Login successful' });
   } catch (err) {
+	request.log.error(err);
     return reply.code(500).send({ error: 'Database error' });
+  }
+};
+
+exports.logout = async (request, reply) => {
+  try {
+    reply.clearCookie('auth_token', {
+      path: '/',
+    });
+
+    return reply.code(200).send({ message: 'Logout successful' });
+  } catch (err) {
+    request.log.error(err);
+    return reply.code(500).send({ error: 'Logout failed' });
   }
 };
 
