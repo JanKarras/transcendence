@@ -1,4 +1,5 @@
 import { logInApi } from "../remote_storage/remote_storage.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { navigateTo } from "../view/history_views.js";
 
 export async function logIn(event: Event) {
@@ -11,10 +12,10 @@ export async function logIn(event: Event) {
   const res = await logInApi(username, password);
 
   if (res.success) {
-    console.log(`User "${username}" logged in successfully.`);
+    showSuccessMessage(`Login successfull for user ${username}`)
 	navigateTo('dashboard')
   } else {
     console.error('Login failed:', res.error);
-    alert(`Login failed: ${res.error}`);
+	showErrorMessage(`Login failed: ${res.error}`)
   }
 }

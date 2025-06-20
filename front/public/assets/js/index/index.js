@@ -15,12 +15,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 function indexInit() {
     return __awaiter(this, void 0, void 0, function* () {
-        const flag = yield is_logged_in_api();
-        if (flag) {
-            navigateTo("dashboard");
+        // Wenn Hash im URL schon eine View vorgibt, soll initRouter das gerendert haben.
+        // Also hier nur noch entscheiden, falls keine View im Hash ist.
+        const hash = window.location.hash;
+        if (hash && hash.length > 1) {
+            // Hash ist da, nix tun, View wurde bereits gerendert
+            return;
+        }
+        // Ansonsten Login-Status prüfen und auf dashboard/login navigieren
+        const loggedIn = yield is_logged_in_api();
+        if (loggedIn) {
+            navigateTo('dashboard');
         }
         else {
-            navigateTo("login");
+            navigateTo('login');
         }
     });
 }

@@ -69,7 +69,7 @@ exports.createUser = async (request, reply) => {
 
 	const validationCode = await insertValidationCode(userId);
 
-	const verificationLink = `https://localhost/email_validation?email=${email}`;
+	const verificationLink = `https://localhost/#email_validation?email=${email}`;
 
 	await sendMail(email, 'Your verification code', `Your verification code is: ${validationCode}\n\nClick here to confirm your email: ${verificationLink}`);
 
