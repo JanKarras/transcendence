@@ -7,9 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { two_fa } from "../index/two_fa.js";
 import { logInApi } from "../remote_storage/remote_storage.js";
-import { render_two_fa } from "../view/two_fa.js";
+import { navigateTo } from "../view/history_views.js";
 export function logIn(event) {
     return __awaiter(this, void 0, void 0, function* () {
         event.preventDefault();
@@ -19,8 +18,7 @@ export function logIn(event) {
         const res = yield logInApi(username, password);
         if (res.success) {
             console.log(`User "${username}" logged in successfully.`);
-            two_fa();
-            render_two_fa();
+            navigateTo('dashboard');
         }
         else {
             console.error('Login failed:', res.error);
