@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "module": "ESNext",
     "outDir": "public/assets/js",
     "rootDir": "src",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

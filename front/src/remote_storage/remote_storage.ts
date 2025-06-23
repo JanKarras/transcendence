@@ -1,3 +1,5 @@
+import { UserResponse } from "../constants/structs";
+
 export async function createUser(username: string, email: string, password: string) {
 	const body = JSON.stringify({ username, email, password })
   try {
@@ -85,6 +87,29 @@ export async function emailValidationApi(email: string, code: string) {
   }
 }
 
+export async function two_fa_api(email: string, code: string) {
+	const body = JSON.stringify({ email, code })
+  try {
+	const response = await fetch('/api/set/two_fa_api', {
+	  method: 'POST',
+	  headers: {
+		'Content-Type': 'application/json',
+	  },
+	  body
+	});
+
+	if (!response.ok) {
+	  const errData = await response.json().catch(() => ({}));
+	  return { success: false, error: errData.error || 'Request failed' };
+	}
+
+	const data = await response.json();
+	return { success: true, data };
+  } catch (error: any) {
+	return { success: false, error: error.error };
+  }
+}
+
 export async function is_logged_in_api(): Promise<boolean> {
 	try {
 		const res = await fetch("/api/get/is_logged_in", {
@@ -103,10 +128,25 @@ export async function is_logged_in_api(): Promise<boolean> {
 	}
 }
 
+export async function getUser(): Promise<UserResponse | false> {
+	try {
+		const res = await fetch("/api/get/getUser", {
+			method: "GET",
+			credentials: "include",
+		});
+
+		const data :UserResponse = await res.json();
+		return data
+	} catch (err) {
+		return false;
+	}
+}
+
 export const api = {
 	createUser,
 	logInApi,
 	logOutApi,
 	emailValidationApi,
-	is_logged_in_api
+	is_logged_in_api,
+	two_fa_api
 };

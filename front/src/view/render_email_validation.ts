@@ -1,9 +1,21 @@
 import { bodyContainer } from "../constants/constants.js";
+import { validate_email } from "../login/email_validation.js";
+import { showErrorMessage } from "../templates/popup_message.js";
+import { render_with_delay } from "../utils/render_with_delay.js";
 
-export async function render_email_validation() {
+export async function render_email_validation(params: URLSearchParams | null) {
 	if (!bodyContainer) {
 		return;
 	}
+
+	const email = params?.get('email') || null;
+
+	if (email === null) {
+		showErrorMessage("Please use the link we sent you! You will be redirected to login in 3 seconds.");
+		render_with_delay("login");
+		return;
+	}
+
 
 	bodyContainer.innerHTML = `
     <div id="emailValidationContainer" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
@@ -36,4 +48,11 @@ export async function render_email_validation() {
       }
     });
   });
+
+	const submit = document.getElementById("submitCodeBtn");
+	if (submit) {
+  	submit.addEventListener("click", () => {
+    	validate_email(email);
+  	});
+}
 }

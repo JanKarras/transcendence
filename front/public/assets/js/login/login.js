@@ -1,29 +1,21 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { logInApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { navigateTo } from "../view/history_views.js";
-export function logIn(event) {
-    return __awaiter(this, void 0, void 0, function* () {
-        event.preventDefault();
-        const form = event.target;
-        const username = form.elements.namedItem("user").value;
-        const password = form.elements.namedItem("password").value;
-        const res = yield logInApi(username, password);
-        if (res.success) {
-            showSuccessMessage(`Login successfull for user ${username}`);
-            navigateTo('dashboard');
-        }
-        else {
-            console.error('Login failed:', res.error);
-            showErrorMessage(`Login failed: ${res.error}`);
-        }
-    });
+export async function logIn(event) {
+    event.preventDefault();
+    const form = event.target;
+    const username = form.elements.namedItem("user").value;
+    const password = form.elements.namedItem("password").value;
+    const res = await logInApi(username, password);
+    if (res.success) {
+        showSuccessMessage(`Login successfull for user ${username}`);
+        const params = new URLSearchParams({ email: username });
+        setTimeout(() => {
+            navigateTo('two_fa', params);
+        }, 3000);
+    }
+    else {
+        console.error('Login failed:', res.error);
+        showErrorMessage(`Login failed: ${res.error}`);
+    }
 }

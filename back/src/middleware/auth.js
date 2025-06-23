@@ -14,9 +14,9 @@ async function authMiddleware(request, reply) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     request.user = decoded;
-    logger.info(`Middleware: Token verified for user: ${decoded.email}`);
+    logger.info(`Middleware: Token verified for user: ${decoded.id}`);
 
-    const newToken = jwt.sign({ email: decoded.email }, JWT_SECRET, { expiresIn: '3h' });
+    const newToken = jwt.sign({ id: decoded.id }, JWT_SECRET, { expiresIn: '3h' });
     reply.setCookie('auth_token', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

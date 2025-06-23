@@ -13,7 +13,10 @@ export async function logIn(event: Event) {
 
   if (res.success) {
     showSuccessMessage(`Login successfull for user ${username}`)
-	navigateTo('dashboard')
+	const params = new URLSearchParams({ email: username })
+		setTimeout(() => {
+		navigateTo('two_fa', params);
+	}, 3000);
   } else {
     console.error('Login failed:', res.error);
 	showErrorMessage(`Login failed: ${res.error}`)

@@ -1,7 +1,7 @@
 import { bodyContainer } from "../constants/constants.js";
 import { registerUser } from "../login/register.js";
 import { navigateTo } from "./history_views.js";
-export function render_register() {
+export function render_register(params) {
     if (!bodyContainer) {
         return;
     }

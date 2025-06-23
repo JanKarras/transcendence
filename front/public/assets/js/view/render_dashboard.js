@@ -1,18 +1,10 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { bodyContainer } from "../constants/constants.js";
-export function render_dashboard() {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!bodyContainer) {
-            return;
-        }
-        bodyContainer.innerHTML = 'Dash';
-    });
+import { getUser } from "../remote_storage/remote_storage.js";
+export async function render_dashboard(params) {
+    if (!bodyContainer) {
+        return;
+    }
+    const user = await getUser();
+    console.log(user);
+    bodyContainer.innerHTML = 'Dash';
 }

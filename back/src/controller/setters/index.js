@@ -67,6 +67,8 @@ exports.createUser = async (request, reply) => {
 
 	const userId = info.lastInsertRowid;
 
+	db.prepare('INSERT INTO stats (user_id, wins, loses, tournamentWins) VALUES (?, 0, 0, 0)').run(userId);
+
 	const validationCode = await insertValidationCode(userId);
 
 	const verificationLink = `https://localhost/#email_validation?email=${email}`;
@@ -108,16 +110,14 @@ exports.login = async (request, reply) => {
 		return reply.code(401).send({ error: 'Incorrect password.' });
 	}
 
-	const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+	const twoFaCode = await insertValidationCode(user.id);
 
-	reply.setCookie('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 3600
-    });
+	const verificationLink = `https://localhost/#two_fa?email=${encodeURIComponent(user.email)}`;
 
-	return reply.code(200).send({ message: 'Login successful' });
+	await sendMail(user.email, 'Your 2FA code', `Your 2FA code is: ${twoFaCode}\n\nYou can confirm here: ${verificationLink}`);
+
+	return reply.code(200).send({ message: '2FA code sent to your email.' });
+
   } catch (err) {
 	request.log.error(err);
     return reply.code(500).send({ error: 'Database error' });
@@ -161,7 +161,16 @@ exports.emailValidation = async (request, reply) => {
     const now = new Date();
 
     if (now - createdAt > TEN_MINUTES) {
-      return reply.code(410).send({ error: 'Validation code expired.' });
+
+		db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+
+      	const validationCode = await insertValidationCode(user.id);
+
+		const verificationLink = `https://localhost/#email_validation?email=${email}`;
+
+		await sendMail(email, 'Your verification code', `Your verification code is: ${validationCode}\n\nClick here to confirm your email: ${verificationLink}`);
+
+		return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
     }
 
     if (validation.code !== code) {
@@ -179,3 +188,69 @@ exports.emailValidation = async (request, reply) => {
 };
 
 
+exports.two_fa_api = async (request, reply) => {
+  const { email, code } = request.body;
+
+  if (!email || !code) {
+    return reply.code(400).send({ error: 'Missing credentials: email/username and code are required.' });
+  }
+
+  try {
+    // Suche den User per Email oder Username
+    let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    if (!user) {
+      user = db.prepare('SELECT * FROM users WHERE username = ?').get(email);
+    }
+
+    if (!user) {
+      return reply.code(401).send({ error: 'Invalid email or username.' });
+    }
+
+    const validation = db.prepare('SELECT code, created_at FROM validation_codes WHERE user_id = ?').get(user.id);
+
+    if (!validation) {
+      return reply.code(404).send({ error: 'No validation code found for this user.' });
+    }
+
+    const TEN_MINUTES = 10 * 60 * 1000;
+    const createdAt = new Date(validation.created_at);
+    const now = new Date();
+
+    if (now - createdAt > TEN_MINUTES) {
+      // Alten Code löschen
+      db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+
+      // Neuen Code erstellen
+      const newCode = await insertValidationCode(user.id);
+
+      const verificationLink = `https://localhost/#two_fa?email=${encodeURIComponent(email)}`;
+
+      // Neue Mail senden
+      await sendMail(user.email, 'Your new 2FA code', `Your new 2FA code is: ${newCode}\n\nYou can confirm here: ${verificationLink}`);
+
+      return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
+    }
+
+    if (validation.code !== code) {
+      return reply.code(401).send({ error: 'Invalid validation code.' });
+    }
+
+    // Code korrekt → JWT-Token erstellen und Cookie setzen
+    db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+
+    reply.setCookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 3600
+    });
+
+    return reply.code(200).send({ message: 'Login successful' });
+
+  } catch (err) {
+    console.error(err);
+    return reply.code(500).send({ error: 'Database error' });
+  }
+};

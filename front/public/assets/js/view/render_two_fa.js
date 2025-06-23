@@ -1,15 +1,15 @@
 import { bodyContainer } from "../constants/constants.js";
-import { validate_email } from "../login/email_validation.js";
+import { two_fa } from "../login/two_fa.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-export async function render_email_validation(params) {
+export async function render_two_fa(params) {
     if (!bodyContainer) {
         return;
     }
     const email = params?.get('email') || null;
     if (email === null) {
-        showErrorMessage("Please use the link we sent you! You will be redirected to login in 3 seconds.");
-        render_with_delay("login");
+        showErrorMessage("Internal Server error. Please try again later");
+        render_with_delay('login');
         return;
     }
     bodyContainer.innerHTML = `
@@ -45,7 +45,7 @@ export async function render_email_validation(params) {
     const submit = document.getElementById("submitCodeBtn");
     if (submit) {
         submit.addEventListener("click", () => {
-            validate_email(email);
+            two_fa(email);
         });
     }
 }

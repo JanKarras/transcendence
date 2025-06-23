@@ -1,9 +1,8 @@
 import { bodyContainer } from "../constants/constants.js";
 import { logIn } from "../login/login.js";
 import { navigateTo } from "./history_views.js";
-import { render_register } from "./render_register.js";
 
-export function render_login() {
+export function render_login(params: URLSearchParams | null) {
 	if (!bodyContainer) {
 		return;
 	}

@@ -1,0 +1,62 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { bodyContainer } from "../constants/constants.js";
+import { validate_email } from "../login/email_validation.js";
+import { showErrorMessage } from "../templates/popup_message.js";
+import { render_login_with_delay } from "../utils/render_login_with_delay.js";
+export function render_email_validation(params) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!bodyContainer) {
+            return;
+        }
+        const email = (params === null || params === void 0 ? void 0 : params.get('email')) || null;
+        if (email === null) {
+            showErrorMessage("Please use the link we sent you! You will be redirected to login in 3 seconds.");
+            render_login_with_delay();
+            return;
+        }
+        bodyContainer.innerHTML = `
+    <div id="emailValidationContainer" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Email Validation</h2>
+      <p class="mb-4 text-center text-gray-700">Please enter the 6-digit code sent to <span class="font-semibold"></span></p>
+      <form id="emailValidationForm" class="flex justify-center space-x-2 mb-6">
+        ${Array(6).fill(0).map((_, i) => `
+          <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" required
+            class="w-10 h-12 text-center text-xl border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            id="codeDigit${i}" />
+        `).join('')}
+      </form>
+      <button id="submitCodeBtn"
+        class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">
+        Verify Email
+      </button>
+    </div>
+  `;
+        const inputs = Array.from(document.querySelectorAll("#emailValidationForm input"));
+        inputs.forEach((input, idx) => {
+            input.addEventListener("input", () => {
+                if (input.value.length === 1 && idx < inputs.length - 1) {
+                    inputs[idx + 1].focus();
+                }
+            });
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && input.value === "" && idx > 0) {
+                    inputs[idx - 1].focus();
+                }
+            });
+        });
+        const submit = document.getElementById("submitCodeBtn");
+        if (submit) {
+            submit.addEventListener("click", () => {
+                validate_email(email);
+            });
+        }
+    });
+}

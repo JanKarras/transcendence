@@ -1,6 +1,6 @@
 import { createUser } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
-import { render_login } from "../view/render_login.js";
+import { render_with_delay } from "../utils/render_with_delay.js";
 
 function passwordValidation(password: string): { valid: boolean; error?: string } {
 	if (password.length < 8) {
@@ -50,7 +50,7 @@ export async function registerUser(event: Event) {
 
 	if (res.success) {
 		showSuccessMessage("Register was succsessfull. Please remember to validate your email adress");
-		render_login();
+		render_with_delay("login");
 	} else {
 		showErrorMessage(`Registration failed: ${res.error}`);
 	}
