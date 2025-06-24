@@ -7,7 +7,7 @@ export function render_register(params: URLSearchParams | null) {
 		return;
 	}
 	bodyContainer.innerHTML = `
-	<div id="RegContainer" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-gray-800">
+	<div id="RegContainer" class="max-w-md p-6 bg-white rounded-lg shadow-md text-gray-800">
 	<h2 class="text-2xl font-semibold mb-6 text-center">Registrieren</h2>
 	<form id="registerForm" class="space-y-4">
 	  <label class="block">

@@ -13,7 +13,7 @@ export async function render_two_fa(params) {
         return;
     }
     bodyContainer.innerHTML = `
-    <div id="emailValidationContainer" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
+    <div id="emailValidationContainer" class="max-w-md p-6 bg-white rounded-lg shadow-lg">
       <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Email Validation</h2>
       <p class="mb-4 text-center text-gray-700">Please enter the 6-digit code sent to <span class="font-semibold"></span></p>
       <form id="emailValidationForm" class="flex justify-center space-x-2 mb-6">

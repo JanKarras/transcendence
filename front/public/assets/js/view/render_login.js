@@ -6,7 +6,7 @@ export function render_login(params) {
         return;
     }
     bodyContainer.innerHTML = `
-		<div id="loginContainer" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
+		<div id="loginContainer" class="max-w-md p-6 bg-white rounded-lg shadow-lg">
 			<h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
 			<form id="loginForm" class="space-y-4">
 				<label class="block">

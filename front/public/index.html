@@ -8,6 +8,23 @@
 	<link rel="icon" href="./assets/img/icon/favicon.ico" type="image/x-icon">
 	<link href="./assets/tailwind.css" rel="stylesheet">
 </head>
-<body  id="bodyContainer">
+<body class="flex flex-col min-h-screen" id="bodyContainer">
+	<header class="h-16 bg-white-100 text-gray-800 flex items-center justify-between px-6 shadow-lg border-b border-gray-300">
+		<h1 class="text-xl font-bold">Transcendence</h1>
+
+		<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 hidden cursor-pointer" id="profile">
+			<img id="profileImg" src="./assets/img/profile/default-profile.jpg" alt="Profile" class="w-full h-full object-cover">
+		</div>
+	</header>
+
+	<main class="flex-1 bg-gray-100 flex justify-center overflow-auto" >
+		<div id="contentContainer" class="flex flex-col justify-center items-center w-full max-w-4xl min-h-[calc(100vh-8rem)]">
+
+		</div>
+	</main>
+
+	<footer class="h-16 bg-white-100 text-gray-800 flex items-center justify-between px-6 shadow-lg border-t border-gray-300">
+		<p class="text-sm">Transcendence Footer</p>
+	</footer>
 </body>
 </html>

@@ -5,7 +5,7 @@ function getOrCreateContainer(): HTMLElement {
   if (!container) {
     container = document.createElement("div");
     container.id = NOTIFICATION_CONTAINER_ID;
-    container.className = "fixed top-5 right-5 z-50 flex flex-col space-y-2 max-w-sm";
+    container.className = "fixed top-64 right-5 z-50 flex flex-col space-y-2 max-w-sm";
     document.body.appendChild(container);
   }
   return container;

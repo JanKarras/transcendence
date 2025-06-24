@@ -13,7 +13,7 @@ export interface Friend {
   wins: number;
   loses: number;
   tournamentWins: number;
-  path: string | null
+  path: string;
 }
 
 export interface UserInfo {
@@ -21,7 +21,7 @@ export interface UserInfo {
   first_name: string | null;
   last_name: string | null;
   age: number | null;
-  path: string | null;
+  path: string;
 }
 
 export interface UserResponse {
