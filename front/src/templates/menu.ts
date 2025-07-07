@@ -6,8 +6,7 @@ function getOrCreateMenuContainer(): HTMLElement {
   if (!container) {
     container = document.createElement("div");
     container.id = MENU_CONTAINER_ID;
-    // Hier keine display:none mehr! Sondern direkt Klassen für verstecken/zeigen:
-    container.className = "fixed top-16 right-11 z-50 bg-white shadow-lg rounded border border-gray-200 w-48 opacity-0 translate-y-2 pointer-events-none transition-all duration-300";
+    container.className = "fixed top-16 right-11 z-50 bg-[#0e0e25] shadow-lg rounded w-48 opacity-0 translate-y-2 pointer-events-none transition-all duration-300";
     document.body.appendChild(container);
   }
   return container;
