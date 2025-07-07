@@ -1,5 +1,6 @@
 export const bodyContainer = document.getElementById("contentContainer");
 export const profile = document.getElementById("profile");
+export const headernavs = document.getElementById("headernavs");
 export const profileContainer = document.getElementById("profileContainer");
 export const profileImg = document.getElementById("profileImg");
 export const friendsNumber = document.getElementById("friendsNumber");

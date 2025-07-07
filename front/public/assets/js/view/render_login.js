@@ -1,8 +1,8 @@
-import { bodyContainer } from "../constants/constants.js";
+import { bodyContainer, headernavs } from "../constants/constants.js";
 import { logIn } from "../login/login.js";
 import { navigateTo } from "./history_views.js";
 export function render_login(params) {
-    if (!bodyContainer) {
+    if (!bodyContainer || !headernavs) {
         return;
     }
     bodyContainer.innerHTML = `
@@ -30,6 +30,7 @@ export function render_login(params) {
 			</button>
 		</div>
 	`;
+    headernavs.classList.add('hidden');
     const regBtn = document.getElementById("registerBtn");
     if (regBtn) {
         regBtn.addEventListener("click", () => {
