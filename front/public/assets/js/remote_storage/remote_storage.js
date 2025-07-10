@@ -134,6 +134,7 @@ export async function saveProfileChanges(updateData) {
             body: updateData,
             credentials: 'include',
         });
+        console.log(response);
         if (!response.ok) {
             const errData = await response.json().catch(() => ({}));
             return { success: false, error: errData.error || 'Request failed' };

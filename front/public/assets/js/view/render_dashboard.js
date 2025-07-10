@@ -1,4 +1,5 @@
-import { bodyContainer, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsNumber, headernavs, LANGUAGE, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { lang, t } from "../constants/language_vars.js";
 import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
@@ -67,7 +68,7 @@ export async function render_dashboard(params) {
 							</a>
 							<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Start a quick match</p>
 							<a href="#" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
-								Play now!
+								${t(lang.playNowBtn, LANGUAGE)}
 							</a>
 						</div>
 					</div>

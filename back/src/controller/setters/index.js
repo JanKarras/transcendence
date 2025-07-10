@@ -5,6 +5,8 @@ const transporter = require("../../email")
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 const logger = require('../../logger/logger');
+const fs = require('fs');
+const path = require('path');
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -255,6 +257,8 @@ exports.two_fa_api = async (request, reply) => {
   }
 };
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
 exports.updateUser = async function (req, reply) {
 	const parts = req.parts();
 
@@ -263,15 +267,34 @@ exports.updateUser = async function (req, reply) {
 	let last_name = null;
 	let age = null;
 
+	let imageName = null;
+
 	for await (const part of parts) {
-		console.log("Part received:", part.fieldname);
 
 		if (part.file) {
-			console.log('File field:', part.fieldname, part.filename);
-			await part.toBuffer();
-		} else {
-			console.log("Text field:", part.fieldname, part.value);
+			const buffer = await part.toBuffer();
 
+			if (buffer.length > MAX_IMAGE_SIZE) {
+				return reply
+					.code(400)
+					.send({ success: false, error: "Image to large. Max 5 MB" });
+			}
+
+			if (part.filename) {
+				const uploadsDir = path.join(__dirname, '../../../profile_images');
+				if (!fs.existsSync(uploadsDir)) {
+					fs.mkdirSync(uploadsDir, { recursive: true });
+				}
+
+				const extension = path.extname(part.filename);
+				const uniqueFilename = `${Date.now()}${extension}`;
+				const fullPath = path.join(uploadsDir, uniqueFilename);
+
+				fs.writeFileSync(fullPath, buffer);
+
+				imageName = uniqueFilename;
+			}
+		} else {
 			if (part.fieldname === "username") {
 				username = part.value;
 			} else if (part.fieldname === "first_name") {
@@ -282,6 +305,25 @@ exports.updateUser = async function (req, reply) {
 				age = part.value;
 			}
 		}
+	}
+
+	let user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+
+	if (username) {
+		if (first_name) {
+			db.prepare('UPDATE users SET first_name = ? WHERE username = ?').run(first_name, username);
+		}
+		if (last_name) {
+			db.prepare('UPDATE users SET last_name = ? WHERE username = ?').run(last_name, username);
+		}
+		if (age) {
+			db.prepare('UPDATE users SET age = ? WHERE username = ?').run(age, username);
+		}
+		if (imageName) {
+			db.prepare('UPDATE users SET path = ? WHERE username = ?').run(path, username);
+		}
+	} else {
+		return reply.code(400).send({ success: false, error: "No Username was send to the server" });
 	}
 
 	reply.send({ success: true });

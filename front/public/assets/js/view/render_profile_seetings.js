@@ -196,17 +196,6 @@ export async function render_profile_settings(params) {
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
-        const updateData = {
-            username: formData.get("username"),
-            first_name: formData.get("first_name"),
-            last_name: formData.get("last_name"),
-            age: formData.get("age") ? parseInt(formData.get("age")) : null,
-        };
-        const imageFile = fileInput?.files?.[0];
-        if (imageFile) {
-            formData.append("profileImage", imageFile);
-        }
-        //formData.append("updateData", JSON.stringify(updateData));
         const res = await saveProfileChanges(formData);
         if (res.success) {
             render_profile_settings(null);
