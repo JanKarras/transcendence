@@ -1,9 +1,11 @@
-import { bodyContainer, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { Friend, UserInfo, UserStats } from "../constants/structs.js";
 import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
+import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
+import { navigateTo } from "./history_views.js";
 
 export async function render_dashboard(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs) {
@@ -23,13 +25,14 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	}
 	const user: UserInfo = userData.user;
 
+	removeEventListenerByClone(MENU_CONTAINER_ID);
+
 	profileContainer.addEventListener("click", (event) => {
-	event.stopPropagation();
-	showMenu([
-			{ label: "Profil", onClick: () => console.log("Profil clicked") },
-			{ label: "Einstellungen", onClick: () => console.log("Einstellungen clicked") },
-			{ label: "Logout", onClick: () => logOutApi() }
-		]);
+		event.stopPropagation();
+		showMenu([
+				{ label: "Profil", onClick: () => navigateTo('profile') },
+				{ label: "Logout", onClick: () => logOutApi() }
+			]);
 	});
 
 
@@ -43,7 +46,25 @@ export async function render_dashboard(params: URLSearchParams | null) {
 
 	profile.innerHTML = user.username
 
-	friendsNumber.innerHTML = freinds.length.toLocaleString();
+	let count: number = 0;
+	const FIVE_MINUTES_MS = 5 * 60 * 1000;
+	const now = Date.now();
+
+	for (let i = 0; i < freinds.length; i++) {
+		const friend = freinds[i];
+		if (!friend.last_seen) {
+			continue;
+		}
+
+		const lastSeen = new Date(friend.last_seen + ' UTC').getTime();
+		console.log(lastSeen);
+		console.log(now);
+		if (now - lastSeen <= FIVE_MINUTES_MS) {
+			count++;
+		}
+	}
+
+	friendsNumber.innerHTML = count.toLocaleString();
 
 	const html = `
 			<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
@@ -86,17 +107,17 @@ export async function render_dashboard(params: URLSearchParams | null) {
 				<div class="flex items-center justify-between gap-x-6">
 
 					<a class="w-[33%] mt-4 flex items-center justify-center flex-col block max-w-sm px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
+						<h5 id="online" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
 						<p class="font-normal text-gray-700 dark:text-gray-400">Online Players</p>
 					</a>
 
 					<a class="w-[33%] mt-4 flex items-center justify-center flex-col block max-w-sm px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
+						<h5 id="tourn" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
 						<p class="font-normal text-gray-700 dark:text-gray-400">Aktiv Tournaments</p>
 					</a>
 
 					<a class="w-[33%] mt-4 flex items-center justify-center flex-col block max-w-sm px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
+						<h5 id="matches" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
 						<p class="font-normal text-gray-700 dark:text-gray-400">Matches Today</p>
 					</a>
 
@@ -104,5 +125,11 @@ export async function render_dashboard(params: URLSearchParams | null) {
 			</div>`
 
 	bodyContainer.innerHTML = html;
+
+	const online = document.getElementById("online")
+
+	const tourn = document.getElementById("tourn")
+
+	const matches = document.getElementById("matches")
 
 }

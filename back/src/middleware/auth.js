@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const logger = require('../logger/logger');
 const JWT_SECRET = process.env.JWT_SECRET
+const db = require("../db");
+
+function updateLastSeen(userId) {
+  db.prepare(`UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?`).run(userId);
+}
 
 async function authMiddleware(request, reply) {
   const token = request.cookies.auth_token;
@@ -8,13 +13,15 @@ async function authMiddleware(request, reply) {
 
   if (!token) {
     logger.warn(`Middleware: No token found for user`);
-    return reply.redirect('/'); // Oder: reply.code(401).send({ error: 'Unauthorized' });
+    return reply.redirect('/');
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     request.user = decoded;
     logger.info(`Middleware: Token verified for user: ${decoded.id}`);
+
+	updateLastSeen(decoded.id);
 
     const newToken = jwt.sign({ id: decoded.id }, JWT_SECRET, { expiresIn: '3h' });
     reply.setCookie('auth_token', newToken, {

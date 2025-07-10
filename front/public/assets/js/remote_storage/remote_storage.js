@@ -127,6 +127,23 @@ export async function getUser() {
         return false;
     }
 }
+export async function saveProfileChanges(updateData) {
+    try {
+        const response = await fetch('/api/set/updateUser', {
+            method: 'POST',
+            body: updateData,
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, error: errData.error || 'Request failed' };
+        }
+        return { success: true };
+    }
+    catch (error) {
+        return { success: false, error: error.message || 'Network error' };
+    }
+}
 export const api = {
     createUser,
     logInApi,

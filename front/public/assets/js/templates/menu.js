@@ -9,13 +9,27 @@ function getOrCreateMenuContainer() {
     }
     return container;
 }
+export function updateMenuItems(items) {
+    const container = getOrCreateMenuContainer();
+    container.innerHTML = "";
+    items.forEach(item => {
+        const btn = document.createElement("button");
+        btn.textContent = item.label;
+        btn.className = "block w-full text-white text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black focus:outline-none";
+        btn.addEventListener("click", () => {
+            item.onClick();
+            hideMenu();
+        });
+        container.appendChild(btn);
+    });
+}
 function renderMenu(items) {
     const container = getOrCreateMenuContainer();
     container.innerHTML = ""; // vorherigen Inhalt löschen
     items.forEach(item => {
         const btn = document.createElement("button");
         btn.textContent = item.label;
-        btn.className = "block w-full text-left px-4 py-2 hover:bg-gray-100 focus:outline-none";
+        btn.className = "block w-full text-white text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black focus:outline-none";
         btn.addEventListener("click", () => {
             item.onClick();
             hideMenu();

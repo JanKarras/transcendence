@@ -13,22 +13,22 @@ export function render_register(params: URLSearchParams | null) {
 	  <label class="block">
 		<span class="block mb-1 font-medium">Username</span>
 		<input type="text" name="username" required
-			   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+			   class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 	  </label>
 	  <label class="block">
 		<span class="block mb-1 font-medium">Email</span>
 		<input type="email" name="email" required
-			   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+			   class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 	  </label>
 	  <label class="block">
 		<span class="block mb-1 font-medium">Passwort</span>
 		<input type="password" name="password" required
-			   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+			   class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 	  </label>
 	  <label class="block">
 		<span class="block mb-1 font-medium">Confirm Passwort</span>
 		<input type="password" name="password2" required
-			   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+			   class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 	  </label>
 	  <button type="submit"
 			  class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">

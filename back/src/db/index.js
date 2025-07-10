@@ -6,21 +6,22 @@ const db = new Database(dbPath);
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS users (
-  	id INTEGER PRIMARY KEY AUTOINCREMENT,
-  	email TEXT NOT NULL UNIQUE,
-  	username TEXT NOT NULL UNIQUE,
-  	password TEXT NOT NULL,
-  	validated BOOLEAN DEFAULT 0,
-  	rights1 BOOLEAN DEFAULT 0,
-  	rights2 BOOLEAN DEFAULT 0,
-  	rights3 BOOLEAN DEFAULT 0,
-  	rights4 BOOLEAN DEFAULT 0,
-  	rights5 BOOLEAN DEFAULT 0,
-	first_name TEXT DEFAULT NULL,
-	last_name TEXT DEFAULT NULL,
-	age INTEGER DEFAULT NULL,
-	path TEXT DEFAULT NULL
-	);
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    validated BOOLEAN DEFAULT 0,
+    rights1 BOOLEAN DEFAULT 0,
+    rights2 BOOLEAN DEFAULT 0,
+    rights3 BOOLEAN DEFAULT 0,
+    rights4 BOOLEAN DEFAULT 0,
+    rights5 BOOLEAN DEFAULT 0,
+    first_name TEXT DEFAULT NULL,
+    last_name TEXT DEFAULT NULL,
+    age INTEGER DEFAULT NULL,
+    path TEXT DEFAULT NULL,
+    last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `).run();
 
 db.prepare(`

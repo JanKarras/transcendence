@@ -4,14 +4,16 @@ import { render_dashboard } from "../view/render_dashboard.js";
 import { render_login } from "../view/render_login.js";
 import { render_register } from "../view/render_register.js";
 import { render_email_validation } from "./render_email_validation.js";
+import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
-const protectedViews = ['dashboard'];
+const protectedViews = ['dashboard', 'profile'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
     register: render_register,
     email_validation: render_email_validation,
-    two_fa: render_two_fa
+    two_fa: render_two_fa,
+    profile: render_profile_settings
 };
 function renderView(view, params = null) {
     const renderer = renderers[view];

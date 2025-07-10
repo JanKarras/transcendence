@@ -14,6 +14,7 @@ export interface Friend {
   loses: number;
   tournamentWins: number;
   path: string;
+  last_seen: string;
 }
 
 export interface UserInfo {

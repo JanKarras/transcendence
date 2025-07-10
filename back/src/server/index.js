@@ -2,11 +2,17 @@ require('dotenv').config();
 const logger = require('../logger/logger');
 const fastify = require('fastify')({ logger });
 const fastifyCookie = require('@fastify/cookie');
+const multipart = require('@fastify/multipart')
+
+
+fastify.register(multipart);
 
 fastify.decorate('logger', logger);
 
 fastify.register(require('../routes/getters/'), { prefix: '/api/get' });
 fastify.register(require('../routes/setters/'), { prefix: '/api/set' });
+
+
 
 fastify.register(fastifyCookie, {
   secret: process.env.JWT_SECRET,

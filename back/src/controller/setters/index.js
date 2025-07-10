@@ -254,3 +254,36 @@ exports.two_fa_api = async (request, reply) => {
     return reply.code(500).send({ error: 'Database error' });
   }
 };
+
+exports.updateUser = async function (req, reply) {
+	const parts = req.parts();
+
+	let username = null;
+	let first_name = null;
+	let last_name = null;
+	let age = null;
+
+	for await (const part of parts) {
+		console.log("Part received:", part.fieldname);
+
+		if (part.file) {
+			console.log('File field:', part.fieldname, part.filename);
+			await part.toBuffer();
+		} else {
+			console.log("Text field:", part.fieldname, part.value);
+
+			if (part.fieldname === "username") {
+				username = part.value;
+			} else if (part.fieldname === "first_name") {
+				first_name = part.value;
+			} else if (part.fieldname === "last_name") {
+				last_name = part.value;
+			} else if (part.fieldname === "age") {
+				age = part.value;
+			}
+		}
+	}
+
+	reply.send({ success: true });
+};
+

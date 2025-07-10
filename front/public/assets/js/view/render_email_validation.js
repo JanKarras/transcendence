@@ -19,7 +19,7 @@ export async function render_email_validation(params) {
       <form id="emailValidationForm" class="flex justify-center space-x-2 mb-6">
         ${Array(6).fill(0).map((_, i) => `
           <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" required
-            class="w-10 h-12 text-center text-xl border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="text-gray-900 w-10 h-12 text-center text-xl border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             id="codeDigit${i}" />
         `).join('')}
       </form>

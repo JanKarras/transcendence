@@ -31,37 +31,65 @@ exports.is_logged_in = async (req, reply) => {
 exports.getUser = async (req, reply) => {
 	const userId = getUserIdFromRequest(req);
 
-	const user = db.prepare('SELECT username, first_name, last_name, age, path FROM users WHERE id = ?').get(userId);
+	const user = db.prepare(`
+		SELECT username, first_name, last_name, age, path
+		FROM users
+		WHERE id = ?
+	`).get(userId);
 
 	if (!user) {
-		return reply.code(401).send({ error: 'Unknown user is logged in' })
+		return reply.code(401).send({ error: 'Unknown user is logged in' });
 	}
 
 	const stmt = db.prepare(`
-		SELECT u.id, u.username, u.first_name, u.last_name, u.age, u.path,
-			   s.wins, s.loses, s.tournamentWins
-		FROM users u
-		JOIN (
-			SELECT
-				CASE
-					WHEN user_id = ? THEN friend_id
-					ELSE user_id
-				END AS friend_id
-			FROM friends
-			WHERE user_id = ? OR friend_id = ?
-		) f ON u.id = f.friend_id
-		JOIN stats s ON u.id = s.user_id;
-	`);
+	SELECT
+		u.id,
+		u.username,
+		u.first_name,
+		u.last_name,
+		u.age,
+		u.path,
+		u.last_seen,
+		s.wins,
+		s.loses,
+		s.tournamentWins
+	FROM users u
+	JOIN (
+		SELECT
+			CASE
+				WHEN user_id = ? THEN friend_id
+				ELSE user_id
+			END AS friend_id
+		FROM friends
+		WHERE user_id = ? OR friend_id = ?
+	) f ON u.id = f.friend_id
+	JOIN stats s ON u.id = s.user_id
+`);
 
-	const friends = stmt.all(userId, userId, userId);
+	const tmp = db.prepare(`SELECT * FROM friends`);
 
-	const stats = db.prepare('SELECT *FROM stats WHERE user_id = ?').get(userId);
+	const res = tmp.all();
+
+		//console.log(res)
+
+	const friends = stmt.all(userId, userId, userId) || [];
+
+	const stats = db.prepare(`
+		SELECT * FROM stats WHERE user_id = ?
+	`).get(userId) || {
+		user_id: userId,
+		wins: 0,
+		loses: 0,
+		tournamentWins: 0
+	};
 
 	const response = {
 		user,
 		friends,
 		stats
 	};
+
+	//console.log(response)
 
 	return reply.code(200).send(response);
 };
