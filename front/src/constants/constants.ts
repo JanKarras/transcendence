@@ -14,3 +14,4 @@ export const NOTIFICATION_CONTAINER_ID = "notification-container";
 
 export const MENU_CONTAINER_ID = "menu-container";
 
+export let LANGUAGE = "eng";

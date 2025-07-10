@@ -30,3 +30,9 @@ export interface UserResponse {
   friends: Friend[];
   stats: UserStats & { user_id: number };
 }
+
+export interface trans {
+  ger: string;
+  eng: string;
+  nig: string;
+}
