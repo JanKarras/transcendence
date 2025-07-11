@@ -1,27 +1,38 @@
-import { bodyContainer, headernavs, MENU_CONTAINER_ID, profile, profileContainer } from "../constants/constants.js";
-import { UserInfo } from "../constants/structs.js";
+import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { Friend, UserInfo } from "../constants/structs.js";
 import { getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
-import { showMenu, updateMenuItems } from "../templates/menu.js";
+import { showFriendsDropdown } from "../templates/freinds_menu.js";
+import { buildMenuItems, showMenu, updateMenuItems } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo } from "./history_views.js";
 
+
+
 export async function render_profile_settings(params: URLSearchParams | null) {
-	if (!bodyContainer || !profile || !headernavs || !profileContainer) {
+	if (!bodyContainer || !profile || !headernavs || !profileContainer || !profileImg || !friendsBtn || !friendsNumber) {
 		console.error("bodyContainer missing");
 		return;
 	}
 	const userData = await getUser();
 
 	removeEventListenerByClone(MENU_CONTAINER_ID);
+	removeEventListenerByClone(FRIENDS_CONTAINER_ID);
+	
+	friendsBtn.addEventListener("click", (event) => {
+			event.stopPropagation();
+			showFriendsDropdown();
+		})
+
+
 
 	profileContainer.addEventListener("click", (event) => {
 		event.stopPropagation();
-		showMenu([
-				{ label: "Dashboard", onClick: () => navigateTo('dashboard') },
-				{ label: "Logout", onClick: () => logOutApi() }
-			]);
+		const menuItems = buildMenuItems([
+			{ label: "🏠 Dashboard", onClick: () => navigateTo("dashboard") }
+		]);
+		showMenu(menuItems);
 	});
 
 	profile.classList.remove('hidden');
@@ -32,9 +43,36 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		render_with_delay("login");
 		return;
 	}
+
+		const freinds: Friend[] = userData.friends;
+
+		let count: number = 0;
+		const FIVE_MINUTES_MS = 5 * 60 * 1000;
+		const now = Date.now();
+		console.log(freinds)
+		for (let i = 0; i < freinds.length; i++) {
+			const friend = freinds[i];
+			if (!friend.last_seen) {
+				continue;
+			}
+
+			const lastSeen = new Date(friend.last_seen + ' UTC').getTime();
+			console.log(lastSeen);
+			console.log(now);
+			if (now - lastSeen <= FIVE_MINUTES_MS) {
+				count++;
+			}
+		}
+
+		friendsNumber.innerHTML = count.toLocaleString();
+
 	const user: UserInfo = userData.user;
+
+	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
+	profileImg.src = safePath
+	profile.innerHTML = user.username
 	const tmp = `<div class="flex flex-col items-center">
-					<img src="${user.path || './assets/img/default-user.png'}"
+					<img src="/api/get/getImage?filename=${encodeURIComponent(user.path)}"
 						class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200 mb-4">
 					<h2 class="text-xl font-bold">${user.username}</h2>
 					<div class="mt-4 space-y-2 text-center">
@@ -43,6 +81,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 						<p><span class="font-semibold">Age:</span> ${user.age !== null ? user.age : 'Not provided'}</p>
 					</div>
 				</div>`
+
 
 	bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
@@ -55,7 +94,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 			<div id="profileView">
 				<div class="flex flex-col items-center space-y-4">
 					<label class="relative group">
-						<img src="${user.path || './assets/img/default-user.png'}"
+						<img src="${safePath || './assets/img/default-user.png'}"
 							class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200">
 					</label>
 
@@ -103,7 +142,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 				<form id="editProfileForm" class="flex flex-col items-center space-y-4">
 
 					<label for="fileInput" class="cursor-pointer relative group">
-						<img id="profileImagePreview" src="${user.path || './assets/img/default-user.png'}"
+						<img id="profileImagePreview" src="${safePath}"
 							class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200">
 						<div class="absolute inset-0 rounded-full bg-black bg-opacity-40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
 							Change
@@ -163,7 +202,6 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		</div>
 	`;
 
-	// Optional: Tailwind `@apply` Simulation (falls du's nutzt)
 	const style = document.createElement("style");
 	style.innerHTML = `
 		.input {
@@ -172,7 +210,6 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 	`;
 	document.head.appendChild(style);
 
-	// DOM Elements
 	const editBtn = document.getElementById("editBtn");
 	const view = document.getElementById("profileView");
 	const edit = document.getElementById("profileEdit");
@@ -193,7 +230,6 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		editBtn?.classList.remove("hidden")
 	});
 
-	// Live Preview for new image
 	fileInput?.addEventListener("change", () => {
 		const file = fileInput.files?.[0];
 		if (file) {

@@ -320,7 +320,7 @@ exports.updateUser = async function (req, reply) {
 			db.prepare('UPDATE users SET age = ? WHERE username = ?').run(age, username);
 		}
 		if (imageName) {
-			db.prepare('UPDATE users SET path = ? WHERE username = ?').run(path, username);
+			db.prepare('UPDATE users SET path = ? WHERE username = ?').run(imageName, username);
 		}
 	} else {
 		return reply.code(400).send({ success: false, error: "No Username was send to the server" });

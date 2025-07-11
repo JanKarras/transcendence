@@ -8,4 +8,5 @@ module.exports = async function (fastify, opts) {
   fastify.post('/emailValidation', settersController.emailValidation);
   fastify.post('/two_fa_api', settersController.two_fa_api);
   fastify.post('/updateUser', {preHandler: authMiddleware}, settersController.updateUser);
+
 };

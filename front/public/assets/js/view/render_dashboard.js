@@ -1,13 +1,15 @@
-import { bodyContainer, friendsNumber, headernavs, LANGUAGE, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
 import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
-import { showMenu } from "../templates/menu.js";
+import { showFriendsDropdown } from "../templates/freinds_menu.js";
+import { buildMenuItems, showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo } from "./history_views.js";
 export async function render_dashboard(params) {
-    if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs) {
+    if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
         console.error("bodyContainer Container missing");
         return;
     }
@@ -22,17 +24,23 @@ export async function render_dashboard(params) {
     }
     const user = userData.user;
     removeEventListenerByClone(MENU_CONTAINER_ID);
+    removeEventListenerByClone(FRIENDS_CONTAINER_ID);
     profileContainer.addEventListener("click", (event) => {
         event.stopPropagation();
-        showMenu([
-            { label: "Profil", onClick: () => navigateTo('profile') },
-            { label: "Logout", onClick: () => logOutApi() }
+        const menuItems = buildMenuItems([
+            { label: "👤 Profil", onClick: () => navigateTo("profile") }
         ]);
+        showMenu(menuItems);
+    });
+    friendsBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        showFriendsDropdown();
     });
     headernavs.classList.remove('hidden');
     const freinds = userData.friends;
     const stats = userData.stats;
-    profileImg.src = user.path;
+    const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
+    profileImg.src = safePath;
     profile.innerHTML = user.username;
     let count = 0;
     const FIVE_MINUTES_MS = 5 * 60 * 1000;

@@ -15,13 +15,24 @@ const renderers = {
     two_fa: render_two_fa,
     profile: render_profile_settings
 };
+let currentView = null;
+let currentParams = null;
+export function reRenderCurrentView() {
+    if (currentView) {
+        renderView(currentView, currentParams);
+    }
+}
 function renderView(view, params = null) {
     const renderer = renderers[view];
     if (renderer) {
         renderer(params);
+        currentView = view;
+        currentParams = params;
     }
     else {
         render_login(null);
+        currentView = 'login';
+        currentParams = null;
     }
 }
 function getViewAndParamsFromHash() {

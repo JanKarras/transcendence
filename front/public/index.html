@@ -7,6 +7,15 @@
 	<script type="module" src="./assets/js/index/index.js" defer></script>
 	<link rel="icon" href="./assets/img/icon/favicon.ico" type="image/x-icon">
 	<link href="./assets/tailwind.css" rel="stylesheet">
+	<script>
+		async function geetImage() {
+			const res = await fetch('/api/get/getImage?filename=hallo', {
+				method: "GET",
+				credentials: "include"
+			});
+			console.log(res)
+		}
+	</script>
 </head>
 <body class="flex flex-col min-h-screen text-white font-sans" id="bodyContainer">
 		<header class="flex justify-between items-center h-16 px-6 bg-[#0e0e25] border-gray-700 shadow-lg">
@@ -15,9 +24,9 @@
 		</h1>
 
 		<div id="headernavs" class="hidden flex items-center space-x-4">
-			<button class="flex h-10 items-center bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 ">
-				<span class="mr-2">👥</span> Freunde
-				<span id="friendsNumber" class="ml-1 bg-green-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+			<button class="flex h-10 items-center bg-gray-800 px-3 py-1 rounded hover:bg-gray-700" id="friendsBtn">
+				<span class="mr-2">👥</span> Friends
+				<span id="friendsNumber" class="friendsNumber ml-1 bg-green-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">3</span>
 			</button>
 			<div id="profileContainer" class="flex h-10 items-center space-x-3 bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 cursor-pointer">
 				<span id="profile" class="text-white font-medium">JanKarras</span>

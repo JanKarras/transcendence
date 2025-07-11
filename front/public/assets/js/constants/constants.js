@@ -1,9 +1,10 @@
 export const bodyContainer = document.getElementById("contentContainer");
 export const profile = document.getElementById("profile");
+export const friendsBtn = document.getElementById("friendsBtn");
 export const headernavs = document.getElementById("headernavs");
 export const profileContainer = document.getElementById("profileContainer");
 export const profileImg = document.getElementById("profileImg");
 export const friendsNumber = document.getElementById("friendsNumber");
 export const NOTIFICATION_CONTAINER_ID = "notification-container";
 export const MENU_CONTAINER_ID = "menu-container";
-export let LANGUAGE = "eng";
+export const FRIENDS_CONTAINER_ID = "friends-container";

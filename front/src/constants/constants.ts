@@ -2,6 +2,8 @@ export const bodyContainer = document.getElementById("contentContainer") as HTML
 
 export const profile = document.getElementById("profile") as HTMLElement | null;
 
+export const friendsBtn = document.getElementById("friendsBtn") as HTMLElement | null;
+
 export const headernavs = document.getElementById("headernavs") as HTMLElement | null;
 
 export const profileContainer = document.getElementById("profileContainer") as HTMLElement | null;
@@ -14,4 +16,4 @@ export const NOTIFICATION_CONTAINER_ID = "notification-container";
 
 export const MENU_CONTAINER_ID = "menu-container";
 
-export let LANGUAGE = "eng";
+export const FRIENDS_CONTAINER_ID = "friends-container";

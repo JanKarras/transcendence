@@ -23,12 +23,25 @@ const renderers: Record<View, ViewRenderFunction> = {
   profile : render_profile_settings
 };
 
+let currentView: View | null = null;
+let currentParams: URLSearchParams | null = null;
+
+export function reRenderCurrentView() {
+  if (currentView) {
+    renderView(currentView, currentParams);
+  }
+}
+
 function renderView(view: View, params: URLSearchParams | null = null) {
   const renderer = renderers[view];
   if (renderer) {
     renderer(params);
+    currentView = view;
+    currentParams = params;
   } else {
     render_login(null);
+    currentView = 'login';
+    currentParams = null;
   }
 }
 
