@@ -127,6 +127,34 @@ export async function getUser() {
         return false;
     }
 }
+export async function getAllUser() {
+    try {
+        const response = await fetch("/api/get/getAllUser");
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+    }
+}
+export async function getAllFriends() {
+    try {
+        const response = await fetch("/api/get/getAllFriends");
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        console.error("Error fetching friends:", error);
+        return [];
+    }
+}
 export async function saveProfileChanges(updateData) {
     try {
         const response = await fetch('/api/set/updateUser', {

@@ -1,16 +1,16 @@
 import { is_logged_in_api } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
-import { render_with_delay } from "../utils/render_with_delay.js";
 import { render_dashboard } from "../view/render_dashboard.js";
 import { render_login } from "../view/render_login.js";
 import { render_register } from "../view/render_register.js";
 import { render_email_validation } from "./render_email_validation.js";
+import { render_friends } from "./render_friends.js";
 import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
 
-export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile';
+export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends';
 
-const protectedViews: View[] = ['dashboard', 'profile'];
+const protectedViews: View[] = ['dashboard', 'profile', 'friends'];
 
 type ViewRenderFunction = (params: URLSearchParams | null) => void;
 
@@ -20,7 +20,8 @@ const renderers: Record<View, ViewRenderFunction> = {
   register: render_register,
   email_validation: render_email_validation,
   two_fa : render_two_fa,
-  profile : render_profile_settings
+  profile : render_profile_settings,
+  friends : render_friends
 };
 
 let currentView: View | null = null;

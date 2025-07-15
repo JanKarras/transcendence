@@ -23,6 +23,7 @@ export interface UserInfo {
   last_name: string | null;
   age: number | null;
   path: string;
+  last_seen: string;
 }
 
 export interface UserResponse {
@@ -35,4 +36,10 @@ export interface trans {
   ger: string;
   eng: string;
   nig: string;
+}
+
+export interface FriendsViewData {
+  allUsers: UserInfo[];
+  allFriends: Friend[];
+  onlineFriends: Friend[];
 }

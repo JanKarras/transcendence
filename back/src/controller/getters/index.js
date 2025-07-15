@@ -133,3 +133,16 @@ exports.getImage = async (req, reply) => {
 		return reply.code(404).send('Bild nicht gefunden.');
 	}
 };
+
+exports.getAllUser = async (req, reply) => {
+	try {
+		const stmt = db.prepare('SELECT id, username, first_name, last_name, age, path, last_seen FROM users WHERE validated = 1');
+		const users = stmt.all();
+
+		console.log(users);
+		reply.send(users);
+	} catch (err) {
+		console.error("DB error:", err);
+		reply.status(500).send({ error: "DB Error" });
+	}
+}

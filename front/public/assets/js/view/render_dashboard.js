@@ -15,7 +15,6 @@ export async function render_dashboard(params) {
     }
     profile.classList.remove('hidden');
     const userData = await getUser();
-    console.log(userData);
     if (!userData) {
         showErrorMessage("Database error. You will will be logged out");
         await logOutApi();

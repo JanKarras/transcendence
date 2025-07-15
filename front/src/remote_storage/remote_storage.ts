@@ -1,4 +1,4 @@
-import { UserResponse } from "../constants/structs";
+import { Friend, UserInfo, UserResponse } from "../constants/structs.js";
 
 export async function createUser(username: string, email: string, password: string) {
 	const body = JSON.stringify({ username, email, password })
@@ -139,6 +139,38 @@ export async function getUser(): Promise<UserResponse | false> {
 		return data
 	} catch (err) {
 		return false;
+	}
+}
+
+export async function getAllUser(): Promise<UserInfo[]> {
+	try {
+		const response = await fetch("/api/get/getAllUser");
+
+		if (!response.ok) {
+			throw new Error(`HTTP error: ${response.status}`);
+		}
+
+		const data: UserInfo[] = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		return [];
+	}
+}
+
+export async function getAllFriends(): Promise<Friend[]> {
+	try {
+		const response = await fetch("/api/get/getAllFriends");
+
+		if (!response.ok) {
+			throw new Error(`HTTP error: ${response.status}`);
+		}
+
+		const data: Friend[] = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Error fetching friends:", error);
+		return [];
 	}
 }
 
