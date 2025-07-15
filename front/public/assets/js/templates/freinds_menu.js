@@ -1,6 +1,7 @@
 import { FRIENDS_CONTAINER_ID, friendsNumber } from "../constants/constants.js";
 import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
+import { navigateTo } from "../view/history_views.js";
 import { hideMenu } from "./menu.js";
 import { showErrorMessage } from "./popup_message.js";
 function getOrCreateFriendsContainer() {
@@ -15,7 +16,7 @@ function getOrCreateFriendsContainer() {
         fixedBtn.className = "bg-[#1c1c3a] text-white font-semibold py-2 px-4 rounded-t cursor-pointer hover:bg-[#343465] transition";
         fixedBtn.style.flex = "0 0 auto";
         fixedBtn.addEventListener("click", () => {
-            window.location.href = "/friends-management";
+            navigateTo('friends');
         });
         container.appendChild(fixedBtn);
         // Scrollbarer Bereich für die Freundesliste
@@ -105,10 +106,8 @@ export async function showFriendsDropdown() {
     };
     online.forEach((f) => renderFriendItem(f, true));
     offline.forEach((f) => renderFriendItem(f, false));
-    // Dropdown sichtbar machen
     container.classList.remove("opacity-0", "translate-y-2", "pointer-events-none");
     container.classList.add("opacity-100", "translate-y-0");
-    // Click-Outside schließen
     function onClickOutside(event) {
         if (!container.contains(event.target)) {
             hideFriendsDropdown();
