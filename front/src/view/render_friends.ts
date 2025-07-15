@@ -87,7 +87,7 @@ export async function render_friends(params: URLSearchParams | null) {
 	profile.innerHTML = user.username
 
 	const wrapper = document.createElement("div");
-wrapper.className = "w-full h-full p-10 min-h-[200px]";
+	wrapper.className = "w-full h-full p-10 min-h-[200px]";
 
 	const tabNav = document.createElement("div");
 	tabNav.className = "flex gap-4 border-b mb-4";
