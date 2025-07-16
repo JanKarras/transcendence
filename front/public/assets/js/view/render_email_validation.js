@@ -55,10 +55,12 @@ import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
+import { render_header } from "./render_header.js";
 export async function render_email_validation(params) {
     if (!bodyContainer)
         return;
     const email = params?.get("email") || null;
+    render_header();
     if (email === null) {
         showErrorMessage(t(lang.emailMissingWarning, LANGUAGE));
         render_with_delay("login");

@@ -217,59 +217,28 @@
 // 		}
 // 	});
 // }
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
-import { showFriendsDropdown } from "../templates/freinds_menu.js";
-import { buildMenuItems, showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
-import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { navigateTo } from "./history_views.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
+import { render_header } from "./render_header.js";
 export async function render_profile_settings(params) {
     if (!bodyContainer || !profile || !headernavs || !profileContainer || !profileImg || !friendsBtn || !friendsNumber) {
         console.error("Missing required DOM elements");
         return;
     }
+    render_header();
     const userData = await getUser();
-    removeEventListenerByClone(MENU_CONTAINER_ID);
-    removeEventListenerByClone(FRIENDS_CONTAINER_ID);
-    friendsBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        showFriendsDropdown();
-    });
-    profileContainer.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const menuItems = buildMenuItems([
-            { label: `🏠 ${t(lang.dashboard, LANGUAGE)}`, onClick: () => navigateTo("dashboard") }
-        ]);
-        showMenu(menuItems);
-    });
-    profile.classList.remove("hidden");
-    headernavs.classList.remove("hidden");
     if (!userData) {
         showErrorMessage(t(lang.profileDbError, LANGUAGE));
         await logOutApi();
         render_with_delay("login");
         return;
     }
-    const freinds = userData.friends;
-    let count = 0;
-    const now = Date.now();
-    const FIVE_MINUTES_MS = 5 * 60 * 1000;
-    for (let friend of freinds) {
-        if (!friend.last_seen)
-            continue;
-        const lastSeen = new Date(friend.last_seen + " UTC").getTime();
-        if (now - lastSeen <= FIVE_MINUTES_MS)
-            count++;
-    }
-    friendsNumber.innerHTML = count.toLocaleString();
     const user = userData.user;
     const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
-    profileImg.src = safePath;
-    profile.innerHTML = user.username;
     bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
 			<button id="editBtn" class="absolute top-4 right-6 text-gray-500 hover:text-black transition transform hover:scale-125">✏️</button>

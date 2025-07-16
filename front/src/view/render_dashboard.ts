@@ -9,6 +9,7 @@ import { showErrorMessage } from "../templates/popup_message.js";
 import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo } from "./history_views.js";
+import { render_header } from "./render_header.js";
 
 export async function render_dashboard(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
@@ -16,65 +17,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		return;
 	}
 
-	profile.classList.remove('hidden')
-	const userData = await getUser();
-
-	if (!userData) {
-		showErrorMessage("Database error. You will will be logged out");
-		await logOutApi()
-		render_with_delay("login");
-		return;
-	}
-	const user: UserInfo = userData.user;
-
-	removeEventListenerByClone(MENU_CONTAINER_ID);
-	removeEventListenerByClone(FRIENDS_CONTAINER_ID);
-
-	profileContainer.addEventListener("click", (event) => {
-		event.stopPropagation();
-		const menuItems = buildMenuItems([
-			{ label: "👤 Profil", onClick: () => navigateTo("profile") }
-		]);
-		showMenu(menuItems);
-	});
-
-	friendsBtn.addEventListener("click", (event) => {
-		event.stopPropagation();
-		showFriendsDropdown();
-	})
-
-
-
-	headernavs.classList.remove('hidden')
-
-	const freinds: Friend[] = userData.friends;
-
-	const stats: UserStats = userData.stats;
-
-	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
-
-	profileImg.src = safePath
-
-	profile.innerHTML = user.username
-
-	let count: number = 0;
-	const FIVE_MINUTES_MS = 5 * 60 * 1000;
-	const now = Date.now();
-	for (let i = 0; i < freinds.length; i++) {
-		const friend = freinds[i];
-		if (!friend.last_seen) {
-			continue;
-		}
-
-		const lastSeen = new Date(friend.last_seen + ' UTC').getTime();
-		console.log(lastSeen);
-		console.log(now);
-		if (now - lastSeen <= FIVE_MINUTES_MS) {
-			count++;
-		}
-	}
-
-	friendsNumber.innerHTML = count.toLocaleString();
+	render_header();
 
 	const html = `
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">

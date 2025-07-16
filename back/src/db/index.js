@@ -61,8 +61,17 @@ if (existingUsers.count === 0) {
   const defaultUsers = [
     { username: "jkarras", email: "karras.jan@web.de" },
     { username: "rmatthes", email: "xxtrickz@web.de" },
-    { username: "atoepper", email: "user3@example.com" },
+    { username: "atoepper", email: "userxy@example.com" },
   ];
+
+  // user1 bis user10 ohne Freunde, aber mit Stats
+  const extraUsers = [];
+  for (let i = 1; i <= 10; i++) {
+    extraUsers.push({
+      username: `user${i}`,
+      email: `user${i}@example.com`
+    });
+  }
 
   const hashedPassword = bcrypt.hashSync("password123", 10);
 
@@ -82,24 +91,32 @@ if (existingUsers.count === 0) {
 
   const userIds = [];
 
-  // Benutzer einfügen
+  // Default-User einfügen
   for (const user of defaultUsers) {
     const result = insertUser.run(user.username, user.email, hashedPassword);
     userIds.push(result.lastInsertRowid);
     insertStats.run(result.lastInsertRowid);
   }
 
+  // Freundschaften nur unter Default-Usern
+  insertFriend.run(userIds[0], userIds[1]); // jkarras → rmatthes
+  insertFriend.run(userIds[1], userIds[0]); // rmatthes → jkarras
 
-  insertFriend.run(userIds[0], userIds[1]); // user1 → user2
-  insertFriend.run(userIds[1], userIds[0]); // user2 → user1
+  insertFriend.run(userIds[0], userIds[2]); // jkarras → atoepper
+  insertFriend.run(userIds[2], userIds[0]); // atoepper → jkarras
 
-  insertFriend.run(userIds[0], userIds[2]); // user1 → user3
-  insertFriend.run(userIds[2], userIds[0]); // user3 → user1
+  // Extra User einfügen (user1 bis user10) ohne Freunde, aber mit Stats
+  for (const user of extraUsers) {
+    const result = insertUser.run(user.username, user.email, hashedPassword);
+    insertStats.run(result.lastInsertRowid);
+    // Keine Freunde setzen!
+  }
 
-  console.log("✅ 3 Default-User wurden erfolgreich erstellt.");
+  console.log("✅ Default-User und 10 weitere User wurden erfolgreich erstellt.");
 } else {
   console.log("ℹ️ Benutzer existieren bereits, keine neuen User hinzugefügt.");
 }
+
 
 
 module.exports = db;

@@ -1,62 +1,13 @@
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
-import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
-import { showFriendsDropdown } from "../templates/freinds_menu.js";
-import { buildMenuItems, showMenu } from "../templates/menu.js";
-import { showErrorMessage } from "../templates/popup_message.js";
-import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
-import { render_with_delay } from "../utils/render_with_delay.js";
-import { navigateTo } from "./history_views.js";
+import { render_header } from "./render_header.js";
 export async function render_dashboard(params) {
     if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
         console.error("bodyContainer Container missing");
         return;
     }
-    profile.classList.remove('hidden');
-    const userData = await getUser();
-    if (!userData) {
-        showErrorMessage("Database error. You will will be logged out");
-        await logOutApi();
-        render_with_delay("login");
-        return;
-    }
-    const user = userData.user;
-    removeEventListenerByClone(MENU_CONTAINER_ID);
-    removeEventListenerByClone(FRIENDS_CONTAINER_ID);
-    profileContainer.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const menuItems = buildMenuItems([
-            { label: "👤 Profil", onClick: () => navigateTo("profile") }
-        ]);
-        showMenu(menuItems);
-    });
-    friendsBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        showFriendsDropdown();
-    });
-    headernavs.classList.remove('hidden');
-    const freinds = userData.friends;
-    const stats = userData.stats;
-    const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
-    profileImg.src = safePath;
-    profile.innerHTML = user.username;
-    let count = 0;
-    const FIVE_MINUTES_MS = 5 * 60 * 1000;
-    const now = Date.now();
-    for (let i = 0; i < freinds.length; i++) {
-        const friend = freinds[i];
-        if (!friend.last_seen) {
-            continue;
-        }
-        const lastSeen = new Date(friend.last_seen + ' UTC').getTime();
-        console.log(lastSeen);
-        console.log(now);
-        if (now - lastSeen <= FIVE_MINUTES_MS) {
-            count++;
-        }
-    }
-    friendsNumber.innerHTML = count.toLocaleString();
+    render_header();
     const html = `
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
 			${t(lang.readyTitle, LANGUAGE)}

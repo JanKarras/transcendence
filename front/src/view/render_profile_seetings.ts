@@ -272,6 +272,7 @@ import { navigateTo } from "./history_views.js";
 
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
+import { render_header } from "./render_header.js";
 
 export async function render_profile_settings(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !headernavs || !profileContainer || !profileImg || !friendsBtn || !friendsNumber) {
@@ -279,25 +280,9 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		return;
 	}
 
+	render_header();
+
 	const userData = await getUser();
-	removeEventListenerByClone(MENU_CONTAINER_ID);
-	removeEventListenerByClone(FRIENDS_CONTAINER_ID);
-
-	friendsBtn.addEventListener("click", (event) => {
-		event.stopPropagation();
-		showFriendsDropdown();
-	});
-
-	profileContainer.addEventListener("click", (event) => {
-		event.stopPropagation();
-		const menuItems = buildMenuItems([
-			{ label: `🏠 ${t(lang.dashboard, LANGUAGE)}`, onClick: () => navigateTo("dashboard") }
-		]);
-		showMenu(menuItems);
-	});
-
-	profile.classList.remove("hidden");
-	headernavs.classList.remove("hidden");
 
 	if (!userData) {
 		showErrorMessage(t(lang.profileDbError, LANGUAGE));
@@ -306,24 +291,8 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		return;
 	}
 
-	const freinds: Friend[] = userData.friends;
-	let count = 0;
-	const now = Date.now();
-	const FIVE_MINUTES_MS = 5 * 60 * 1000;
-
-	for (let friend of freinds) {
-		if (!friend.last_seen) continue;
-		const lastSeen = new Date(friend.last_seen + " UTC").getTime();
-		if (now - lastSeen <= FIVE_MINUTES_MS) count++;
-	}
-
-	friendsNumber.innerHTML = count.toLocaleString();
-
 	const user: UserInfo = userData.user;
 	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
-
-	profileImg.src = safePath;
-	profile.innerHTML = user.username;
 
 	bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">

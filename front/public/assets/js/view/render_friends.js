@@ -1,11 +1,8 @@
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { getAllUser, getUser, logOutApi } from "../remote_storage/remote_storage.js";
-import { showFriendsDropdown } from "../templates/freinds_menu.js";
-import { buildMenuItems, showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
-import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { navigateTo } from "./history_views.js";
+import { render_header } from "./render_header.js";
 async function fetchAndPrepareFriendsData() {
     const [userData, allUsers] = await Promise.all([getUser(), getAllUser()]);
     if (!userData || !allUsers) {
@@ -20,8 +17,9 @@ async function fetchAndPrepareFriendsData() {
     const FIVE_MINUTES_MS = 5 * 60 * 1000;
     const now = Date.now();
     const onlineFriends = allFriends.filter(friend => {
-        if (!friend.last_seen)
+        if (!friend.last_seen) {
             return true;
+        }
         const lastSeenTime = new Date(friend.last_seen + " UTC").getTime();
         return now - lastSeenTime <= FIVE_MINUTES_MS;
     });
@@ -38,36 +36,12 @@ export async function render_friends(params) {
         render_with_delay("login");
         return;
     }
-    removeEventListenerByClone(MENU_CONTAINER_ID);
-    removeEventListenerByClone(FRIENDS_CONTAINER_ID);
-    profileContainer.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const menuItems = buildMenuItems([
-            { label: "👤 Profil", onClick: () => navigateTo("profile") }
-        ]);
-        showMenu(menuItems);
-    });
-    friendsBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        showFriendsDropdown();
-    });
-    headernavs.classList.remove('hidden');
-    profile.classList.remove('hidden');
+    render_header();
     bodyContainer.innerHTML = "";
     const data = await fetchAndPrepareFriendsData();
-    if (!data)
-        return;
-    const userData = await getUser();
-    if (!userData) {
-        showErrorMessage("Database error. You will will be logged out");
-        await logOutApi();
-        render_with_delay("login");
+    if (!data) {
         return;
     }
-    const user = userData.user;
-    const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
-    profileImg.src = safePath;
-    profile.innerHTML = user.username;
     const wrapper = document.createElement("div");
     wrapper.className = "w-full h-full p-10 min-h-[200px]";
     const tabNav = document.createElement("div");

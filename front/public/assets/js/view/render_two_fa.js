@@ -54,10 +54,12 @@ import { two_fa } from "../login/two_fa.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { lang, t } from "../constants/language_vars.js";
+import { render_header } from "./render_header.js";
 export async function render_two_fa(params, currentLang = "eng") {
     if (!bodyContainer) {
         return;
     }
+    render_header();
     const email = params?.get('email') || null;
     if (email === null) {
         showErrorMessage("Internal Server error. Please try again later"); // Optional auch übersetzbar machen

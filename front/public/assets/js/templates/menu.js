@@ -2,8 +2,23 @@ import { MENU_CONTAINER_ID } from "../constants/constants.js";
 import { LANGUAGE, setLanguage } from "../constants/gloabal.js";
 import { AVAILABLE_LANGUAGES } from "../constants/language_vars.js";
 import { logOutApi } from "../remote_storage/remote_storage.js";
-import { reRenderCurrentView } from "../view/history_views.js";
+import { navigateTo, reRenderCurrentView } from "../view/history_views.js";
 import { hideFriendsDropdown } from "./freinds_menu.js";
+export function getMenuEntries(currentPos) {
+    const entries = [];
+    console.log(currentPos);
+    if (currentPos === "dashboard") {
+        entries.push({ label: `👤 Profil`, onClick: () => navigateTo("profile") });
+    }
+    if (currentPos === "profile") {
+        entries.push({ label: `🏠 Dashboard`, onClick: () => navigateTo("dashboard") });
+    }
+    if (currentPos === "friends") {
+        entries.push({ label: `🏠 Dashboard`, onClick: () => navigateTo("dashboard") });
+        entries.push({ label: `👤 Profil`, onClick: () => navigateTo("profile") });
+    }
+    return entries;
+}
 export function buildMenuItems(baseItems) {
     const langEntry = {
         label: `🌐 Language: ${LANGUAGE.toUpperCase()}`,
@@ -90,7 +105,6 @@ export function showMenu(items) {
     hideFriendsDropdown();
     const container = getOrCreateMenuContainer();
     renderMenu(items);
-    // Sichtbar machen mit Animation
     container.classList.remove("opacity-0", "translate-y-2", "pointer-events-none");
     container.classList.add("opacity-100", "translate-y-0");
     function onClickOutside(event) {
@@ -105,7 +119,6 @@ export function showMenu(items) {
 }
 export function hideMenu() {
     const container = getOrCreateMenuContainer();
-    // Verstecken mit Animation
     container.classList.add("opacity-0", "translate-y-2", "pointer-events-none");
     container.classList.remove("opacity-100", "translate-y-0");
 }

@@ -67,11 +67,14 @@ import { navigateTo } from "./history_views.js";
 // Sprachkonstanten und Funktionen importieren
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
+import { render_header } from "./render_header.js";
 
 export function render_register(params: URLSearchParams | null) {
   if (!bodyContainer) {
     return;
   }
+
+  render_header()
 
   bodyContainer.innerHTML = `
   <div id="RegContainer" class="max-w-md p-6 bg-white rounded-lg shadow-md text-gray-800">
