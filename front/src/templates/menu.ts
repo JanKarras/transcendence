@@ -2,6 +2,7 @@ import { MENU_CONTAINER_ID } from "../constants/constants.js";
 import { LANGUAGE, setLanguage } from "../constants/gloabal.js";
 import { AVAILABLE_LANGUAGES } from "../constants/language_vars.js";
 import { logOutApi } from "../remote_storage/remote_storage.js";
+import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo, reRenderCurrentView } from "../view/history_views.js";
 import { hideFriendsDropdown } from "./freinds_menu.js";
 
@@ -35,7 +36,11 @@ export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 
 	const logoutEntry: MenuItem = {
 		label: "🚪 Logout",
-		onClick: () => logOutApi()
+		onClick: () => {
+			logOutApi()
+			render_with_delay("login");
+		}
+
 	};
 
 	return [...baseItems, langEntry, logoutEntry];
