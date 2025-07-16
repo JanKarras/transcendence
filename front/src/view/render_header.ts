@@ -12,23 +12,31 @@ function getPos() {
 }
 
 export async function render_header() {
-	const userData = await getUser();
 
 	const pos = getPos();
 
-	if (!userData || !profileImg || !profile || !headernavs || !profileContainer || !friendsNumber || !friendsBtn) {
+	if (!profileImg || !profile || !headernavs || !profileContainer || !friendsNumber || !friendsBtn) {
+		showErrorMessage("Database Error. You will be logged out");
+		logOutApi();
+		render_with_delay('login');
+		return;
+	}
+	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa") {
+		headernavs.classList.remove('hidden');
+	} else {
+		headernavs.classList.add('hidden');
+		return;
+	}
+
+	const userData = await getUser();
+
+	if (!userData ) {
 		showErrorMessage("Database Error. You will be logged out");
 		logOutApi();
 		render_with_delay('login');
 		return;
 	}
 
-	if (pos !== "login") {
-		headernavs.classList.remove('hidden');
-	} else {
-		headernavs.classList.add('hidden');
-		return;
-	}
 
 	const user: UserInfo = userData.user;
 
