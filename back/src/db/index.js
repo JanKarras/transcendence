@@ -61,7 +61,7 @@ if (existingUsers.count === 0) {
   const defaultUsers = [
     { username: "jkarras", email: "karras.jan@web.de" },
     { username: "rmatthes", email: "xxtrickz@web.de" },
-    { username: "atoepper", email: "userxy@example.com" },
+    { username: "atoepper", email: "atoepper@student.42wolfsburg.de" },
   ];
 
   // user1 bis user10 ohne Freunde, aber mit Stats

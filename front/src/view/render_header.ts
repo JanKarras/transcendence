@@ -7,9 +7,7 @@ import { showErrorMessage } from "../templates/popup_message.js";
 import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 
-
-
-function getPos() {
+export function getPos() {
 	return window.location.hash.replace(/^#/, '');
 }
 
@@ -27,6 +25,8 @@ function updateOnlineUser(friends : Friend[]) {
 	}
 	friendsNumber.textContent = count.toLocaleString();
 }
+
+let profileMenuListenerAttached = false;
 
 export async function render_header() {
 
@@ -74,15 +74,27 @@ export async function render_header() {
 	});
 
 	removeEventListenerByClone(MENU_CONTAINER_ID);
-
-	profileContainer.addEventListener("click", (e) => {
-		e.stopPropagation();
-		const items = buildMenuItems(getMenuEntries(pos));
-		showMenu(items);
-	});
+	if (!profileMenuListenerAttached) {
+		profileContainer.addEventListener("click", (e) => {
+			e.stopPropagation();
+			const pos = getPos();
+			const items = buildMenuItems(getMenuEntries(pos));
+			showMenu(items);
+		});
+		profileMenuListenerAttached = true;
+	}
 }
 
-setInterval(async () => {
+let intervalId: ReturnType<typeof setInterval>;
+
+intervalId = setInterval(async () => {
+	const pos = getPos();
+
+	if (pos == 'login' || pos == 'register' || pos == 'two_fa' || pos == 'email_validation') {
+		clearInterval(intervalId);
+		return;
+	}
+
 	const user = await getUser();
 	if (!user) {
 		return;

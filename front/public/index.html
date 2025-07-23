@@ -7,15 +7,6 @@
 	<script type="module" src="./assets/js/index/index.js" defer></script>
 	<link rel="icon" href="./assets/img/icon/favicon.ico" type="image/x-icon">
 	<link href="./assets/tailwind.css" rel="stylesheet">
-	<script>
-		async function geetImage() {
-			const res = await fetch('/api/get/getImage?filename=hallo', {
-				method: "GET",
-				credentials: "include"
-			});
-			console.log(res)
-		}
-	</script>
 </head>
 <body class="flex flex-col min-h-screen text-white font-sans" id="bodyContainer">
 		<header class="flex justify-between items-center h-16 px-6 bg-[#0e0e25] border-gray-700 shadow-lg">

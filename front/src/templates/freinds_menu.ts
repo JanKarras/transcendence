@@ -26,6 +26,7 @@ export async function showFriendsDropdown() {
 	  "bg-[#1c1c3a] text-white font-semibold py-2 px-4 rounded-t cursor-pointer hover:bg-[#343465] transition";
 	friendsBtn.addEventListener("click", () => {
 	  navigateTo("friends");
+	  hideFriendsDropdown()
 	});
 	container.appendChild(friendsBtn);
 	const userData = await getUser();

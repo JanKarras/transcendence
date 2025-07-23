@@ -122,7 +122,6 @@ function renderMenu(items: MenuItem[]) {
   		langWrapper.appendChild(langSubmenu);
   		container.appendChild(langWrapper);
 	} else {
-	  // Normale Menüeinträge
 	  const btn = document.createElement("button");
 	  btn.textContent = item.label;
 	  btn.className = "block w-full text-white text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black focus:outline-none";

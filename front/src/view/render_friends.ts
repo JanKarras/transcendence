@@ -3,7 +3,7 @@ import { Friend, FriendsViewData, UserInfo } from "../constants/structs.js";
 import { getAllUser, getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { render_header } from "./render_header.js";
+import { getPos, render_header } from "./render_header.js";
 
 let data: FriendsViewData | null = null;
 let lastDataJSON: string = "";
@@ -192,7 +192,17 @@ function renderFriendRequests() {
 	container.innerHTML = "<p>Anfragen werden später geladen...</p>";
 }
 
-setInterval(async () => {
+let intervalId: ReturnType<typeof setInterval>;
+
+intervalId = setInterval(async () => {
+
+	const pos = getPos();
+
+	if (pos !== 'friends') {
+		clearInterval(intervalId);
+		return;
+	}
+
 	const newData = await fetchAndPrepareFriendsData();
 	if (!newData) {
 		return;

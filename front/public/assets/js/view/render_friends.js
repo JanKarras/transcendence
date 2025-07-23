@@ -2,7 +2,7 @@ import { bodyContainer, friendsBtn, headernavs, profile, profileContainer, profi
 import { getAllUser, getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { render_header } from "./render_header.js";
+import { getPos, render_header } from "./render_header.js";
 let data = null;
 let lastDataJSON = "";
 async function fetchAndPrepareFriendsData() {
@@ -166,7 +166,13 @@ function renderFriendRequests() {
         return;
     container.innerHTML = "<p>Anfragen werden später geladen...</p>";
 }
-setInterval(async () => {
+let intervalId;
+intervalId = setInterval(async () => {
+    const pos = getPos();
+    if (pos !== 'friends') {
+        clearInterval(intervalId);
+        return;
+    }
     const newData = await fetchAndPrepareFriendsData();
     if (!newData) {
         return;
