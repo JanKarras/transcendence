@@ -306,7 +306,7 @@ intervalId = setInterval(async () => {
     if (!newData) {
         return;
     }
-    if (!deepEqual(data, newData)) {
+    if (deepEqual(data, newData)) {
         return;
     }
     console.log("Differences:", findDifferences(data, newData));
