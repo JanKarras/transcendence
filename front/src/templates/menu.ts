@@ -1,6 +1,6 @@
 import { MENU_CONTAINER_ID } from "../constants/constants.js";
 import { LANGUAGE, setLanguage } from "../constants/gloabal.js";
-import { AVAILABLE_LANGUAGES } from "../constants/language_vars.js";
+import { AVAILABLE_LANGUAGES, lang, t } from "../constants/language_vars.js";
 import { logOutApi } from "../remote_storage/remote_storage.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo, reRenderCurrentView } from "../view/history_views.js";
@@ -12,14 +12,14 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 	console.log(currentPos)
 
 	if (currentPos === "dashboard") {
-		entries.push({ label: `👤 Profil`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
 	if (currentPos === "profile") {
-		entries.push({ label: `🏠 Dashboard`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 	}
 	if (currentPos === "friends") {
-		entries.push({ label: `🏠 Dashboard`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 Profil`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
 
 	return entries;
@@ -28,14 +28,14 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 
 export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 	const langEntry: MenuItem = {
-		label: `🌐 Language: ${LANGUAGE.toUpperCase()}`,
+		label: `${t(lang.languageLabel, LANGUAGE)} ${LANGUAGE.toUpperCase()}`,
 		onClick: () => {
 
 		}
 	};
 
 	const logoutEntry: MenuItem = {
-		label: "🚪 Logout",
+		label: `🚪 ${t(lang.logout, LANGUAGE)}`,
 		onClick: () => {
 			logOutApi()
 			render_with_delay("login");

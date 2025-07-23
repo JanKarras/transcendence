@@ -6,6 +6,8 @@ import { buildMenuItems, getMenuEntries, showMenu } from "../templates/menu.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
+import { lang, t } from "../constants/language_vars.js";
+import { LANGUAGE } from "../constants/gloabal.js";
 
 export function getPos() {
 	return window.location.hash.replace(/^#/, '');
@@ -32,12 +34,16 @@ export async function render_header() {
 
 	const pos = getPos();
 
-	if (!profileImg || !profile || !headernavs || !profileContainer || !friendsNumber || !friendsBtn) {
-		showErrorMessage("Database Error. You will be logged out");
+	const friendsCotnainer = document.getElementById("FriendsContainer")
+
+	if (!friendsCotnainer || !profileImg || !profile || !headernavs || !profileContainer || !friendsNumber || !friendsBtn) {
+		showErrorMessage(t(lang.databaseError, LANGUAGE));
 		logOutApi();
 		render_with_delay('login');
 		return;
 	}
+	friendsCotnainer.innerHTML = t(lang.friends, LANGUAGE)
+
 	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa") {
 		headernavs.classList.remove('hidden');
 	} else {
@@ -48,7 +54,7 @@ export async function render_header() {
 	const userData = await getUser();
 
 	if (!userData ) {
-		showErrorMessage("Database Error. You will be logged out");
+		showErrorMessage(t(lang.databaseError, LANGUAGE));
 		logOutApi();
 		render_with_delay('login');
 		return;

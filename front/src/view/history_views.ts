@@ -7,6 +7,8 @@ import { render_email_validation } from "./render_email_validation.js";
 import { render_friends } from "./render_friends.js";
 import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
+import { lang, t } from "../constants/language_vars.js";
+import { LANGUAGE } from "../constants/gloabal.js";
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends';
 
@@ -68,7 +70,7 @@ export function initRouter() {
       if (protectedViews.includes(state.view)) {
         const isLoggedIn = await is_logged_in_api();
         if (!isLoggedIn) {
-          showErrorMessage('You must be logged in to access this page.');
+          showErrorMessage(t(lang.loginRequired, LANGUAGE));
           renderView('login', null);
           history.replaceState({ view: 'login', paramString: '' }, '', `#login`);
           return;
@@ -82,7 +84,7 @@ export function initRouter() {
         if (protectedViews.includes(viewData.view)) {
           const isLoggedIn = await is_logged_in_api();
           if (!isLoggedIn) {
-            showErrorMessage('You must be logged in to access this page.');
+            showErrorMessage(t(lang.loginRequired, LANGUAGE));
             renderView('login', null);
             history.replaceState({ view: 'login', paramString: '' }, '', `#login`);
             return;
@@ -108,6 +110,7 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
   if (protectedViews.includes(view)) {
     const isLoggedIn = await is_logged_in_api();
     if (!isLoggedIn) {
+	showErrorMessage(t(lang.loginRequired, LANGUAGE));
       history.pushState({ view: 'login', paramString: '' }, '', `#login`);
       return;
     }
@@ -115,5 +118,6 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
 
   renderView(view, params);
   const paramString = params ? `?${params.toString()}` : '';
+
   history.pushState({ view, paramString }, '', `#${view}${paramString}`);
 }

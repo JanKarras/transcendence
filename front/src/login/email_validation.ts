@@ -1,3 +1,5 @@
+import { LANGUAGE } from "../constants/gloabal.js";
+import { lang, t } from "../constants/language_vars.js";
 import { emailValidationApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
@@ -10,13 +12,13 @@ export async function validate_email(email: string) {
   const isValidCode = /^[0-9]{6}$/.test(code);
 
   if (!isValidCode) {
-    showErrorMessage("Please enter a valid 6-digit code.");
+    showErrorMessage(t(lang.invalidCode, LANGUAGE));
     return;
   }
 
   const res = await emailValidationApi(email, code);
   if (res.success) {
-	showSuccessMessage("You validatet your accoutn successfully. You will be redirected to the login in 3 seconds");
+	showSuccessMessage(t(lang.emailValidated, LANGUAGE));
 	render_with_delay("login");
   } else {
 	console.log(res.error);

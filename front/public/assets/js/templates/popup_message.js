@@ -1,4 +1,6 @@
 import { NOTIFICATION_CONTAINER_ID } from "../constants/constants.js";
+import { LANGUAGE } from "../constants/gloabal.js";
+import { lang, t } from "../constants/language_vars.js";
 function getOrCreateContainer() {
     let container = document.getElementById(NOTIFICATION_CONTAINER_ID);
     if (!container) {
@@ -21,11 +23,13 @@ function createNotificationElement(message, bgColor, textColor) {
 }
 export function showSuccessMessage(message) {
     const container = getOrCreateContainer();
-    const notification = createNotificationElement(message, "bg-green-500", "text-white");
+    const finalMessage = message || t(lang.successDefaultMessage, LANGUAGE);
+    const notification = createNotificationElement(finalMessage, "bg-green-500", "text-white");
     container.appendChild(notification);
 }
 export function showErrorMessage(message) {
     const container = getOrCreateContainer();
-    const notification = createNotificationElement(message, "bg-red-500", "text-white");
+    const finalMessage = message || t(lang.errorDefaultMessage, LANGUAGE);
+    const notification = createNotificationElement(finalMessage, "bg-red-500", "text-white");
     container.appendChild(notification);
 }

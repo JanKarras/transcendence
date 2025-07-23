@@ -5,6 +5,8 @@ import { showErrorMessage } from "../templates/popup_message.js";
 import { isFriendOnline } from "../utils/isFriendOnline.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { getPos, render_header } from "./render_header.js";
+import { lang, t } from "../constants/language_vars.js";
+import { LANGUAGE } from "../constants/gloabal.js";
 
 let data: FriendsViewData | null = null;
 
@@ -43,7 +45,7 @@ async function fetchAndPrepareFriendsData(): Promise<FriendsViewData | null> {
 
 export async function render_friends(params: URLSearchParams | null) {
 	if (!bodyContainer || !profileContainer || !friendsBtn || !headernavs || !profile || !profileImg) {
-		showErrorMessage('Error with DOM loading. You will be logged out. Please try again later');
+		showErrorMessage(t(lang.domLoadError, LANGUAGE));
 		await logOutApi();
 		render_with_delay("login");
 		return;
@@ -69,10 +71,10 @@ export async function render_friends(params: URLSearchParams | null) {
 	contentContainer.id = "friends-content";
 
 	const tabs = [
-		{ id: "online", label: "Freunde Online", render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
-		{ id: "all", label: "Alle Freunde", render: () => renderAllFriends(data?.allFriends ?? []) },
-		{ id: "add", label: "Freunde hinzufügen", render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? []) },
-		{ id: "requests", label: "Anfragen", render: () => renderFriendRequests() },
+		{ id: "online", label: t(lang.friendsOnline, LANGUAGE), render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
+		{ id: "all", label: t(lang.allFriends, LANGUAGE), render: () => renderAllFriends(data?.allFriends ?? []) },
+		{ id: "add", label: t(lang.addFriends, LANGUAGE), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? []) },
+		{ id: "requests", label: t(lang.friendRequests, LANGUAGE), render: () => renderFriendRequests() },
 	];
 
 	tabs.forEach((tab, index) => {
@@ -143,21 +145,21 @@ function createFriendElement(friend: Friend): HTMLElement {
 	const fullName = (friend.first_name || "") + (friend.last_name ? " " + friend.last_name : "");
 	nameAge.textContent = `Name: ${fullName.trim() || "-"}`;
 	if (friend.age !== null && friend.age !== undefined) {
-		nameAge.textContent += `, Alter: ${friend.age}`;
+		nameAge.textContent = `${t(lang.name, LANGUAGE)}: ${fullName.trim() || "-"}`;
 	}
 
 	const statsDiv = document.createElement("div");
 	statsDiv.innerHTML = `
-		Wins: <strong>${friend.wins || 0}</strong>,
-		Loses: <strong>${friend.loses || 0}</strong>,
-		Tournament Wins: <strong>${friend.tournamentWins || 0}</strong>
+		${t(lang.wins, LANGUAGE)}: <strong>${friend.wins || 0}</strong>,
+		${t(lang.loses, LANGUAGE)}: <strong>${friend.loses || 0}</strong>,
+		${t(lang.tournamentWins, LANGUAGE)}: <strong>${friend.tournamentWins || 0}</strong>
 	`;
 
 	const btnContainer = document.createElement("div");
 	btnContainer.className = "mt-2 flex gap-3";
 
 	const chatBtn = document.createElement("button");
-	chatBtn.textContent = "💬 Start Chat";
+	chatBtn.textContent = `💬 ${t(lang.startChat, LANGUAGE)}`;
 	chatBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 	chatBtn.addEventListener("click", e => {
 		e.stopPropagation();
@@ -165,7 +167,7 @@ function createFriendElement(friend: Friend): HTMLElement {
 	});
 
 	const gameBtn = document.createElement("button");
-	gameBtn.textContent = "🎮 Start Match";
+	gameBtn.textContent = `🎮 ${t(lang.startMatch, LANGUAGE)}`;
 	gameBtn.className = "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
 	gameBtn.addEventListener("click", e => {
 		e.stopPropagation();
@@ -307,7 +309,7 @@ function createAddFriendElement(user: UserInfo): HTMLElement {
 	leftDiv.appendChild(usernameSpan);
 
 	const addBtn = document.createElement("button");
-	addBtn.textContent = "➕ Add Friend";
+	addBtn.textContent = `➕ ${t(lang.addFriend, LANGUAGE)}`;
 	addBtn.className =
 		"hidden group-hover:inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-1";
 
