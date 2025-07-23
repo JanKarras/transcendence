@@ -400,7 +400,7 @@ intervalId = setInterval(async () => {
 		return;
 	}
 
-	if (!deepEqual(data, newData)) {
+	if (deepEqual(data, newData)) {
 		return;
 	}
 
