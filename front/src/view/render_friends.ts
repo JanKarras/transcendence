@@ -1,7 +1,7 @@
 import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
-import { Friend, FriendsViewData, UserInfo } from "../constants/structs.js";
-import { getAllUser, getUser, logOutApi } from "../remote_storage/remote_storage.js";
-import { showErrorMessage } from "../templates/popup_message.js";
+import { Friend, FriendsViewData, UserInfo, RequestInfo } from "../constants/structs.js";
+import { getAllUser, getUser, logOutApi, sendFriendRequestApi } from "../remote_storage/remote_storage.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { isFriendOnline } from "../utils/isFriendOnline.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { getPos, render_header } from "./render_header.js";
@@ -35,10 +35,16 @@ async function fetchAndPrepareFriendsData(): Promise<FriendsViewData | null> {
 		return a.username.localeCompare(b.username);
 	});
 
+	const recv = userData.requests?.received || [];
+
+	const send = userData.requests?.sent || [];
+
 	return {
 		allUsers: usersWithoutMe,
 		allFriends: sortedFriends,
-		onlineFriends
+		onlineFriends,
+		recvRequest: recv,
+		sendRequest: send
 	};
 }
 
@@ -56,7 +62,7 @@ export async function render_friends(params: URLSearchParams | null) {
 	bodyContainer.innerHTML = "";
 
 	data = await fetchAndPrepareFriendsData();
-
+	console.log(data)
 	if (!data) {
 		return;
 	}
@@ -73,8 +79,9 @@ export async function render_friends(params: URLSearchParams | null) {
 	const tabs = [
 		{ id: "online", label: t(lang.friendsOnline, LANGUAGE), render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
 		{ id: "all", label: t(lang.allFriends, LANGUAGE), render: () => renderAllFriends(data?.allFriends ?? []) },
-		{ id: "add", label: t(lang.addFriends, LANGUAGE), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? []) },
-		{ id: "requests", label: t(lang.friendRequests, LANGUAGE), render: () => renderFriendRequests() },
+		{ id: "add", label: t(lang.addFriends, LANGUAGE), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? [], data?.recvRequest ?? [], data?.sendRequest ?? []) },
+		{ id: "requests", label: t(lang.friendRequests, LANGUAGE), render: () => renderFriendRequests(data?.recvRequest ?? [], data?.sendRequest ?? []) },
+
 	];
 
 	tabs.forEach((tab, index) => {
@@ -263,7 +270,12 @@ function renderAllFriends(friends: Friend[]) {
 	renderFriendList(container, friends);
 }
 
-function renderAddFriends(allUsers: UserInfo[], friends: Friend[]) {
+function renderAddFriends(
+	allUsers: UserInfo[],
+	friends: Friend[],
+	recvRequests: RequestInfo[],
+	sendRequests: RequestInfo[]
+) {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
 
@@ -271,19 +283,41 @@ function renderAddFriends(allUsers: UserInfo[], friends: Friend[]) {
 
 	const friendUsernames = new Set(friends.map(f => f.username));
 
-	const nonFriends = allUsers.filter(user => !friendUsernames.has(user.username));
+	const recvFriendUsernames = new Set(
+		recvRequests
+			.filter(r => r.type === "friend")
+			.map(r => r.sender_username)
+			.filter((name): name is string => name !== undefined)
+	);
+	
+	const sendFriendUsernames = new Set(
+		sendRequests
+			.filter(r => r.type === "friend")
+			.map(r => r.receiver_username)
+			.filter((name): name is string => name !== undefined)
+	);
+
+
+	const nonFriends = allUsers.filter(user =>
+		!friendUsernames.has(user.username)
+	);
 
 	renderSearchInput(container, (query) => {
 		const filtered = nonFriends.filter(user =>
 			user.username.toLowerCase().includes(query.toLowerCase())
 		);
-		renderAddFriendList(container, filtered);
+		renderAddFriendList(container, filtered, recvFriendUsernames, sendFriendUsernames);
 	});
 
-	renderAddFriendList(container, nonFriends);
+	renderAddFriendList(container, nonFriends, recvFriendUsernames, sendFriendUsernames);
 }
 
-function createAddFriendElement(user: UserInfo): HTMLElement {
+
+function createAddFriendElement(
+	user: UserInfo,
+	recvRequests: Set<string>,
+	sendRequests: Set<string>
+): HTMLElement {
 	const userDiv = document.createElement("div");
 	userDiv.className =
 		"friend-item group flex justify-start items-center border-b border-gray-700 p-2 hover:bg-gray-800 transition";
@@ -308,39 +342,192 @@ function createAddFriendElement(user: UserInfo): HTMLElement {
 	leftDiv.appendChild(imgWrapper);
 	leftDiv.appendChild(usernameSpan);
 
-	const addBtn = document.createElement("button");
-	addBtn.textContent = `➕ ${t(lang.addFriend, LANGUAGE)}`;
-	addBtn.className =
-		"hidden group-hover:inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-1";
+	let statusText: string | null = null;
+	if (recvRequests.has(user.username)) {
+		statusText = "Anfrage erhalten";
+	} else if (sendRequests.has(user.username)) {
+		statusText = "Anfrage gesendet";
+	}
 
-	addBtn.addEventListener("click", async () => {
-		console.log(`Freundschaftsanfrage an ${user.username} gesendet.`);
-	});
+	if (statusText) {
+		const statusLabel = document.createElement("span");
+		statusLabel.textContent = statusText;
+		statusLabel.className = "text-sm text-gray-400 ml-auto pr-2";
+		userDiv.appendChild(leftDiv);
+		userDiv.appendChild(statusLabel);
+	} else {
+		const addBtn = document.createElement("button");
+		addBtn.textContent = `➕ ${t(lang.addFriend, LANGUAGE)}`;
+		addBtn.className =
+			"hidden group-hover:inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-auto";
 
-	userDiv.appendChild(leftDiv);
-	userDiv.appendChild(addBtn);
+		addBtn.addEventListener("click", async () => {
+			sendFriendRequest(user);
+		});
+
+		userDiv.appendChild(leftDiv);
+		userDiv.appendChild(addBtn);
+	}
 
 	return userDiv;
 }
 
 
-function renderAddFriendList(container: HTMLElement, users: UserInfo[]) {
+async function sendFriendRequest(user: UserInfo) {
+	const res = await sendFriendRequestApi(user);
+
+	if (res.success) {
+		showSuccessMessage(
+			t(lang.friendRequestSent, LANGUAGE).replace("{username}", user.username)
+		);
+	} else {
+		const errorText = res.error ?? "Unknown Error";
+		showErrorMessage(
+			t(lang.friendRequestFailed, LANGUAGE).replace("{error}", errorText)
+		);
+	}
+}
+
+function renderAddFriendList(
+	container: HTMLElement,
+	users: UserInfo[],
+	recvRequests: Set<string>,
+	sendRequests: Set<string>
+) {
 	while (container.childNodes.length > 1) {
 		container.removeChild(container.lastChild!);
 	}
 
 	users.forEach(user => {
-		const userElement = createAddFriendElement(user);
+		const userElement = createAddFriendElement(user, recvRequests, sendRequests);
 		container.appendChild(userElement);
 	});
 }
 
-function renderFriendRequests() {
+function renderFriendRequests(
+	recvRequests: RequestInfo[],
+	sendRequests: RequestInfo[]
+) {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
 
-	container.innerHTML = "<p>Anfragen werden später geladen...</p>";
+	container.innerHTML = "";
+
+	const wrapper = document.createElement("div");
+	wrapper.className = "flex gap-8";
+
+	// Links: Empfangene Anfragen
+	const recvSection = document.createElement("div");
+	recvSection.className = "flex-1";
+	recvSection.innerHTML = `<h3 class="font-semibold mb-2">Empfangene Anfragen</h3>`;
+
+	if (recvRequests.length === 0) {
+		const noRecv = document.createElement("p");
+		noRecv.textContent = "Keine empfangenen Anfragen.";
+		recvSection.appendChild(noRecv);
+	} else {
+		recvRequests.forEach(request => {
+			const requestBox = createRequestBox(request, true, "recv");
+			recvSection.appendChild(requestBox);
+		});
+	}
+
+	// Rechts: Gesendete Anfragen
+	const sendSection = document.createElement("div");
+	sendSection.className = "flex-1";
+	sendSection.innerHTML = `<h3 class="font-semibold mb-2">Gesendete Anfragen</h3>`;
+
+	if (sendRequests.length === 0) {
+		const noSend = document.createElement("p");
+		noSend.textContent = "Keine gesendeten Anfragen.";
+		sendSection.appendChild(noSend);
+	} else {
+		sendRequests.forEach(request => {
+			const requestBox = createRequestBox(request, false, "send");
+			sendSection.appendChild(requestBox);
+		});
+	}
+
+	wrapper.appendChild(recvSection);
+	wrapper.appendChild(sendSection);
+
+	container.appendChild(wrapper);
 }
+
+// Hilfsfunktion, jetzt mit einem zusätzlichen Parameter für Richtung
+function createRequestBox(
+	request: RequestInfo,
+	canRespond: boolean,
+	direction: "recv" | "send"
+): HTMLElement {
+	const requestBox = document.createElement("div");
+	requestBox.className = "flex items-center justify-between p-4 mb-3 border rounded shadow";
+
+	const info = document.createElement("div");
+
+	// Name und Text abhängig von Richtung und Typ
+	let username = "";
+	let text = "";
+
+	if (direction === "recv") {
+		username = request.sender_username || "Unbekannt";
+		if (request.type === "friend") {
+			text = "möchte dich als Freund hinzufügen";
+		} else {
+			text = "lädt dich zu einem Spiel ein";
+		}
+	} else if (direction === "send") {
+		// Gesendete Anfragen - wir zeigen den Empfänger-Namen
+		username = request.receiver_username || "Unbekannt";
+		if (request.type === "friend") {
+			text = "Du hast eine Freundschaftsanfrage gesendet";
+		} else {
+			text = "Du hast eine Spieleinladung gesendet";
+		}
+	}
+
+	info.innerHTML = `
+		<p class="font-semibold">${username}</p>
+		<p class="text-sm text-gray-600">${text}</p>
+	`;
+
+	requestBox.appendChild(info);
+
+	if (canRespond) {
+		// Buttons nur bei empfangenen Anfragen
+		const btns = document.createElement("div");
+		btns.className = "flex gap-2";
+
+		const acceptBtn = document.createElement("button");
+		acceptBtn.textContent = "Annehmen";
+		acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
+		acceptBtn.addEventListener("click", () => {
+			// TODO: handleAcceptRequest(request);
+		});
+
+		const declineBtn = document.createElement("button");
+		declineBtn.textContent = "Ablehnen";
+		declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
+		declineBtn.addEventListener("click", () => {
+			// TODO: handleDeclineRequest(request);
+		});
+
+		btns.appendChild(acceptBtn);
+		btns.appendChild(declineBtn);
+
+		requestBox.appendChild(btns);
+	} else {
+		// Gesendete Anfragen: nur Statustext
+		const status = document.createElement("span");
+		status.className = "text-sm text-gray-400 italic";
+		status.textContent = "Ausstehend";
+		requestBox.appendChild(status);
+	}
+
+	return requestBox;
+}
+
+
 
 let intervalId: ReturnType<typeof setInterval>;
 
@@ -418,13 +605,11 @@ intervalId = setInterval(async () => {
 		renderAllFriends(data.allFriends);
 	}
 	if (currentTab === "add") {
-		renderAddFriends(data.allUsers, data.allFriends);
+		renderAddFriends(data.allUsers, data.allFriends, data.recvRequest, data.sendRequest);
 	}
 	if (currentTab === "requests") {
-		renderFriendRequests();
+		renderFriendRequests(data.recvRequest, data.sendRequest);
 	}
 }, 10000);
 
-async function sendFriendRequest() {
 
-}

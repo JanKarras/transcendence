@@ -86,16 +86,47 @@ exports.getUser = async (req, reply) => {
 		tournamentWins: 0
 	};
 
-	const response = {
-		user,
-		friends,
-		stats
-	};
+	const sentRequests = db.prepare(`
+    	SELECT r.id, r.type, u.username AS receiver_username, r.created_at
+    	FROM requests r
+    	JOIN users u ON r.receiver_id = u.id
+    	WHERE r.sender_id = ?
+  	`).all(userId);
+
+  	const receivedRequests = db.prepare(`
+    	SELECT r.id, r.type, u.username AS sender_username, r.created_at
+    	FROM requests r
+    	JOIN users u ON r.sender_id = u.id
+    	WHERE r.receiver_id = ?
+  	`).all(userId);
+
+  	const response = {
+    	user,
+    	friends,
+    	stats,
+    	requests: {
+    	  sent: sentRequests,
+    	  received: receivedRequests
+    	}
+  	};
 
 	console.log(response)
 
 	return reply.code(200).send(response);
 };
+
+exports.getAllUser = async (req, reply) => {
+	try {
+		const stmt = db.prepare('SELECT id, username, first_name, last_name, age, path, last_seen FROM users WHERE validated = 1');
+		const users = stmt.all();
+
+		console.log(users);
+		reply.send(users);
+	} catch (err) {
+		console.error("DB error:", err);
+		reply.status(500).send({ error: "DB Error" });
+	}
+}
 
 exports.getImage = async (req, reply) => {
 	const { filename } = req.query;
@@ -134,15 +165,4 @@ exports.getImage = async (req, reply) => {
 	}
 };
 
-exports.getAllUser = async (req, reply) => {
-	try {
-		const stmt = db.prepare('SELECT id, username, first_name, last_name, age, path, last_seen FROM users WHERE validated = 1');
-		const users = stmt.all();
 
-		console.log(users);
-		reply.send(users);
-	} catch (err) {
-		console.error("DB error:", err);
-		reply.status(500).send({ error: "DB Error" });
-	}
-}

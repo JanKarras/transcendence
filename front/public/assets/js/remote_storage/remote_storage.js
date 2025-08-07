@@ -19,6 +19,27 @@ export async function createUser(username, email, password) {
         return { success: false, error: error.error };
     }
 }
+export async function sendFriendRequestApi(user) {
+    const body = JSON.stringify(user);
+    try {
+        const response = await fetch('/api/set/sendFriendRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body,
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, error: errData.error || 'Request failed' };
+        }
+        return { success: true };
+    }
+    catch (error) {
+        return { success: false, error: error.message || 'Network error' };
+    }
+}
 export async function logInApi(username, password) {
     const body = JSON.stringify({ username, password });
     try {

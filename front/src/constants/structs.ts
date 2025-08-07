@@ -30,6 +30,10 @@ export interface UserResponse {
   user: UserInfo;
   friends: Friend[];
   stats: UserStats & { user_id: number };
+  requests?: {
+    sent: RequestInfo[];
+    received: RequestInfo[];
+  };
 }
 
 export interface trans {
@@ -38,8 +42,18 @@ export interface trans {
   nig: string;
 }
 
+export interface RequestInfo {
+  id: number;
+  type: string;
+  receiver_username?: string;
+  sender_username?: string;
+  created_at: string;
+}
+
 export interface FriendsViewData {
   allUsers: UserInfo[];
   allFriends: Friend[];
   onlineFriends: Friend[];
+  recvRequest: RequestInfo[];
+  sendRequest: RequestInfo[];
 }
