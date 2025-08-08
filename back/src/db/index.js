@@ -64,7 +64,6 @@ if (existingUsers.count === 0) {
     { username: "atoepper", email: "atoepper@student.42wolfsburg.de" },
   ];
 
-  // user1 bis user10 ohne Freunde, aber mit Stats
   const extraUsers = [];
   for (let i = 1; i <= 10; i++) {
     extraUsers.push({

@@ -48,6 +48,7 @@ export interface RequestInfo {
   receiver_username?: string;
   sender_username?: string;
   created_at: string;
+  status: string;
 }
 
 export interface FriendsViewData {

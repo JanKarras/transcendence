@@ -643,6 +643,48 @@ export const lang = {
         ua: "Не вдалося надіслати запит дружби до {username}.",
         nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
     },
+    friendRequestAccepted: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    },
+    friendRequestAcceptFailed: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    },
+    friendRequestDeclined: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    },
+    friendRequestDeclineFailed: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    },
+    friendRemoved: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    },
+    friendRemoveFailed: {
+        ger: "Freundschaftsanfrage an {username} fehlgeschlagen.",
+        eng: "Friend request to {username} failed.",
+        fr: "Échec de la demande d'ami à {username}.",
+        ua: "Не вдалося надіслати запит дружби до {username}.",
+        nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
+    }
 };
 export function t(obj, langCode) {
     return obj[langCode] || obj.eng;

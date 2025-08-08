@@ -194,6 +194,68 @@ export async function saveProfileChanges(updateData) {
         return { success: false, error: error.message || 'Network error' };
     }
 }
+export async function handleAcceptRequestApi(request) {
+    const body = JSON.stringify(request);
+    try {
+        const response = await fetch('/api/set/handleAcceptRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body,
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, error: errData.error || 'Request failed' };
+        }
+        return { success: true };
+    }
+    catch (error) {
+        return { success: false, error: error.message || 'Network error' };
+    }
+}
+export async function handleDeclineRequestApi(request) {
+    const body = JSON.stringify(request);
+    try {
+        const response = await fetch('/api/set/handleDeclineRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body,
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, error: errData.error || 'Request failed' };
+        }
+        return { success: true };
+    }
+    catch (error) {
+        return { success: false, error: error.message || 'Network error' };
+    }
+}
+export async function removeFriendApi(friend) {
+    try {
+        const response = await fetch('/api/set/removeFriend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ friendUsername: friend.username }),
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, error: errData.error || 'Request failed' };
+        }
+        return { success: true };
+    }
+    catch (error) {
+        return { success: false, error: error.message || 'Network error' };
+    }
+}
 export const api = {
     createUser,
     logInApi,

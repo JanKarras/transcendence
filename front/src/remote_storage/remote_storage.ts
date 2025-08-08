@@ -1,4 +1,4 @@
-import { Friend, UserInfo, UserResponse } from "../constants/structs.js";
+import { Friend, UserInfo, UserResponse, RequestInfo } from "../constants/structs.js";
 
 export async function createUser(username: string, email: string, password: string) {
 	const body = JSON.stringify({ username, email, password })
@@ -160,7 +160,7 @@ export async function getUser(): Promise<UserResponse | false> {
 		});
 
 		const data :UserResponse = await res.json();
-		
+
 		return data
 	} catch (err) {
 		return false;
@@ -207,6 +207,76 @@ export async function saveProfileChanges(updateData: FormData) {
 			credentials: 'include',
 		});
 		console.log(response);
+		if (!response.ok) {
+			const errData = await response.json().catch(() => ({}));
+			return { success: false, error: errData.error || 'Request failed' };
+		}
+
+		return { success: true };
+	} catch (error: any) {
+		return { success: false, error: error.message || 'Network error' };
+	}
+}
+
+export async function handleAcceptRequestApi(request: RequestInfo): Promise<{ success: boolean; error?: string }> {
+	const body = JSON.stringify(request);
+
+	try {
+		const response = await fetch('/api/set/handleAcceptRequest', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body,
+			credentials: 'include',
+		});
+
+		if (!response.ok) {
+			const errData = await response.json().catch(() => ({}));
+			return { success: false, error: errData.error || 'Request failed' };
+		}
+
+		return { success: true };
+	} catch (error: any) {
+		return { success: false, error: error.message || 'Network error' };
+	}
+}
+
+export async function handleDeclineRequestApi(request: RequestInfo): Promise<{ success: boolean; error?: string }> {
+	const body = JSON.stringify(request);
+
+	try {
+		const response = await fetch('/api/set/handleDeclineRequest', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body,
+			credentials: 'include',
+		});
+
+		if (!response.ok) {
+			const errData = await response.json().catch(() => ({}));
+			return { success: false, error: errData.error || 'Request failed' };
+		}
+
+		return { success: true };
+	} catch (error: any) {
+		return { success: false, error: error.message || 'Network error' };
+	}
+}
+
+export async function removeFriendApi(friend: Friend): Promise<{ success: boolean; error?: string }> {
+	try {
+		const response = await fetch('/api/set/removeFriend', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+			body: JSON.stringify({ friendUsername: friend.username }),
+		});
+
 		if (!response.ok) {
 			const errData = await response.json().catch(() => ({}));
 			return { success: false, error: errData.error || 'Request failed' };

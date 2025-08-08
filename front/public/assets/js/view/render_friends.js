@@ -1,5 +1,5 @@
 import { bodyContainer, friendsBtn, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
-import { getAllUser, getUser, logOutApi, sendFriendRequestApi } from "../remote_storage/remote_storage.js";
+import { getAllUser, getUser, handleAcceptRequestApi, handleDeclineRequestApi, logOutApi, removeFriendApi, sendFriendRequestApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { isFriendOnline } from "../utils/isFriendOnline.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
@@ -147,9 +147,7 @@ function createFriendElement(friend) {
     removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
     removeBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        const confirmed = confirm(`Möchtest du ${friend.username} wirklich entfernen?`);
-        if (!confirmed)
-            return;
+        removeFriend(friend);
     });
     if (isOnline) {
         btnContainer.appendChild(chatBtn);
@@ -164,6 +162,17 @@ function createFriendElement(friend) {
         detailsDiv.classList.toggle("hidden");
     });
     return friendDiv;
+}
+async function removeFriend(friend) {
+    console.log(friend);
+    const res = await removeFriendApi(friend);
+    if (res.success) {
+        showSuccessMessage(t(lang.friendRemoved, LANGUAGE).replace("{username}", friend.username));
+    }
+    else {
+        const errorText = res.error ?? "Unknown Error";
+        showErrorMessage(t(lang.friendRemoveFailed, LANGUAGE).replace("{error}", errorText));
+    }
 }
 function renderSearchInput(container, onSearch) {
     const searchWrapper = document.createElement("div");
@@ -208,26 +217,43 @@ function renderAllFriends(friends) {
     });
     renderFriendList(container, friends);
 }
+function renderAddFriendList(container, users, recvRequests, sendRequests) {
+    while (container.childNodes.length > 1) {
+        container.removeChild(container.lastChild);
+    }
+    users.forEach(user => {
+        const userElement = createAddFriendElement(user, recvRequests, sendRequests);
+        container.appendChild(userElement);
+    });
+}
 function renderAddFriends(allUsers, friends, recvRequests, sendRequests) {
     const container = document.getElementById("friends-content");
     if (!container)
         return;
     container.innerHTML = "";
     const friendUsernames = new Set(friends.map(f => f.username));
-    const recvFriendUsernames = new Set(recvRequests
+    // Map username → status für empfangene Freundesanfragen
+    const recvFriendStatus = new Map();
+    recvRequests
         .filter(r => r.type === "friend")
-        .map(r => r.sender_username)
-        .filter((name) => name !== undefined));
-    const sendFriendUsernames = new Set(sendRequests
+        .forEach(r => {
+        if (r.sender_username)
+            recvFriendStatus.set(r.sender_username, r.status);
+    });
+    // Map username → status für gesendete Freundesanfragen
+    const sendFriendStatus = new Map();
+    sendRequests
         .filter(r => r.type === "friend")
-        .map(r => r.receiver_username)
-        .filter((name) => name !== undefined));
+        .forEach(r => {
+        if (r.receiver_username)
+            sendFriendStatus.set(r.receiver_username, r.status);
+    });
     const nonFriends = allUsers.filter(user => !friendUsernames.has(user.username));
     renderSearchInput(container, (query) => {
         const filtered = nonFriends.filter(user => user.username.toLowerCase().includes(query.toLowerCase()));
-        renderAddFriendList(container, filtered, recvFriendUsernames, sendFriendUsernames);
+        renderAddFriendList(container, filtered, recvFriendStatus, sendFriendStatus);
     });
-    renderAddFriendList(container, nonFriends, recvFriendUsernames, sendFriendUsernames);
+    renderAddFriendList(container, nonFriends, recvFriendStatus, sendFriendStatus);
 }
 function createAddFriendElement(user, recvRequests, sendRequests) {
     const userDiv = document.createElement("div");
@@ -247,17 +273,47 @@ function createAddFriendElement(user, recvRequests, sendRequests) {
     usernameSpan.className = "font-semibold text-white";
     leftDiv.appendChild(imgWrapper);
     leftDiv.appendChild(usernameSpan);
+    // Hilfsfunktion: Statustext & Klasse
+    function mapStatusToText(status) {
+        switch (status) {
+            case "nothandled":
+                return "Anfrage ausstehend";
+            case "accepted":
+                return "Anfrage angenommen";
+            case "declined":
+                return "Anfrage abgelehnt";
+            default:
+                return "Status unbekannt";
+        }
+    }
+    function mapStatusToClass(status) {
+        switch (status) {
+            case "nothandled":
+                return "text-gray-400 italic";
+            case "accepted":
+                return "text-green-600 font-semibold";
+            case "declined":
+                return "text-red-600 font-semibold";
+            default:
+                return "text-gray-400 italic";
+        }
+    }
     let statusText = null;
+    let statusClass = "";
     if (recvRequests.has(user.username)) {
-        statusText = "Anfrage erhalten";
+        const status = recvRequests.get(user.username);
+        statusText = mapStatusToText(status);
+        statusClass = mapStatusToClass(status);
     }
     else if (sendRequests.has(user.username)) {
-        statusText = "Anfrage gesendet";
+        const status = sendRequests.get(user.username);
+        statusText = mapStatusToText(status);
+        statusClass = mapStatusToClass(status);
     }
     if (statusText) {
         const statusLabel = document.createElement("span");
         statusLabel.textContent = statusText;
-        statusLabel.className = "text-sm text-gray-400 ml-auto pr-2";
+        statusLabel.className = `text-sm ml-auto pr-2 ${statusClass}`;
         userDiv.appendChild(leftDiv);
         userDiv.appendChild(statusLabel);
     }
@@ -283,15 +339,6 @@ async function sendFriendRequest(user) {
         const errorText = res.error ?? "Unknown Error";
         showErrorMessage(t(lang.friendRequestFailed, LANGUAGE).replace("{error}", errorText));
     }
-}
-function renderAddFriendList(container, users, recvRequests, sendRequests) {
-    while (container.childNodes.length > 1) {
-        container.removeChild(container.lastChild);
-    }
-    users.forEach(user => {
-        const userElement = createAddFriendElement(user, recvRequests, sendRequests);
-        container.appendChild(userElement);
-    });
 }
 function renderFriendRequests(recvRequests, sendRequests) {
     const container = document.getElementById("friends-content");
@@ -339,7 +386,6 @@ function createRequestBox(request, canRespond, direction) {
     const requestBox = document.createElement("div");
     requestBox.className = "flex items-center justify-between p-4 mb-3 border rounded shadow";
     const info = document.createElement("div");
-    // Name und Text abhängig von Richtung und Typ
     let username = "";
     let text = "";
     if (direction === "recv") {
@@ -352,7 +398,6 @@ function createRequestBox(request, canRespond, direction) {
         }
     }
     else if (direction === "send") {
-        // Gesendete Anfragen - wir zeigen den Empfänger-Namen
         username = request.receiver_username || "Unbekannt";
         if (request.type === "friend") {
             text = "Du hast eine Freundschaftsanfrage gesendet";
@@ -366,34 +411,73 @@ function createRequestBox(request, canRespond, direction) {
 		<p class="text-sm text-gray-600">${text}</p>
 	`;
     requestBox.appendChild(info);
+    // Status-Text & Stil je nach status
+    const statusTextMap = {
+        nothandled: "Ausstehend",
+        accepted: "Angenommen",
+        declined: "Abgelehnt",
+    };
+    const statusColorMap = {
+        nothandled: "text-gray-400 italic",
+        accepted: "text-green-600 font-semibold",
+        declined: "text-red-600 font-semibold",
+    };
+    const statusText = statusTextMap[request.status] || "Unbekannt";
+    const statusClass = statusColorMap[request.status] || "text-gray-400 italic";
     if (canRespond) {
-        // Buttons nur bei empfangenen Anfragen
-        const btns = document.createElement("div");
-        btns.className = "flex gap-2";
-        const acceptBtn = document.createElement("button");
-        acceptBtn.textContent = "Annehmen";
-        acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
-        acceptBtn.addEventListener("click", () => {
-            // TODO: handleAcceptRequest(request);
-        });
-        const declineBtn = document.createElement("button");
-        declineBtn.textContent = "Ablehnen";
-        declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
-        declineBtn.addEventListener("click", () => {
-            // TODO: handleDeclineRequest(request);
-        });
-        btns.appendChild(acceptBtn);
-        btns.appendChild(declineBtn);
-        requestBox.appendChild(btns);
+        if (request.status === "nothandled") {
+            const btns = document.createElement("div");
+            btns.className = "flex gap-2";
+            const acceptBtn = document.createElement("button");
+            acceptBtn.textContent = "Annehmen";
+            acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
+            acceptBtn.addEventListener("click", () => {
+                handleAcceptRequest(request);
+            });
+            const declineBtn = document.createElement("button");
+            declineBtn.textContent = "Ablehnen";
+            declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
+            declineBtn.addEventListener("click", () => {
+                handleDeclineRequest(request);
+            });
+            btns.appendChild(acceptBtn);
+            btns.appendChild(declineBtn);
+            requestBox.appendChild(btns);
+        }
+        else {
+            const status = document.createElement("span");
+            status.className = statusClass;
+            status.textContent = statusText;
+            requestBox.appendChild(status);
+        }
     }
     else {
-        // Gesendete Anfragen: nur Statustext
         const status = document.createElement("span");
-        status.className = "text-sm text-gray-400 italic";
-        status.textContent = "Ausstehend";
+        status.className = statusClass;
+        status.textContent = statusText;
         requestBox.appendChild(status);
     }
     return requestBox;
+}
+async function handleAcceptRequest(req) {
+    const res = await handleAcceptRequestApi(req);
+    if (res.success) {
+        showSuccessMessage(t(lang.friendRequestAccepted, LANGUAGE).replace("{username}", req.sender_username || "User"));
+    }
+    else {
+        const errorText = res.error ?? "Unknown Error";
+        showErrorMessage(t(lang.friendRequestAcceptFailed, LANGUAGE).replace("{error}", errorText));
+    }
+}
+async function handleDeclineRequest(req) {
+    const res = await handleDeclineRequestApi(req);
+    if (res.success) {
+        showSuccessMessage(t(lang.friendRequestDeclined, LANGUAGE).replace("{username}", req.sender_username || "User"));
+    }
+    else {
+        const errorText = res.error ?? "Unknown Error";
+        showErrorMessage(t(lang.friendRequestDeclineFailed, LANGUAGE).replace("{error}", errorText));
+    }
 }
 let intervalId;
 function findDifferences(obj1, obj2, path = "") {

@@ -383,3 +383,111 @@ exports.sendFriendRequest = async function (req, reply) {
 		return reply.code(500).send({ success: false, error: "Internal server error" });
 	}
 };
+
+exports.handleAcceptRequest = async function (req, reply) {
+	const { id } = req.body;
+
+	if (!id) {
+		return reply.code(400).send({ error: "Request ID missing" });
+	}
+
+	try {
+		const transaction = db.transaction(() => {
+			const request = db.prepare('SELECT sender_id, receiver_id, status FROM requests WHERE id = ?').get(id);
+			if (!request) {
+				throw new Error("Request not found");
+			}
+			if (request.status === "accepted") {
+				return "already_accepted";
+			}
+
+			db.prepare('UPDATE requests SET status = ? WHERE id = ?').run("accepted", id);
+
+			const insertFriend = db.prepare('INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)');
+
+			insertFriend.run(request.sender_id, request.receiver_id);
+			insertFriend.run(request.receiver_id, request.sender_id);
+
+			return "success";
+		});
+
+		const result = transaction();
+
+		if (result === "already_accepted") {
+			return reply.code(409).send({ error: "Request already accepted" });
+		}
+
+		return reply.code(200).send({ success: true });
+	} catch (err) {
+		if (err.message === "Request not found") {
+			return reply.code(404).send({ error: err.message });
+		}
+		return reply.code(500).send({ error: "Database error" });
+	}
+};
+
+
+exports.handleDeclineRequest = async function (req, reply) {
+	const { id } = req.body;
+
+	if (!id) {
+		return reply.code(400).send({ error: "Request ID missing" });
+	}
+
+	try {
+		const result = db.prepare('UPDATE requests SET status = ? WHERE id = ?').run("declined", id);
+
+		if (result.changes === 0) {
+			return reply.code(404).send({ error: "Request not found" });
+		}
+
+		return reply.code(200).send({ success: true });
+	} catch (err) {
+		return reply.code(500).send({ error: "Database error" });
+	}
+};
+
+exports.removeFriend = async function (req, reply) {
+	const { friendUsername } = req.body;
+	if (!friendUsername) {
+		return reply.code(400).send({ error: "friendUsername fehlt" });
+	}
+
+	const userId = req.user && req.user.id;
+	if (!userId) {
+		return reply.code(401).send({ error: "Nicht eingeloggt" });
+	}
+
+	try {
+		const friend = db.prepare('SELECT id FROM users WHERE username = ?').get(friendUsername);
+		if (!friend) {
+			return reply.code(404).send({ error: "Freund nicht gefunden" });
+		}
+		const friendId = friend.id;
+
+		const deleteFriendsStmt = db.prepare(`
+			DELETE FROM friends
+			WHERE (user_id = ? AND friend_id = ?)
+			OR (user_id = ? AND friend_id = ?)
+		`);
+		const friendsResult = deleteFriendsStmt.run(userId, friendId, friendId, userId);
+
+		if (friendsResult.changes === 0) {
+			return reply.code(404).send({ error: "Freundschaft nicht gefunden" });
+		}
+
+		const deleteRequestsStmt = db.prepare(`
+			DELETE FROM requests
+			WHERE (sender_id = ? AND receiver_id = ?)
+			OR (sender_id = ? AND receiver_id = ?)
+		`);
+		deleteRequestsStmt.run(userId, friendId, friendId, userId);
+
+		return reply.code(200).send({ success: true });
+	} catch (err) {
+		console.error(err);
+		return reply.code(500).send({ error: "Datenbankfehler" });
+	}
+};
+
+
