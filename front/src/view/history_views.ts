@@ -9,10 +9,11 @@ import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
 import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
+import { render_chat } from "./render_chat.js";
 
-export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends';
+export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat';
 
-const protectedViews: View[] = ['dashboard', 'profile', 'friends'];
+const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat'];
 
 type ViewRenderFunction = (params: URLSearchParams | null) => void;
 
@@ -23,7 +24,8 @@ const renderers: Record<View, ViewRenderFunction> = {
   email_validation: render_email_validation,
   two_fa : render_two_fa,
   profile : render_profile_settings,
-  friends : render_friends
+  friends : render_friends,
+  chat : render_chat
 };
 
 let currentView: View | null = null;

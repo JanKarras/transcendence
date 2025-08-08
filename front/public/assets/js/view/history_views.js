@@ -9,7 +9,8 @@ import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
 import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
-const protectedViews = ['dashboard', 'profile', 'friends'];
+import { render_chat } from "./render_chat.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -17,7 +18,8 @@ const renderers = {
     email_validation: render_email_validation,
     two_fa: render_two_fa,
     profile: render_profile_settings,
-    friends: render_friends
+    friends: render_friends,
+    chat: render_chat
 };
 let currentView = null;
 let currentParams = null;
