@@ -143,7 +143,7 @@ function createFriendElement(friend) {
         console.log(`Spiel-Einladung an ${friend.username} senden...`);
     });
     const removeBtn = document.createElement("button");
-    removeBtn.textContent = "🗑 Unfriend";
+    removeBtn.textContent = `🗑 ${t(lang.unfriend, LANGUAGE)}`;
     removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
     removeBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
@@ -273,17 +273,16 @@ function createAddFriendElement(user, recvRequests, sendRequests) {
     usernameSpan.className = "font-semibold text-white";
     leftDiv.appendChild(imgWrapper);
     leftDiv.appendChild(usernameSpan);
-    // Hilfsfunktion: Statustext & Klasse
     function mapStatusToText(status) {
         switch (status) {
             case "nothandled":
-                return "Anfrage ausstehend";
+                return t(lang.status.nothandled, LANGUAGE);
             case "accepted":
-                return "Anfrage angenommen";
+                return t(lang.status.accepted, LANGUAGE);
             case "declined":
-                return "Anfrage abgelehnt";
+                return t(lang.status.declined, LANGUAGE);
             default:
-                return "Status unbekannt";
+                return t(lang.status.unknown, LANGUAGE);
         }
     }
     function mapStatusToClass(status) {
@@ -350,10 +349,10 @@ function renderFriendRequests(recvRequests, sendRequests) {
     // Links: Empfangene Anfragen
     const recvSection = document.createElement("div");
     recvSection.className = "flex-1";
-    recvSection.innerHTML = `<h3 class="font-semibold mb-2">Empfangene Anfragen</h3>`;
+    recvSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.receivedTitle, LANGUAGE)}</h3>`;
     if (recvRequests.length === 0) {
         const noRecv = document.createElement("p");
-        noRecv.textContent = "Keine empfangenen Anfragen.";
+        noRecv.textContent = t(lang.renderFriendRequests.noReceived, LANGUAGE);
         recvSection.appendChild(noRecv);
     }
     else {
@@ -365,10 +364,10 @@ function renderFriendRequests(recvRequests, sendRequests) {
     // Rechts: Gesendete Anfragen
     const sendSection = document.createElement("div");
     sendSection.className = "flex-1";
-    sendSection.innerHTML = `<h3 class="font-semibold mb-2">Gesendete Anfragen</h3>`;
+    sendSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.sentTitle, LANGUAGE)}</h3>`;
     if (sendRequests.length === 0) {
         const noSend = document.createElement("p");
-        noSend.textContent = "Keine gesendeten Anfragen.";
+        noSend.textContent = t(lang.renderFriendRequests.noSent, LANGUAGE);
         sendSection.appendChild(noSend);
     }
     else {
@@ -389,21 +388,21 @@ function createRequestBox(request, canRespond, direction) {
     let username = "";
     let text = "";
     if (direction === "recv") {
-        username = request.sender_username || "Unbekannt";
+        username = request.sender_username || t(lang.general.unknownUser, LANGUAGE);
         if (request.type === "friend") {
-            text = "möchte dich als Freund hinzufügen";
+            text = t(lang.requestBox.friendRequestRecv, LANGUAGE);
         }
         else {
-            text = "lädt dich zu einem Spiel ein";
+            text = t(lang.requestBox.gameInviteRecv, LANGUAGE);
         }
     }
     else if (direction === "send") {
-        username = request.receiver_username || "Unbekannt";
+        username = request.receiver_username || t(lang.general.unknownUser, LANGUAGE);
         if (request.type === "friend") {
-            text = "Du hast eine Freundschaftsanfrage gesendet";
+            text = t(lang.requestBox.friendRequestSend, LANGUAGE);
         }
         else {
-            text = "Du hast eine Spieleinladung gesendet";
+            text = t(lang.requestBox.gameInviteSend, LANGUAGE);
         }
     }
     info.innerHTML = `
@@ -411,31 +410,38 @@ function createRequestBox(request, canRespond, direction) {
 		<p class="text-sm text-gray-600">${text}</p>
 	`;
     requestBox.appendChild(info);
+    function mapStatusToText(status) {
+        switch (status) {
+            case "nothandled":
+                return t(lang.status.nothandled, LANGUAGE);
+            case "accepted":
+                return t(lang.status.accepted, LANGUAGE);
+            case "declined":
+                return t(lang.status.declined, LANGUAGE);
+            default:
+                return t(lang.status.unknown, LANGUAGE);
+        }
+    }
     // Status-Text & Stil je nach status
-    const statusTextMap = {
-        nothandled: "Ausstehend",
-        accepted: "Angenommen",
-        declined: "Abgelehnt",
-    };
     const statusColorMap = {
         nothandled: "text-gray-400 italic",
         accepted: "text-green-600 font-semibold",
         declined: "text-red-600 font-semibold",
     };
-    const statusText = statusTextMap[request.status] || "Unbekannt";
+    const statusText = mapStatusToText(request.status);
     const statusClass = statusColorMap[request.status] || "text-gray-400 italic";
     if (canRespond) {
         if (request.status === "nothandled") {
             const btns = document.createElement("div");
             btns.className = "flex gap-2";
             const acceptBtn = document.createElement("button");
-            acceptBtn.textContent = "Annehmen";
+            acceptBtn.textContent = t(lang.requestBox.accept, LANGUAGE);
             acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
             acceptBtn.addEventListener("click", () => {
                 handleAcceptRequest(request);
             });
             const declineBtn = document.createElement("button");
-            declineBtn.textContent = "Ablehnen";
+            declineBtn.textContent = t(lang.requestBox.decline, LANGUAGE);
             declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
             declineBtn.addEventListener("click", () => {
                 handleDeclineRequest(request);

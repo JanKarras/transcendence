@@ -7,21 +7,21 @@ const db = new Database(dbPath);
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL UNIQUE,
-    username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    validated BOOLEAN DEFAULT 0,
-    rights1 BOOLEAN DEFAULT 0,
-    rights2 BOOLEAN DEFAULT 0,
-    rights3 BOOLEAN DEFAULT 0,
-    rights4 BOOLEAN DEFAULT 0,
-    rights5 BOOLEAN DEFAULT 0,
-    first_name TEXT DEFAULT NULL,
-    last_name TEXT DEFAULT NULL,
-    age INTEGER DEFAULT NULL,
-    path TEXT DEFAULT NULL,
-    last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	email TEXT NOT NULL UNIQUE,
+	username TEXT NOT NULL UNIQUE,
+	password TEXT NOT NULL,
+	validated BOOLEAN DEFAULT 0,
+	rights1 BOOLEAN DEFAULT 0,
+	rights2 BOOLEAN DEFAULT 0,
+	rights3 BOOLEAN DEFAULT 0,
+	rights4 BOOLEAN DEFAULT 0,
+	rights5 BOOLEAN DEFAULT 0,
+	first_name TEXT DEFAULT NULL,
+	last_name TEXT DEFAULT NULL,
+	age INTEGER DEFAULT NULL,
+	path TEXT DEFAULT NULL,
+	last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `).run();
 
@@ -37,64 +37,64 @@ db.prepare(`
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS friends (
-    user_id INTEGER NOT NULL,
-    friend_id INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, friend_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
+	user_id INTEGER NOT NULL,
+	friend_id INTEGER NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (user_id, friend_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `).run();
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS stats (
-    user_id INTEGER NOT NULL PRIMARY KEY,
-    wins INTEGER DEFAULT 0,
-    loses INTEGER DEFAULT 0,
-    tournamentWins INTEGER DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	user_id INTEGER NOT NULL PRIMARY KEY,
+	wins INTEGER DEFAULT 0,
+	loses INTEGER DEFAULT 0,
+	tournamentWins INTEGER DEFAULT 0,
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   )
 `).run();
 
 const existingUsers = db.prepare(`SELECT COUNT(*) as count FROM users`).get();
 if (existingUsers.count === 0) {
   const defaultUsers = [
-    { username: "jkarras", email: "karras.jan@web.de" },
-    { username: "rmatthes", email: "xxtrickz@web.de" },
-    { username: "atoepper", email: "atoepper@student.42wolfsburg.de" },
+	{ username: "jkarras", email: "karras.jan@web.de" },
+	{ username: "rmatthes", email: "xxtrickz@web.de" },
+	{ username: "atoepper", email: "atoepper@student.42wolfsburg.de" },
   ];
 
   const extraUsers = [];
   for (let i = 1; i <= 10; i++) {
-    extraUsers.push({
-      username: `user${i}`,
-      email: `user${i}@example.com`
-    });
+	extraUsers.push({
+	  username: `user${i}`,
+	  email: `user${i}@example.com`
+	});
   }
 
   const hashedPassword = bcrypt.hashSync("password123", 10);
 
   const insertUser = db.prepare(`
-    INSERT INTO users (username, email, password, validated, path)
-    VALUES (?, ?, ?, 1, '1752223449371.png')
+	INSERT INTO users (username, email, password, validated, path)
+	VALUES (?, ?, ?, 1, '1752223449371.png')
   `);
 
   const insertStats = db.prepare(`
-    INSERT INTO stats (user_id, wins, loses, tournamentWins)
-    VALUES (?, 0, 0, 0)
+	INSERT INTO stats (user_id, wins, loses, tournamentWins)
+	VALUES (?, 0, 0, 0)
   `);
 
   const insertFriend = db.prepare(`
-    INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)
+	INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)
   `);
 
   const userIds = [];
 
   // Default-User einfügen
   for (const user of defaultUsers) {
-    const result = insertUser.run(user.username, user.email, hashedPassword);
-    userIds.push(result.lastInsertRowid);
-    insertStats.run(result.lastInsertRowid);
+	const result = insertUser.run(user.username, user.email, hashedPassword);
+	userIds.push(result.lastInsertRowid);
+	insertStats.run(result.lastInsertRowid);
   }
 
   // Freundschaften nur unter Default-Usern
@@ -106,9 +106,9 @@ if (existingUsers.count === 0) {
 
   // Extra User einfügen (user1 bis user10) ohne Freunde, aber mit Stats
   for (const user of extraUsers) {
-    const result = insertUser.run(user.username, user.email, hashedPassword);
-    insertStats.run(result.lastInsertRowid);
-    // Keine Freunde setzen!
+	const result = insertUser.run(user.username, user.email, hashedPassword);
+	insertStats.run(result.lastInsertRowid);
+	// Keine Freunde setzen!
   }
 
   console.log("✅ Default-User und 10 weitere User wurden erfolgreich erstellt.");
@@ -123,7 +123,7 @@ db.prepare(`
   receiver_id INTEGER NOT NULL,
   type TEXT NOT NULL CHECK(type IN ('friend', 'game')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  status TEXT NOT NULL CHECK(status IN ('accepted', 'declined', 'nothandled')),
+  status TEXT NOT NULL DEFAULT 'nothandled' CHECK(status IN ('accepted', 'declined', 'nothandled')),
   FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );

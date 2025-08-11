@@ -704,10 +704,150 @@ export const lang = {
 		fr: "Échec de la suppression de {username} de votre liste d'amis.",
 		ua: "Не вдалося видалити {username} зі списку друзів.",
 		nig: "Ọ dịghị arụsi ike iwepụ {username} n'usoro ndị enyi gị.",
+	},
+	status: {
+		nothandled: {
+			ger: "Anfrage ausstehend",
+			eng: "Request pending",
+			nig: "Arịrịọ ka na-eche",
+			fr: "Demande en attente",
+			ua: "Запит у очікуванні",
+		},
+		accepted: {
+			ger: "Anfrage angenommen",
+			eng: "Request accepted",
+			nig: "Arịrịọ anabatara",
+			fr: "Demande acceptée",
+			ua: "Запит прийнято",
+		},
+		declined: {
+			ger: "Anfrage abgelehnt",
+			eng: "Request declined",
+			nig: "Arịrịọ ajụrụ",
+			fr: "Demande refusée",
+			ua: "Запит відхилено",
+		},
+		unknown: {
+			ger: "Status unbekannt",
+			eng: "Unknown status",
+			nig: "Ọnọdụ amaghị",
+			fr: "Statut inconnu",
+			ua: "Невідомий статус",
+		}
+	},
+	requestBox: {
+		friendRequestRecv: {
+			ger: "möchte dich als Freund hinzufügen",
+			eng: "wants to add you as a friend",
+			nig: "chọrọ itinye gị dị ka enyi",
+			fr: "veut vous ajouter comme ami",
+			ua: "хоче додати вас у друзі",
+		},
+		gameInviteRecv: {
+			ger: "lädt dich zu einem Spiel ein",
+			eng: "invites you to a game",
+			nig: "kpọrọ gị ka ị bịa n’egwuregwu",
+			fr: "vous invite à un jeu",
+			ua: "запрошує вас до гри",
+		},
+		friendRequestSend: {
+			ger: "Du hast eine Freundschaftsanfrage gesendet",
+			eng: "You sent a friend request",
+			nig: "Izitere arịrịọ enyi",
+			fr: "Vous avez envoyé une demande d'ami",
+			ua: "Ви надіслали запит у друзі",
+		},
+		gameInviteSend: {
+			ger: "Du hast eine Spieleinladung gesendet",
+			eng: "You sent a game invite",
+			nig: "Izitere ọkpọ egwuregwu",
+			fr: "Vous avez envoyé une invitation à un jeu",
+			ua: "Ви надіслали запрошення до гри",
+		},
+		accept: {
+			ger: "Annehmen",
+			eng: "Accept",
+			nig: "Nabata",
+			fr: "Accepter",
+			ua: "Прийняти",
+		},
+		decline: {
+			ger: "Ablehnen",
+			eng: "Decline",
+			nig: "Jụ",
+			fr: "Refuser",
+			ua: "Відхилити",
+		},
+		status: {
+			nothandled: {
+				ger: "Ausstehend",
+				eng: "Pending",
+				nig: "Na-eche",
+				fr: "En attente",
+				ua: "В очікуванні",
+			},
+			accepted: {
+				ger: "Angenommen",
+				eng: "Accepted",
+				nig: "Anabatara",
+				fr: "Accepté",
+				ua: "Прийнято",
+			},
+			declined: {
+				ger: "Abgelehnt",
+				eng: "Declined",
+				nig: "Ajụrụ",
+				fr: "Refusé",
+				ua: "Відхилено",
+			},
+			unknown: {
+				ger: "Unbekannt",
+				eng: "Unknown",
+				nig: "Amaghị",
+				fr: "Inconnu",
+				ua: "Невідомо",
+			},
+		},
+	},
+	general: {
+		unknownUser: {
+			ger: "Unbekannt",
+			eng: "Unknown",
+			nig: "Amaghị",
+			fr: "Inconnu",
+			ua: "Невідомо",
+		},
+	},
+	renderFriendRequests: {
+		receivedTitle: {
+			ger: "Empfangene Anfragen",
+			eng: "Received Requests",
+			nig: "Arịrịọ nataara",
+			fr: "Demandes reçues",
+			ua: "Отримані запити",
+		},
+		sentTitle: {
+			ger: "Gesendete Anfragen",
+			eng: "Sent Requests",
+			nig: "Arịrịọ zigara",
+			fr: "Demandes envoyées",
+			ua: "Відправлені запити",
+		},
+		noReceived: {
+			ger: "Keine empfangenen Anfragen.",
+			eng: "No received requests.",
+			nig: "Enweghị arịrịọ natara.",
+			fr: "Aucune demande reçue.",
+			ua: "Немає отриманих запитів.",
+		},
+		noSent: {
+			ger: "Keine gesendeten Anfragen.",
+			eng: "No sent requests.",
+			nig: "Enweghị arịrịọ zigara.",
+			fr: "Aucune demande envoyée.",
+			ua: "Немає відправлених запитів.",
+		},
 	}
-
-
-
 };
 
 
