@@ -256,6 +256,23 @@ export async function removeFriendApi(friend) {
         return { success: false, error: error.message || 'Network error' };
     }
 }
+export async function getUserForProfile(id) {
+    try {
+        const response = await fetch(`/api/get/getUserForProfile?id=${encodeURIComponent(id)}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: data.error || "Unknown error" };
+        }
+        return data;
+    }
+    catch (err) {
+        console.error("Error fetching user profile:", err);
+        return { error: err.message || "Network error" };
+    }
+}
 export const api = {
     createUser,
     logInApi,

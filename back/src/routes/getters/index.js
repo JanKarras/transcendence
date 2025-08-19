@@ -6,4 +6,5 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/getUser', {preHandler: authMiddleware}, gettersController.getUser);
 	fastify.get('/getImage', {preHandler: authMiddleware}, gettersController.getImage);
 	fastify.get('/getAllUser', {preHandler: authMiddleware}, gettersController.getAllUser);
+	fastify.get('/getUserForProfile', {preHandler: authMiddleware}, gettersController.getUserForProfile);
 };

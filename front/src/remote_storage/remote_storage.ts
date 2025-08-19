@@ -288,6 +288,29 @@ export async function removeFriendApi(friend: Friend): Promise<{ success: boolea
 	}
 }
 
+
+export async function getUserForProfile(id: string): Promise<UserInfo | { error: string }> {
+	try {
+		const response = await fetch(`/api/get/getUserForProfile?id=${encodeURIComponent(id)}`, {
+			method: 'GET',
+			credentials: 'include',
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			return { error: data.error || "Unknown error" };
+		}
+
+		return data as UserInfo;
+	} catch (err: any) {
+		console.error("Error fetching user profile:", err);
+		return { error: err.message || "Network error" };
+	}
+}
+
+
+
 export const api = {
 	createUser,
 	logInApi,

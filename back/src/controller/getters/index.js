@@ -92,7 +92,7 @@ exports.getUser = async (req, reply) => {
 		JOIN users u ON r.receiver_id = u.id
 		WHERE r.sender_id = ?
 	`).all(userId);
-	
+
 	const receivedRequests = db.prepare(`
 		SELECT r.id, r.type, r.status, u.username AS sender_username, r.created_at
 		FROM requests r
@@ -101,13 +101,13 @@ exports.getUser = async (req, reply) => {
 	`).all(userId);
 
   	const response = {
-    	user,
-    	friends,
-    	stats,
-    	requests: {
-    	  sent: sentRequests,
-    	  received: receivedRequests
-    	}
+		user,
+		friends,
+		stats,
+		requests: {
+		  sent: sentRequests,
+		  received: receivedRequests
+		}
   	};
 
 	console.log(response)
@@ -162,6 +162,51 @@ exports.getImage = async (req, reply) => {
 	} catch (err) {
 		console.error('Bild nicht gefunden:', imagePath);
 		return reply.code(404).send('Bild nicht gefunden.');
+	}
+};
+
+
+exports.getUserForProfile = async (req, reply) => {
+	try {
+		const { id } = req.query;
+		const userId = getUserIdFromRequest(req);
+
+		if (!id || !userId) {
+			return reply.status(400).send({ error: "Missing id parameter" });
+		}
+
+		const friendCheckStmt = db.prepare(`
+			SELECT 1
+			FROM friends
+			WHERE (user_id = ? AND friend_id = ?)
+			   OR (user_id = ? AND friend_id = ?)
+			LIMIT 1
+		`);
+
+		const isFriend = friendCheckStmt.get(userId, id, id, userId);
+
+		if (!isFriend) {
+			return reply.status(403).send({ error: "You are not friends with this user" });
+		}
+
+		const stmt = db.prepare(`
+			SELECT username, first_name, last_name, age, path, last_seen
+			FROM users
+			WHERE id = ?
+			LIMIT 1
+		`);
+
+		const user = stmt.get(id);
+
+		if (!user) {
+			return reply.status(404).send({ error: "User not found" });
+		}
+
+		reply.send(user);
+
+	} catch (err) {
+		console.error("DB error:", err);
+		reply.status(500).send({ error: "DB Error" });
 	}
 };
 

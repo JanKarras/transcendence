@@ -10,10 +10,11 @@ import { render_two_fa } from "./render_two_fa.js";
 import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { render_chat } from "./render_chat.js";
+import { render_friend_profile } from "./render_friend_profile.js";
 
-export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat';
+export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile';
 
-const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat'];
+const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile'];
 
 type ViewRenderFunction = (params: URLSearchParams | null) => void;
 
@@ -25,7 +26,8 @@ const renderers: Record<View, ViewRenderFunction> = {
   two_fa : render_two_fa,
   profile : render_profile_settings,
   friends : render_friends,
-  chat : render_chat
+  chat : render_chat,
+  friend_profile : render_friend_profile
 };
 
 let currentView: View | null = null;
@@ -101,7 +103,7 @@ export function initRouter() {
 
   const viewData = getViewAndParamsFromHash();
   if (viewData) {
-    navigateTo(viewData.view, viewData.params); // <-- hier auch Login-Check nutzen
+    navigateTo(viewData.view, viewData.params); 
   } else {
     renderView('login', null);
   }

@@ -827,7 +827,21 @@ export const lang = {
             fr: "Aucune demande envoyée.",
             ua: "Немає відправлених запитів.",
         },
-    }
+    },
+    no_id_msg: {
+        ger: "Keine Benutzer-ID übergeben.",
+        eng: "No user ID provided.",
+        nig: "Enweghị ID onye ọrụ enyere.",
+        fr: "Aucun identifiant utilisateur fourni.",
+        ua: "Не передано ідентифікатор користувача.",
+    },
+    missing_req_dom_elem: {
+        ger: "Benötigtes DOM-Element fehlt.",
+        eng: "Required DOM element is missing.",
+        nig: "Ihe dị mkpa DOM adịghị.",
+        fr: "Élément DOM requis manquant.",
+        ua: "Відсутній необхідний DOM-елемент.",
+    },
 };
 export function t(obj, langCode) {
     return obj[langCode] || obj.eng;

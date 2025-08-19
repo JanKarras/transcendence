@@ -10,7 +10,8 @@ import { render_two_fa } from "./render_two_fa.js";
 import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { render_chat } from "./render_chat.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat'];
+import { render_friend_profile } from "./render_friend_profile.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -19,7 +20,8 @@ const renderers = {
     two_fa: render_two_fa,
     profile: render_profile_settings,
     friends: render_friends,
-    chat: render_chat
+    chat: render_chat,
+    friend_profile: render_friend_profile
 };
 let currentView = null;
 let currentParams = null;
@@ -89,7 +91,7 @@ export function initRouter() {
     });
     const viewData = getViewAndParamsFromHash();
     if (viewData) {
-        navigateTo(viewData.view, viewData.params); // <-- hier auch Login-Check nutzen
+        navigateTo(viewData.view, viewData.params);
     }
     else {
         renderView('login', null);
