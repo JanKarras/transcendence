@@ -848,6 +848,13 @@ export const lang = {
         nig: "Mkparịta ụka",
         fr: "Discussion",
         ua: "Чат"
+    },
+    translationObj: {
+        ger: "Chat",
+        eng: "Chat",
+        nig: "Mkparịta ụka",
+        fr: "Discussion",
+        ua: "Чат"
     }
 };
 export function t(obj, langCode) {

@@ -855,7 +855,6 @@ export const lang = {
 		fr: "Aucun identifiant utilisateur fourni.",
 		ua: "Не передано ідентифікатор користувача.",
 	},
-
 	missing_req_dom_elem: {
 		ger: "Benötigtes DOM-Element fehlt.",
 		eng: "Required DOM element is missing.",
@@ -869,8 +868,14 @@ export const lang = {
 		nig: "Mkparịta ụka",
 		fr: "Discussion",
 		ua: "Чат"
+	},
+	translationObj: {
+		ger: "Chat",
+		eng: "Chat",
+		nig: "Mkparịta ụka",
+		fr: "Discussion",
+		ua: "Чат"
 	}
-
 
 };
 

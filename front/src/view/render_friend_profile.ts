@@ -51,7 +51,7 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 					${renderReadonlyField("first_name", user.first_name || 'Unknown')}
 					${renderReadonlyField("last_name", user.last_name || 'Unknown')}
 					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
-					${renderReadonlyField("last_seen", user.last_seen || t(lang.profileLastSeenUnknown, LANGUAGE))}
+					${renderReadonlyField("last_seen", user.last_seen || t(lang.profileAgeUnknown, LANGUAGE))}
 
 					<div class="min-h-[40px] mt-4"> </div>
 				</div>
@@ -60,9 +60,17 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 	`;
 }
 
+type Trans = {
+  ger: string;
+  eng: string;
+  nig: string;
+  fr: string;
+  ua: string;
+};
+
 function renderReadonlyField(field: string, value: string | number) {
 	const key = "profileLabel_" + field;
-	const translationObj = lang[key as keyof typeof lang];
+	const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
 	const label = translationObj ? t(translationObj, LANGUAGE) : field;
 
 	return `

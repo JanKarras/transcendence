@@ -123,7 +123,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 
 function renderReadonlyField(field: string, value: string | number) {
   const key = "profileLabel_" + field;
-  const translationObj = lang[key as keyof typeof lang];
+  const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
   const label = translationObj ? t(translationObj, LANGUAGE) : field;
 
   return `
@@ -134,10 +134,18 @@ function renderReadonlyField(field: string, value: string | number) {
     </div>`;
 }
 
+type Trans = {
+  ger: string;
+  eng: string;
+  nig: string;
+  fr: string;
+  ua: string;
+};
+
 
 function renderEditableField(field: string, value: string | number, type = "text") {
   const key = "profileLabel_" + field;
-  const translationObj = lang[key as keyof typeof lang];
+  const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
   const label = translationObj ? t(translationObj, LANGUAGE) : field;
 
   return `
