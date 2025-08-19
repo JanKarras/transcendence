@@ -863,6 +863,14 @@ export const lang = {
 		fr: "Élément DOM requis manquant.",
 		ua: "Відсутній необхідний DOM-елемент.",
 	},
+	chat: {
+		ger: "Chat",
+		eng: "Chat",
+		nig: "Mkparịta ụka",
+		fr: "Discussion",
+		ua: "Чат"
+	}
+
 
 };
 

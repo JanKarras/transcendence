@@ -10,15 +10,15 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 	const entries = [];
 
 	if (currentPos === "dashboard") {
-		entries.push({ label: `💬 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
 	if (currentPos === "profile") {
-		entries.push({ label: `💬 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
 		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 	}
 	if (currentPos === "friends") {
-		entries.push({ label: `💬 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
 		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
