@@ -48,8 +48,8 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 					<img src="${safePath}" class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200">
 
 					${renderReadonlyField("username", user.username)}
-					${renderReadonlyField("first_name", user.first_name || 'Unknown')}
-					${renderReadonlyField("last_name", user.last_name || 'Unknown')}
+					${renderReadonlyField("first_name", user.first_name || t(lang.unknown, LANGUAGE))}
+					${renderReadonlyField("last_name", user.last_name || t(lang.unknown, LANGUAGE))}
 					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
 					${renderReadonlyField("last_seen", user.last_seen || t(lang.profileAgeUnknown, LANGUAGE))}
 

@@ -216,6 +216,13 @@ export const lang = {
         ua: "Вік",
         nig: "Afọ"
     },
+    profileLabel_last_seen: {
+        ger: "Zuletzt online",
+        eng: "Last seen",
+        fr: "Dernière connexion",
+        ua: "Останнє відвідування",
+        nig: "Hụ ikpeazụ"
+    },
     registerTitle: {
         eng: "Register",
         ger: "Registrieren",
@@ -855,7 +862,14 @@ export const lang = {
         nig: "Mkparịta ụka",
         fr: "Discussion",
         ua: "Чат"
-    }
+    },
+    unknown: {
+        ger: "Unbekannt",
+        eng: "Unknown",
+        nig: "Amaghị",
+        fr: "Inconnu",
+        ua: "Невідомо",
+    },
 };
 export function t(obj, langCode) {
     return obj[langCode] || obj.eng;
