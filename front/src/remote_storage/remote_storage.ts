@@ -309,7 +309,56 @@ export async function getUserForProfile(id: string): Promise<UserInfo | { error:
 	}
 }
 
+export async function getFriends() {
+    try {
+        const response = await fetch('/api/get/friends', {
+            credentials: 'include',
+        });
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching friends:', error);
+        return [];
+    }
+}
 
+export async function getMessages(friendId: number) {
+    try {
+        const response = await fetch(`/api/get/messages/${friendId}`, {
+            credentials: 'include',
+        });
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        return [];
+    }
+}
+
+export async function getBlocked(friendId: number) {
+    const res = await fetch(`/api/get/blocked/${friendId}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) throw new Error(`Failed to check block status: ${res.status}`);
+    const data = (await res.json()) as { blocked: boolean };
+    return !!data.blocked;
+}
+
+export async function getStatus(friendId: number): Promise<number> {
+    const res = await fetch(`/api/get/status/${friendId}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) throw new Error(`Failed to check user status: ${res.status}`);
+    // const data = (await res.json()) as { status: number };
+    // return data.status;
+
+    const data: { status: number | string | boolean } = await res.json();
+    return Number(data.status) ? 1 : 0;
+}
 
 export const api = {
 	createUser,

@@ -3,7 +3,7 @@ const logger = require('../logger/logger');
 const fastify = require('fastify')({ logger });
 const fastifyCookie = require('@fastify/cookie');
 const multipart = require('@fastify/multipart')
-
+const { startWebSocketServer } = require('../websocket/ws');
 
 fastify.register(multipart);
 
@@ -28,6 +28,8 @@ fastify.setNotFoundHandler((request, reply) => {
 const start = async () => {
   try {
     await fastify.listen({ port: 4000, host: '0.0.0.0' });
+	startWebSocketServer(fastify.server);
+	logger.info('WebSocket server attached at /ws');
   } catch (err) {
     logger.error(err);
     process.exit(1);

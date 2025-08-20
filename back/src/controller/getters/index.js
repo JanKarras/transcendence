@@ -211,3 +211,119 @@ exports.getUserForProfile = async (req, reply) => {
 };
 
 
+// Chat
+
+exports.getToken = async (req, reply) => {
+	try {
+		const token =
+			req.cookies.auth_token || req.headers.authorization?.split(' ')[1];
+
+		if (!token) {
+			return reply.code(401).send({ error: 'No token provided' });
+		}
+
+		const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+		return { token };
+	} catch (err) {
+		req.log.error(err);
+		return reply.code(401).send({ error: 'Invalid or expired token' });
+	}
+};
+
+exports.getFriends = async (req, reply) => {
+	const userId = req.user.id;
+	const friends = db
+		.prepare(
+			`
+		SELECT
+			u.id,
+			u.username,
+			u.last_seen,
+			CASE
+				WHEN b.blocked_id IS NOT NULL THEN 1
+				ELSE 0
+			END AS blocked
+		FROM friends f
+		JOIN users u
+			ON u.id = f.friend_id
+		LEFT JOIN blocks b
+			ON b.blocker_id = f.user_id
+		   AND b.blocked_id = f.friend_id
+		WHERE f.user_id = ?
+	`
+		)
+		.all(userId);
+
+	reply.send(friends);
+};
+
+exports.getMessages = async (req, reply) => {
+	const userId = req.user.id;
+	const { friendId } = req.params;
+
+	const messages = db
+		.prepare(
+			`
+		SELECT m.*, u.username as from_username
+		FROM messages m
+		JOIN users u ON u.id = m.sender_id
+		WHERE (m.sender_id = ? AND m.receiver_id = ?)
+		   OR (m.sender_id = ? AND m.receiver_id = ?)
+		ORDER BY m.created_at ASC
+	`
+		)
+		.all(userId, friendId, friendId, userId);
+
+	reply.send(messages);
+};
+
+const stmtBlockedByFriend = db.prepare(`
+  SELECT EXISTS(
+	SELECT 1 FROM blocks
+	WHERE blocker_id = ? AND blocked_id = ?
+  ) AS blocked
+`);
+
+exports.getBlocked = async (req, reply) => {
+	const userId = req.user?.id;
+	if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+	const { friendId: friendIdRaw } = req.params;
+	const friendId = Number(friendIdRaw);
+
+	if (!Number.isInteger(friendId) || friendId <= 0) {
+		return reply
+			.code(400)
+			.send({ error: 'friendId must be a positive integer' });
+	}
+
+	const row = stmtBlockedByFriend.get(friendId, userId);
+	return reply.send({ blocked: !!row.blocked });
+};
+
+const stmtStatusByFriend = db.prepare(`
+  SELECT COALESCE(
+	(SELECT status FROM user_status WHERE user_id = ? LIMIT 1),
+	0
+  ) AS status
+`);
+
+exports.getStatus = async (req, reply) => {
+	const userId = req.user?.id;
+	if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+	const { friendId: friendIdRaw } = req.params;
+	const friendId = Number(friendIdRaw);
+
+	if (!Number.isInteger(friendId) || friendId <= 0) {
+		return reply
+			.code(400)
+			.send({ error: 'friendId must be a positive integer' });
+	}
+
+	const row = stmtStatusByFriend.get(friendId);
+	const statusNum = Number(row?.status) ? 1 : 0;
+
+	return reply.send({ status: statusNum });
+};
