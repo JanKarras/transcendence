@@ -58,3 +58,18 @@ export interface FriendsViewData {
   recvRequest: RequestInfo[];
   sendRequest: RequestInfo[];
 }
+
+export interface MatchHistoryEntry {
+  matchId: number;
+  type: "1v1_local" | "1v1_remote" | "tournament";
+  tournamentId?: number | null;
+  tournamentName?: string | null;
+  round?: number | null;
+  matchDate: string; // ISO-String von DB
+  players: {
+    userId: number;
+    username: string;
+    score: number;
+    rank?: number | null;
+  }[];
+}

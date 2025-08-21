@@ -325,6 +325,27 @@ export async function getStatus(friendId) {
     const data = await res.json();
     return Number(data.status) ? 1 : 0;
 }
+export async function getMatchHistory(userId) {
+    try {
+        const res = await fetch(`/api/get/getMatchHistory?userId=${userId}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            console.error("Failed to fetch match history:", errData.error || res.statusText);
+            return [];
+        }
+        const data = await res.json();
+        console.log("Match History für User", userId, data.matchHistory);
+        // return the match history
+        return data.matchHistory;
+    }
+    catch (err) {
+        console.error("Error fetching match history:", err);
+        return [];
+    }
+}
 export const api = {
     createUser,
     logInApi,

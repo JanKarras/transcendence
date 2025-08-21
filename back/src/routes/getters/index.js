@@ -12,4 +12,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/blocked/:friendId',{ preHandler: authMiddleware },gettersController.getBlocked);
 	fastify.get('/status/:friendId',{ preHandler: authMiddleware },gettersController.getStatus);
 	fastify.get('/token',{ preHandler: authMiddleware },gettersController.getToken);
+	fastify.get('/getMatchHistory',{ preHandler: authMiddleware },gettersController.getMatchHistory);
 };
+
+

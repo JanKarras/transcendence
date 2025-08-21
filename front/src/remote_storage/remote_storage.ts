@@ -1,4 +1,4 @@
-import { Friend, UserInfo, UserResponse, RequestInfo } from "../constants/structs.js";
+import { Friend, UserInfo, UserResponse, RequestInfo, MatchHistoryEntry } from "../constants/structs.js";
 
 export async function createUser(username: string, email: string, password: string) {
 	const body = JSON.stringify({ username, email, password })
@@ -359,6 +359,32 @@ export async function getStatus(friendId: number): Promise<number> {
     const data: { status: number | string | boolean } = await res.json();
     return Number(data.status) ? 1 : 0;
 }
+
+export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry[] | undefined> {
+	try {
+		const res = await fetch(`/api/get/getMatchHistory?userId=${userId}`, {
+			method: "GET",
+			credentials: "include",
+		});
+
+		if (!res.ok) {
+			const errData = await res.json().catch(() => ({}));
+			console.error("Failed to fetch match history:", errData.error || res.statusText);
+			return [];
+		}
+
+		const data: { matchHistory: MatchHistoryEntry[] } = await res.json();
+		console.log("Match History für User", userId, data.matchHistory);
+
+		// return the match history
+		return data.matchHistory;
+	} catch (err: any) {
+		console.error("Error fetching match history:", err);
+		return [];
+	}
+}
+
+
 
 export const api = {
 	createUser,

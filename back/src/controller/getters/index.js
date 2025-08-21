@@ -73,8 +73,6 @@ exports.getUser = async (req, reply) => {
 
 	const res = tmp.all();
 
-	console.log(res)
-
 	const friends = stmt.all(userId, userId, userId) || [];
 
 	const stats = db.prepare(`
@@ -110,8 +108,6 @@ exports.getUser = async (req, reply) => {
 		}
   	};
 
-	console.log(response)
-
 	return reply.code(200).send(response);
 };
 
@@ -120,7 +116,6 @@ exports.getAllUser = async (req, reply) => {
 		const stmt = db.prepare('SELECT id, username, first_name, last_name, age, path, last_seen FROM users WHERE validated = 1');
 		const users = stmt.all();
 
-		console.log(users);
 		reply.send(users);
 	} catch (err) {
 		console.error("DB error:", err);
@@ -327,3 +322,56 @@ exports.getStatus = async (req, reply) => {
 
 	return reply.send({ status: statusNum });
 };
+
+exports.getMatchHistory = async (req, reply) => {
+	try {
+		const { userId } = req.query;
+
+		if (!userId || typeof userId !== 'string') {
+			return reply.code(400).send({ error: 'Missing userId parameter' });
+		}
+
+		// 1️⃣ Alle Matches des Users abrufen
+		const userMatches = db.prepare(`
+			SELECT
+				m.id AS match_id,
+				m.type AS match_type,
+				m.tournament_id,
+				m.round,
+				m.created_at AS match_date,
+				t.name AS tournament_name
+			FROM matches m
+			LEFT JOIN tournaments t ON m.tournament_id = t.id
+			JOIN match_players mp ON mp.match_id = m.id
+			WHERE mp.user_id = ?
+			ORDER BY m.created_at ASC
+		`).all(userId);
+
+		// 2️⃣ Für jedes Match die Spieler abrufen
+		const matchesWithPlayers = userMatches.map(match => {
+			const players = db.prepare(`
+				SELECT
+					mp.user_id,
+					u.username,
+					mp.score,
+					mp.rank
+				FROM match_players mp
+				JOIN users u ON mp.user_id = u.id
+				WHERE mp.match_id = ?
+			`).all(match.match_id);
+
+			return {
+				...match,
+				players
+			};
+		});
+
+		console.log(`📊 Match-History für userId ${userId}:`, matchesWithPlayers);
+
+		reply.code(200).send({ matchHistory: matchesWithPlayers });
+	} catch (err) {
+		console.error('Error fetching match history:', err);
+		reply.code(500).send({ error: 'DB Error' });
+	}
+};
+
