@@ -1,5 +1,5 @@
 import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
-import { getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
+import { getMatchHistory, getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { LANGUAGE } from "../constants/gloabal.js";
@@ -12,6 +12,7 @@ export async function render_profile_settings(params) {
     }
     render_header();
     const userData = await getUser();
+    console.log(userData);
     if (!userData) {
         showErrorMessage(t(lang.profileDbError, LANGUAGE));
         await logOutApi();
@@ -38,7 +39,11 @@ export async function render_profile_settings(params) {
 					<div class="min-h-[40px] mt-4"> </div>
 				</div>
 			</div>
-
+			<div class="flex space-x-4 mt-4" id="matchHistoryContainer">
+				<button id="matchhis" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
+					${t(lang.matchHis, LANGUAGE)}
+				</button>
+			</div>
 			<div id="profileEdit" class="hidden">
 				<form id="editProfileForm" class="flex flex-col items-center space-y-4">
 					<label for="fileInput" class="cursor-pointer relative group">
@@ -73,15 +78,19 @@ export async function render_profile_settings(params) {
     const form = document.getElementById("editProfileForm");
     const fileInput = document.getElementById("fileInput");
     const preview = document.getElementById("profileImagePreview");
+    const matchhis = document.getElementById("matchhis");
+    const matchContainer = document.getElementById("matchHistoryContainer");
     editBtn?.addEventListener("click", () => {
         view?.classList.add("hidden");
         edit?.classList.remove("hidden");
         editBtn.classList.add("hidden");
+        matchContainer?.classList.add("hidden");
     });
     cancelBtn?.addEventListener("click", () => {
         edit?.classList.add("hidden");
         view?.classList.remove("hidden");
         editBtn?.classList.remove("hidden");
+        matchContainer?.classList.remove("hidden");
     });
     fileInput?.addEventListener("change", () => {
         const file = fileInput.files?.[0];
@@ -104,26 +113,71 @@ export async function render_profile_settings(params) {
             showErrorMessage(res.error);
         }
     });
+    matchhis?.addEventListener("click", async () => {
+        const matches = await getMatchHistory(1);
+        renderMatchHistorySettings(matches || [], () => {
+            render_profile_settings(null);
+        });
+    });
 }
 function renderReadonlyField(field, value) {
     const key = "profileLabel_" + field;
     const translationObj = lang[key];
     const label = translationObj ? t(translationObj, LANGUAGE) : field;
     return `
-    <div class="w-full">
-      <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
-      <input value="${value}" disabled
-        class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700" />
-    </div>`;
+	<div class="w-full">
+	  <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
+	  <input value="${value}" disabled
+		class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700" />
+	</div>`;
 }
 function renderEditableField(field, value, type = "text") {
     const key = "profileLabel_" + field;
     const translationObj = lang[key];
     const label = translationObj ? t(translationObj, LANGUAGE) : field;
     return `
-    <div class="w-full">
-      <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
-      <input name="${field}" placeholder="${label}" value="${value}" type="${type}"
-        class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700 transition hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-    </div>`;
+	<div class="w-full">
+	  <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
+	  <input name="${field}" placeholder="${label}" value="${value}" type="${type}"
+		class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700 transition hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+	</div>`;
+}
+function renderMatchHistorySettings(matches, backToProfile) {
+    if (!bodyContainer)
+        return;
+    const formatMatchType = (type) => {
+        switch (type) {
+            case "1v1_local": return t(lang.matchType1v1Local, LANGUAGE);
+            case "1v1_remote": return t(lang.matchType1v1Remote, LANGUAGE);
+            case "tournament": return t(lang.matchTypeTournament, LANGUAGE);
+            default: return type;
+        }
+    };
+    bodyContainer.innerHTML = `
+		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
+			<h2 class="text-xl font-semibold mb-4">${t(lang.matchHistoryTitle, LANGUAGE)}</h2>
+			<div class="space-y-4 overflow-y-auto max-h-[600px]">
+				${matches.map(match => `
+					<div class="border p-3 rounded bg-gray-50">
+						<p class="font-medium">
+							<strong>${formatMatchType(match.match_type)}</strong>
+							${match.tournament_name ? `- ${match.tournament_name} (${t(lang.round, LANGUAGE)} ${match.round})` : ''}
+						</p>
+						<p class="text-sm text-gray-600 mb-2">${match.match_date}</p>
+						<ul class="pl-4 list-disc">
+							${match.players.map((p) => `
+								<li>${p.username} - ${t(lang.score, LANGUAGE)}: ${p.score} ${p.rank === 1 ? t(lang.trophy, LANGUAGE) : ''}</li>
+							`).join('')}
+						</ul>
+					</div>
+				`).join('')}
+			</div>
+			<div class="mt-4">
+				<button id="backToProfileBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+					${t(lang.backToProfile, LANGUAGE)}
+				</button>
+			</div>
+		</div>
+	`;
+    document.getElementById("backToProfileBtn")?.addEventListener("click", backToProfile);
 }

@@ -21,7 +21,7 @@ async function renderProfile(user: UserInfo, id: number) {
 				${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
 				${renderReadonlyField("last_seen", user.last_seen || t(lang.profileAgeUnknown, LANGUAGE))}
 				<div class="flex space-x-4 mt-4">
-					<button id="showHistoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Match History</button>
+					<button id="showHistoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">${t(lang.matchHis, LANGUAGE)}</button>
 				</div>
 			</div>
 		</div>
@@ -30,11 +30,9 @@ async function renderProfile(user: UserInfo, id: number) {
 	if (!bodyContainer) return;
 	bodyContainer.innerHTML = profileHTML;
 
-	// Höhe merken
 	const profileInner = document.getElementById("profileInner");
-	const containerHeight = profileInner?.offsetHeight || 400; // fallback 400px
+	const containerHeight = profileInner?.offsetHeight || 400;
 
-	// Listener **immer neu binden**
 	const showHistoryBtn = document.getElementById("showHistoryBtn");
 	showHistoryBtn?.addEventListener("click", async () => {
 		const matchHistory = await getMatchHistory(Number(id));
@@ -45,30 +43,29 @@ async function renderProfile(user: UserInfo, id: number) {
 function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeight: number) {
 	if (!bodyContainer) return;
 
-	// Hilfsfunktion für lesbaren Match-Typ
 	const formatMatchType = (type: string) => {
 		switch(type) {
-			case "1v1_local": return "1v1 (Local)";
-			case "1v1_remote": return "1v1 (Remote)";
-			case "tournament": return "Tournament";
+			case "1v1_local": return t(lang.matchType1v1Local, LANGUAGE);
+			case "1v1_remote": return t(lang.matchType1v1Remote, LANGUAGE);
+			case "tournament": return t(lang.matchTypeTournament, LANGUAGE);
 			default: return type;
 		}
 	};
 
 	bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
-			<h2 class="text-xl font-semibold mb-4">Match History</h2>
+			<h2 class="text-xl font-semibold mb-4">${t(lang.matchHis, LANGUAGE)}</h2>
 			<div class="space-y-4 overflow-y-auto" style="min-height: ${fixedHeight - 28 - 40 - 16 - 16}px; max-height: ${fixedHeight - 28 - 40 - 16 - 16}px;">
 				${matches.map(match => {
 					const maxRank = Math.min(...match.players.map((p: any) => p.rank)); // Gewinner rank=1
 					return `
 						<div class="border p-3 rounded bg-gray-50">
-							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (Runde ${match.round})` : ''}</p>
+							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (${t(lang.round, LANGUAGE)} ${match.round})` : ''}</p>
 							<p class="text-sm text-gray-600 mb-2">${match.match_date}</p>
 							<ul class="pl-4 list-disc">
 								${match.players.map((p: any) => `
 									<li>
-										${p.username} - Score: ${p.score} ${p.rank === 1 ? '🏆' : ''}
+										${p.username} - ${t(lang.score, LANGUAGE)}: ${p.score} ${p.rank === 1 ? t(lang.trophy, LANGUAGE) : ''}
 									</li>`).join('')}
 							</ul>
 						</div>
@@ -76,7 +73,9 @@ function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeig
 				}).join('')}
 			</div>
 			<div class="mt-4">
-				<button id="backToProfileBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Zurück zum Profil</button>
+				<button id="backToProfileBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+					${t(lang.backToProfile, LANGUAGE)}
+				</button>
 			</div>
 		</div>
 	`;

@@ -8,6 +8,26 @@ const logger = require('../../logger/logger');
 const fs = require('fs');
 const path = require('path');
 
+function getUserIdFromRequest(req) {
+	try {
+		const token = req.cookies?.auth_token;
+
+		if (!token) {
+			return null;
+		}
+
+		const payload = jwt.verify(token, JWT_SECRET);
+
+		if (payload && typeof payload.id === 'number') {
+			return payload.id;
+		}
+
+		return null;
+	} catch(err) {
+		return null;
+	}
+}
+
 async function hashPassword(password) {
   const saltRounds = 10;
   const hashed = await bcrypt.hash(password, saltRounds);
@@ -21,10 +41,10 @@ async function verifyPassword(password, hash) {
 
 async function sendMail(to, subject, text) {
   const info = await transporter.sendMail({
-    from: '"Transcendence"',
-    to,
-    subject,
-    text,
+	from: '"Transcendence"',
+	to,
+	subject,
+	text,
   });
   console.log('Email sent:', info.messageId);
 }
@@ -38,18 +58,18 @@ async function insertValidationCode(userId) {
   let retries = 5;
 
   while (retries > 0) {
-    const code = generateSixDigitCode();
-    try {
-      insertQuery.run(userId, code);
-      return code;
-    } catch (err) {
-      if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        retries--;
-        if (retries === 0) throw new Error('Failed to generate unique validation code');
-      } else {
-        throw err;
-      }
-    }
+	const code = generateSixDigitCode();
+	try {
+	  insertQuery.run(userId, code);
+	  return code;
+	} catch (err) {
+	  if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+		retries--;
+		if (retries === 0) throw new Error('Failed to generate unique validation code');
+	  } else {
+		throw err;
+	  }
+	}
   }
 }
 
@@ -57,39 +77,50 @@ exports.createUser = async (request, reply) => {
   const { username, email, password } = request.body;
 
   if (!username || !email || !password) {
-    return reply.code(400).send({ error: 'Missing credentials: username, email and password are required.' });
+	return reply.code(400).send({ error: 'Missing credentials: username, email and password are required.' });
   }
 
+  const validator = require("validator");
+
+  if (!validator.isEmail(email)) {
+	return reply.code(400).send({ error: 'Invalid email address' });
+  }
+
+  const cleanUsername = validator.escape(username);
+
   try {
-    const hashedPw = await hashPassword(password);
+	const hashedPw = await hashPassword(password);
 
-    const query = db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-
-    const info = query.run(username, email, hashedPw);
+	const query = db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+	const info = query.run(cleanUsername, email, hashedPw);
 
 	const userId = info.lastInsertRowid;
-
 	db.prepare('INSERT INTO stats (user_id, wins, loses, tournamentWins) VALUES (?, 0, 0, 0)').run(userId);
 
 	const validationCode = await insertValidationCode(userId);
 
-	const verificationLink = `https://localhost/#email_validation?email=${email}`;
+	const verificationLink = `https://localhost/#email_validation?email=${encodeURIComponent(email)}`;
 
-	await sendMail(email, 'Your verification code', `Your verification code is: ${validationCode}\n\nClick here to confirm your email: ${verificationLink}`);
+	await sendMail(
+	  email,
+	  'Your verification code',
+	  `Your verification code is: ${validationCode}\n\nClick here to confirm your email: ${verificationLink}`
+	);
 
-    return reply.code(201).send({ message: 'User created successfully' });
+	return reply.code(201).send({ message: 'User created successfully' });
   } catch (err) {
-    if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      return reply.code(409).send({ error: 'Username or email already exists' });
-    }
-    return reply.code(500).send({ error: 'Database error' });
+	if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+	  return reply.code(409).send({ error: 'Username or email already exists' });
+	}
+	return reply.code(500).send({ error: 'Database error' });
   }
 };
+
 
 exports.login = async (request, reply) => {
   const { username, password } = request.body;
   if (!username || !password) {
-    return reply.code(400).send({ error: 'Missing credentials: username, password are required.' });
+	return reply.code(400).send({ error: 'Missing credentials: username, password are required.' });
   }
 
   try {
@@ -109,7 +140,25 @@ exports.login = async (request, reply) => {
 	const isValid = await verifyPassword(password, user.password);
 
 	if (!isValid) {
-		return reply.code(401).send({ error: 'Incorrect password.' });
+		return reply.code(401).send({ error: 'Invalid username or email.' });
+	}
+
+	const MIN_INTERVAL = 60 * 1000;
+
+	const lastCode = db.prepare(`
+		SELECT created_at
+		FROM validation_codes
+		WHERE user_id = ?
+		ORDER BY created_at DESC
+		LIMIT 1
+	`).get(user.id);
+
+	if (lastCode) {
+		const lastSent = new Date(lastCode.created_at).getTime();
+		const now = Date.now();
+		if (now - lastSent < MIN_INTERVAL) {
+			return reply.code(429).send({ error: 'Please wait before requesting another 2FA code.' });
+		}
 	}
 
 	const twoFaCode = await insertValidationCode(user.id);
@@ -122,70 +171,70 @@ exports.login = async (request, reply) => {
 
   } catch (err) {
 	request.log.error(err);
-    return reply.code(500).send({ error: 'Database error' });
+	return reply.code(500).send({ error: 'Database error' });
   }
 };
 
 exports.logout = async (request, reply) => {
   try {
-    reply.clearCookie('auth_token', {
-      path: '/',
-    });
+	reply.clearCookie('auth_token', {
+	  path: '/',
+	});
 
-    return reply.code(200).send({ message: 'Logout successful' });
+	return reply.code(200).send({ message: 'Logout successful' });
   } catch (err) {
-    request.log.error(err);
-    return reply.code(500).send({ error: 'Logout failed' });
+	request.log.error(err);
+	return reply.code(500).send({ error: 'Logout failed' });
   }
 };
 
 exports.emailValidation = async (request, reply) => {
   const { email, code } = request.body;
   if (!email || !code) {
-    return reply.code(400).send({ error: 'Missing credentials: email and code are required.' });
+	return reply.code(400).send({ error: 'Missing credentials: email and code are required.' });
   }
 
   try {
-    const user = db.prepare('SELECT id, validated FROM users WHERE email = ?').get(email);
-    if (!user) {
-      return reply.code(401).send({ error: 'Invalid email.' });
-    }
+	const user = db.prepare('SELECT id, validated FROM users WHERE email = ?').get(email);
+	if (!user) {
+	  return reply.code(401).send({ error: 'Invalid email.' });
+	}
 
-    const validation = db.prepare(`
-      SELECT code, created_at FROM validation_codes WHERE user_id = ?
-    `).get(user.id);
-    if (!validation) {
-      return reply.code(404).send({ error: 'No validation code found for this user.' });
-    }
+	const validation = db.prepare(`
+	  SELECT code, created_at FROM validation_codes WHERE user_id = ?
+	`).get(user.id);
+	if (!validation) {
+	  return reply.code(404).send({ error: 'No validation code found for this user.' });
+	}
 
-    const TEN_MINUTES = 10 * 60 * 1000;
-    const createdAt = new Date(validation.created_at);
-    const now = new Date();
+	const TEN_MINUTES = 10 * 60 * 1000;
+	const createdAt = new Date(validation.created_at);
+	const now = new Date();
 
-    if (now - createdAt > TEN_MINUTES) {
+	if (now - createdAt > TEN_MINUTES) {
 
 		db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
-      	const validationCode = await insertValidationCode(user.id);
+	  	const validationCode = await insertValidationCode(user.id);
 
 		const verificationLink = `https://localhost/#email_validation?email=${email}`;
 
 		await sendMail(email, 'Your verification code', `Your verification code is: ${validationCode}\n\nClick here to confirm your email: ${verificationLink}`);
 
 		return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
-    }
+	}
 
-    if (validation.code !== code) {
-      return reply.code(401).send({ error: 'Invalid validation code.' });
-    }
+	if (validation.code !== code) {
+	  return reply.code(401).send({ error: 'Invalid validation code.' });
+	}
 
-    db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+	db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
-    db.prepare('UPDATE users SET validated = 1 WHERE id = ?').run(user.id);
+	db.prepare('UPDATE users SET validated = 1 WHERE id = ?').run(user.id);
 
-    return reply.code(200).send({ message: 'Email successfully validated.' });
+	return reply.code(200).send({ message: 'Email successfully validated.' });
   } catch (err) {
-    return reply.code(500).send({ error: 'Database error' });
+	return reply.code(500).send({ error: 'Database error' });
   }
 };
 
@@ -194,142 +243,139 @@ exports.two_fa_api = async (request, reply) => {
   const { email, code } = request.body;
 
   if (!email || !code) {
-    return reply.code(400).send({ error: 'Missing credentials: email/username and code are required.' });
+	return reply.code(400).send({ error: 'Missing credentials: email/username and code are required.' });
   }
 
   try {
-    // Suche den User per Email oder Username
-    let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-    if (!user) {
-      user = db.prepare('SELECT * FROM users WHERE username = ?').get(email);
-    }
+	// Suche den User per Email oder Username
+	let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+	if (!user) {
+	  user = db.prepare('SELECT * FROM users WHERE username = ?').get(email);
+	}
 
-    if (!user) {
-      return reply.code(401).send({ error: 'Invalid email or username.' });
-    }
+	if (!user) {
+	  return reply.code(401).send({ error: 'Invalid email or username.' });
+	}
 
-    const validation = db.prepare('SELECT code, created_at FROM validation_codes WHERE user_id = ?').get(user.id);
+	const validation = db.prepare('SELECT code, created_at FROM validation_codes WHERE user_id = ?').get(user.id);
 
-    if (!validation) {
-      return reply.code(404).send({ error: 'No validation code found for this user.' });
-    }
+	if (!validation) {
+	  return reply.code(404).send({ error: 'No validation code found for this user.' });
+	}
 
-    const TEN_MINUTES = 10 * 60 * 1000;
-    const createdAt = new Date(validation.created_at);
-    const now = new Date();
+	const TEN_MINUTES = 10 * 60 * 1000;
+	const createdAt = new Date(validation.created_at);
+	const now = new Date();
 
-    if (now - createdAt > TEN_MINUTES) {
-      // Alten Code löschen
-      db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+	if (now - createdAt > TEN_MINUTES) {
+	  // Alten Code löschen
+	  db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
-      // Neuen Code erstellen
-      const newCode = await insertValidationCode(user.id);
+	  // Neuen Code erstellen
+	  const newCode = await insertValidationCode(user.id);
 
-      const verificationLink = `https://localhost/#two_fa?email=${encodeURIComponent(email)}`;
+	  const verificationLink = `https://localhost/#two_fa?email=${encodeURIComponent(email)}`;
 
-      // Neue Mail senden
-      await sendMail(user.email, 'Your new 2FA code', `Your new 2FA code is: ${newCode}\n\nYou can confirm here: ${verificationLink}`);
+	  // Neue Mail senden
+	  await sendMail(user.email, 'Your new 2FA code', `Your new 2FA code is: ${newCode}\n\nYou can confirm here: ${verificationLink}`);
 
-      return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
-    }
+	  return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
+	}
 
-    if (validation.code !== code) {
-      return reply.code(401).send({ error: 'Invalid validation code.' });
-    }
+	if (validation.code !== code) {
+	  return reply.code(401).send({ error: 'Invalid validation code.' });
+	}
 
-    // Code korrekt → JWT-Token erstellen und Cookie setzen
-    db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
+	// Code korrekt → JWT-Token erstellen und Cookie setzen
+	db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+	const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
-    reply.setCookie('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 3600
-    });
+	reply.setCookie('auth_token', token, {
+	  httpOnly: true,
+	  secure: process.env.NODE_ENV === 'production',
+	  path: '/',
+	  maxAge: 3600
+	});
 
-    return reply.code(200).send({ message: 'Login successful' });
+	return reply.code(200).send({ message: 'Login successful' });
 
   } catch (err) {
-    console.error(err);
-    return reply.code(500).send({ error: 'Database error' });
+	console.error(err);
+	return reply.code(500).send({ error: 'Database error' });
   }
 };
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 exports.updateUser = async function (req, reply) {
-	const parts = req.parts();
+	const userId = getUserIdFromRequest(req);
+	if (!userId) {
+		return reply.code(401).send({ success: false, error: "Not authenticated" });
+	}
 
-	let username = null;
+	const parts = req.parts();
 	let first_name = null;
 	let last_name = null;
 	let age = null;
-
 	let imageName = null;
 
-	for await (const part of parts) {
+	const nameRegex = /^[a-zA-ZäöüÄÖÜß0-9 .'-]{1,50}$/;
 
+	for await (const part of parts) {
 		if (part.file) {
 			const buffer = await part.toBuffer();
 
 			if (buffer.length > MAX_IMAGE_SIZE) {
-				return reply
-					.code(400)
-					.send({ success: false, error: "Image to large. Max 5 MB" });
+				return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
 			}
 
 			if (part.filename) {
 				const uploadsDir = path.join(__dirname, '../../../profile_images');
-				if (!fs.existsSync(uploadsDir)) {
-					fs.mkdirSync(uploadsDir, { recursive: true });
-				}
+				if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 				const extension = path.extname(part.filename);
 				const uniqueFilename = `${Date.now()}${extension}`;
 				const fullPath = path.join(uploadsDir, uniqueFilename);
 
 				fs.writeFileSync(fullPath, buffer);
-
 				imageName = uniqueFilename;
 			}
 		} else {
-			if (part.fieldname === "username") {
-				username = part.value;
-			} else if (part.fieldname === "first_name") {
-				first_name = part.value;
+			if (part.fieldname === "first_name") {
+				if (!nameRegex.test(part.value)) {
+					return reply.code(400).send({ success: false, error: "Invalid first name" });
+				}
+				first_name = part.value.trim();
 			} else if (part.fieldname === "last_name") {
-				last_name = part.value;
+				if (!nameRegex.test(part.value)) {
+					return reply.code(400).send({ success: false, error: "Invalid last name" });
+				}
+				last_name = part.value.trim();
 			} else if (part.fieldname === "age") {
-				age = part.value;
+				if (!/^\d+$/.test(part.value)) {
+					return reply.code(400).send({ success: false, error: "Invalid age" });
+				}
+				age = parseInt(part.value, 10);
 			}
 		}
 	}
 
-	let user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-
-	if (username) {
-		if (first_name) {
-			db.prepare('UPDATE users SET first_name = ? WHERE username = ?').run(first_name, username);
-		}
-		if (last_name) {
-			db.prepare('UPDATE users SET last_name = ? WHERE username = ?').run(last_name, username);
-		}
-		if (age) {
-			db.prepare('UPDATE users SET age = ? WHERE username = ?').run(age, username);
-		}
-		if (imageName) {
-			db.prepare('UPDATE users SET path = ? WHERE username = ?').run(imageName, username);
-		}
-	} else {
-		return reply.code(400).send({ success: false, error: "No Username was send to the server" });
+	if (first_name) {
+		db.prepare('UPDATE users SET first_name = ? WHERE id = ?').run(first_name, userId);
+	}
+	if (last_name) {
+		db.prepare('UPDATE users SET last_name = ? WHERE id = ?').run(last_name, userId);
+	}
+	if (age !== null) {
+		db.prepare('UPDATE users SET age = ? WHERE id = ?').run(age, userId);
+	}
+	if (imageName) {
+		db.prepare('UPDATE users SET path = ? WHERE id = ?').run(imageName, userId);
 	}
 
 	reply.send({ success: true });
 };
-
-
 
 exports.sendFriendRequest = async function (req, reply) {
 	try {
@@ -367,6 +413,7 @@ exports.sendFriendRequest = async function (req, reply) {
 			WHERE sender_id = ? AND receiver_id = ? AND type = 'friend'
 		`).get(senderId, receiver.id);
 
+
 		if (existingRequest) {
 			return reply.code(409).send({ success: false, error: "Friend request already sent" });
 		}
@@ -393,10 +440,20 @@ exports.handleAcceptRequest = async function (req, reply) {
 
 	try {
 		const transaction = db.transaction(() => {
+			const userId = getUserIdFromRequest(req);
+			if (!userId) {
+				return reply.code(401).send({ error: "Not authenticated" });
+			}
+
 			const request = db.prepare('SELECT sender_id, receiver_id, status FROM requests WHERE id = ?').get(id);
 			if (!request) {
 				throw new Error("Request not found");
 			}
+
+			if (request.receiver_id !== userId) {
+				return reply.code(403).send({ error: "You are not allowed to accept this request" });
+			}
+
 			if (request.status === "accepted") {
 				return "already_accepted";
 			}
@@ -434,12 +491,29 @@ exports.handleDeclineRequest = async function (req, reply) {
 		return reply.code(400).send({ error: "Request ID missing" });
 	}
 
+	const userId = getUserIdFromRequest(req);
+	if (!userId) {
+		return reply.code(401).send({ error: "Not authenticated" });
+	}
 	try {
-		const result = db.prepare('UPDATE requests SET status = ? WHERE id = ?').run("declined", id);
+		const request = db.prepare('SELECT sender_id, receiver_id, status FROM requests WHERE id = ?').get(id);
 
-		if (result.changes === 0) {
+		if (!request) {
 			return reply.code(404).send({ error: "Request not found" });
 		}
+
+		if (request.sender_id !== userId && request.receiver_id !== userId) {
+			return reply.code(403).send({ error: "Not authorized to decline this request" });
+		}
+
+		if (request.status === "declined") {
+			return reply.code(409).send({ error: "Request already declined" });
+		}
+		if (request.status === "accepted") {
+			return reply.code(409).send({ error: "Request already accepted" });
+		}
+
+		db.prepare('UPDATE requests SET status = ? WHERE id = ?').run("declined", id);
 
 		return reply.code(200).send({ success: true });
 	} catch (err) {
@@ -450,20 +524,29 @@ exports.handleDeclineRequest = async function (req, reply) {
 exports.removeFriend = async function (req, reply) {
 	const { friendUsername } = req.body;
 	if (!friendUsername) {
-		return reply.code(400).send({ error: "friendUsername fehlt" });
+		return reply.code(400).send({ error: "friendUsername is required" });
 	}
 
-	const userId = req.user && req.user.id;
+	const userId = getUserIdFromRequest(req);
 	if (!userId) {
-		return reply.code(401).send({ error: "Nicht eingeloggt" });
+		return reply.code(401).send({ error: "Not authenticated" });
+	}
+
+	if (friendUsername.trim() === "") {
+		return reply.code(400).send({ error: "Invalid friendUsername" });
 	}
 
 	try {
 		const friend = db.prepare('SELECT id FROM users WHERE username = ?').get(friendUsername);
 		if (!friend) {
-			return reply.code(404).send({ error: "Freund nicht gefunden" });
+			return reply.code(404).send({ error: "Friend not found" });
 		}
+
 		const friendId = friend.id;
+
+		if (friendId === userId) {
+			return reply.code(400).send({ error: "Cannot remove yourself" });
+		}
 
 		const deleteFriendsStmt = db.prepare(`
 			DELETE FROM friends
@@ -473,7 +556,7 @@ exports.removeFriend = async function (req, reply) {
 		const friendsResult = deleteFriendsStmt.run(userId, friendId, friendId, userId);
 
 		if (friendsResult.changes === 0) {
-			return reply.code(404).send({ error: "Freundschaft nicht gefunden" });
+			return reply.code(404).send({ error: "Friendship not found" });
 		}
 
 		const deleteRequestsStmt = db.prepare(`
@@ -483,11 +566,9 @@ exports.removeFriend = async function (req, reply) {
 		`);
 		deleteRequestsStmt.run(userId, friendId, friendId, userId);
 
-		return reply.code(200).send({ success: true });
+		return reply.code(200).send({ success: true, message: "Friend removed successfully" });
 	} catch (err) {
 		console.error(err);
-		return reply.code(500).send({ error: "Datenbankfehler" });
+		return reply.code(500).send({ error: "Database error" });
 	}
 };
-
-

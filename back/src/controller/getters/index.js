@@ -69,9 +69,6 @@ exports.getUser = async (req, reply) => {
 
 `);
 
-	const tmp = db.prepare(`SELECT * FROM friends`);
-
-	const res = tmp.all();
 
 	const friends = stmt.all(userId, userId, userId) || [];
 
@@ -131,7 +128,7 @@ exports.getImage = async (req, reply) => {
 	}
 
 	const uploadsDir = path.join(__dirname, '../../../profile_images');
-	const imagePath = path.join(uploadsDir, filename);
+	const imagePath = path.join(uploadsDir, path.basename(filename));
 
 	const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
 	const ext = path.extname(filename).toLowerCase();
@@ -331,7 +328,11 @@ exports.getMatchHistory = async (req, reply) => {
 			return reply.code(400).send({ error: 'Missing userId parameter' });
 		}
 
-		// 1️⃣ Alle Matches des Users abrufen
+		const userIdNum = Number(userId);
+		if (!Number.isInteger(userIdNum)) {
+			return reply.code(400).send({ error: "Invalid userId" });
+		}
+
 		const userMatches = db.prepare(`
 			SELECT
 				m.id AS match_id,
@@ -345,9 +346,8 @@ exports.getMatchHistory = async (req, reply) => {
 			JOIN match_players mp ON mp.match_id = m.id
 			WHERE mp.user_id = ?
 			ORDER BY m.created_at ASC
-		`).all(userId);
+		`).all(userIdNum);
 
-		// 2️⃣ Für jedes Match die Spieler abrufen
 		const matchesWithPlayers = userMatches.map(match => {
 			const players = db.prepare(`
 				SELECT
@@ -366,7 +366,7 @@ exports.getMatchHistory = async (req, reply) => {
 			};
 		});
 
-		console.log(`📊 Match-History für userId ${userId}:`, matchesWithPlayers);
+		console.log(`📊 Match-History für userId ${userIdNum}:`, matchesWithPlayers);
 
 		reply.code(200).send({ matchHistory: matchesWithPlayers });
 	} catch (err) {

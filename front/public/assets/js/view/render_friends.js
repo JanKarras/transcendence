@@ -260,9 +260,9 @@ function createAddFriendElement(user, recvRequests, sendRequests) {
     userDiv.className =
         "friend-item group flex justify-start items-center border-b border-gray-700 p-2 hover:bg-gray-800 transition";
     const leftDiv = document.createElement("div");
-    leftDiv.className = "flex items-center gap-3 w-[200px]";
+    leftDiv.className = "flex items-center gap-3";
     const imgWrapper = document.createElement("div");
-    imgWrapper.className = "relative w-10 h-10";
+    imgWrapper.className = "relative w-10 h-10 flex-shrink-0";
     const img = document.createElement("img");
     img.src = `/api/get/getImage?filename=${encodeURIComponent(user.path || "std_user_img.png")}`;
     img.alt = user.username;
@@ -312,20 +312,20 @@ function createAddFriendElement(user, recvRequests, sendRequests) {
     if (statusText) {
         const statusLabel = document.createElement("span");
         statusLabel.textContent = statusText;
-        statusLabel.className = `text-sm ml-auto pr-2 ${statusClass}`;
+        statusLabel.className = `text-sm ml-2 ${statusClass}`;
+        leftDiv.appendChild(statusLabel);
         userDiv.appendChild(leftDiv);
-        userDiv.appendChild(statusLabel);
     }
     else {
         const addBtn = document.createElement("button");
         addBtn.textContent = `➕ ${t(lang.addFriend, LANGUAGE)}`;
         addBtn.className =
-            "hidden group-hover:inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-auto";
+            "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity";
         addBtn.addEventListener("click", async () => {
             sendFriendRequest(user);
         });
+        leftDiv.appendChild(addBtn);
         userDiv.appendChild(leftDiv);
-        userDiv.appendChild(addBtn);
     }
     return userDiv;
 }

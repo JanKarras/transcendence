@@ -10,7 +10,9 @@ import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 
 export function getPos() {
-	return window.location.hash.replace(/^#/, '');
+    const hash = window.location.hash.replace(/^#/, '');
+    const [pos] = hash.split('?');
+    return pos;
 }
 
 function updateOnlineUser(friends : Friend[]) {
@@ -33,7 +35,6 @@ let profileMenuListenerAttached = false;
 export async function render_header() {
 
 	const pos = getPos();
-
 	const friendsCotnainer = document.getElementById("FriendsContainer")
 
 	if (!friendsCotnainer || !profileImg || !profile || !headernavs || !profileContainer || !friendsNumber || !friendsBtn) {
