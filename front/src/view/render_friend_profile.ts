@@ -57,7 +57,7 @@ function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeig
 			<h2 class="text-xl font-semibold mb-4">${t(lang.matchHis, LANGUAGE)}</h2>
 			<div class="space-y-4 overflow-y-auto" style="min-height: ${fixedHeight - 28 - 40 - 16 - 16}px; max-height: ${fixedHeight - 28 - 40 - 16 - 16}px;">
 				${matches.map(match => {
-					const maxRank = Math.min(...match.players.map((p: any) => p.rank)); // Gewinner rank=1
+					const maxRank = Math.min(...match.players.map((p: any) => p.rank)); 
 					return `
 						<div class="border p-3 rounded bg-gray-50">
 							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (${t(lang.round, LANGUAGE)} ${match.round})` : ''}</p>

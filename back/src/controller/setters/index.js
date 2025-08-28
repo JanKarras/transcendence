@@ -247,7 +247,6 @@ exports.two_fa_api = async (request, reply) => {
   }
 
   try {
-	// Suche den User per Email oder Username
 	let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
 	if (!user) {
 	  user = db.prepare('SELECT * FROM users WHERE username = ?').get(email);
@@ -268,15 +267,12 @@ exports.two_fa_api = async (request, reply) => {
 	const now = new Date();
 
 	if (now - createdAt > TEN_MINUTES) {
-	  // Alten Code löschen
 	  db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
-	  // Neuen Code erstellen
 	  const newCode = await insertValidationCode(user.id);
 
 	  const verificationLink = `https://localhost/#two_fa?email=${encodeURIComponent(email)}`;
 
-	  // Neue Mail senden
 	  await sendMail(user.email, 'Your new 2FA code', `Your new 2FA code is: ${newCode}\n\nYou can confirm here: ${verificationLink}`);
 
 	  return reply.code(410).send({ error: 'Validation code expired. A new code has been generated and sent to your email.' });
@@ -286,7 +282,6 @@ exports.two_fa_api = async (request, reply) => {
 	  return reply.code(401).send({ error: 'Invalid validation code.' });
 	}
 
-	// Code korrekt → JWT-Token erstellen und Cookie setzen
 	db.prepare('DELETE FROM validation_codes WHERE user_id = ?').run(user.id);
 
 	const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });

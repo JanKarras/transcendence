@@ -65,7 +65,7 @@ export interface MatchHistoryEntry {
   tournamentId?: number | null;
   tournamentName?: string | null;
   round?: number | null;
-  matchDate: string; // ISO-String von DB
+  matchDate: string;
   players: {
     userId: number;
     username: string;

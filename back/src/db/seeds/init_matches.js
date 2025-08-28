@@ -14,27 +14,19 @@ if (existingMatches.count === 0 && existingTournaments.count === 0) {
     const user2 = db.prepare(`SELECT id FROM users WHERE username = 'user2'`).get();
     const user3 = db.prepare(`SELECT id FROM users WHERE username = 'user3'`).get();
 
-    // ----------------------
-    // 1v1 Local (jkarras vs user1)
-    // ----------------------
     let result = insertMatch.run('1v1_local', null, null);
     let matchId = result.lastInsertRowid;
     insertMatchPlayer.run(matchId, jkarrasId, 11, 1);
     insertMatchPlayer.run(matchId, user1.id, 7, 2);
 
-    // 1v1 Remote (jkarras vs user2)
     result = insertMatch.run('1v1_remote', null, null);
     matchId = result.lastInsertRowid;
     insertMatchPlayer.run(matchId, jkarrasId, 15, 1);
     insertMatchPlayer.run(matchId, user2.id, 13, 2);
 
-    // ----------------------
-    // Tournament erstellen
-    // ----------------------
     const tourResult = insertTournament.run("Startup Cup");
     const tournamentId = tourResult.lastInsertRowid;
 
-    // Runde 1 – Halbfinale
     result = insertMatch.run('tournament', tournamentId, 1);
     matchId = result.lastInsertRowid;
     insertMatchPlayer.run(matchId, jkarrasId, 11, 1);
@@ -45,14 +37,11 @@ if (existingMatches.count === 0 && existingTournaments.count === 0) {
     insertMatchPlayer.run(matchId, user2.id, 10, 2);
     insertMatchPlayer.run(matchId, user3.id, 12, 1);
 
-    // Runde 2 – Finale Gewinner / kleines Finale Verlierer
-    // Finale Gewinner
     result = insertMatch.run('tournament', tournamentId, 2);
     matchId = result.lastInsertRowid;
     insertMatchPlayer.run(matchId, jkarrasId, 14, 1);
     insertMatchPlayer.run(matchId, user3.id, 13, 2);
 
-    // Finale Verlierer
     result = insertMatch.run('tournament', tournamentId, 2);
     matchId = result.lastInsertRowid;
     insertMatchPlayer.run(matchId, user1.id, 9, 3);
@@ -60,7 +49,7 @@ if (existingMatches.count === 0 && existingTournaments.count === 0) {
 
     console.log("✅ Beispiel-Matches und Tournament erstellt: 1v1 Local, 1v1 Remote + Startup Cup");
 
-	
+
 } else {
     console.log("ℹ️ Matches/Tournaments existieren bereits, keine neuen erstellt.");
 }

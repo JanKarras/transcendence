@@ -12,15 +12,15 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 	const basePos = currentPos.split('?')[0];
 
 	if (basePos === "dashboard") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "profile") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 	}
 	if (basePos === "friends") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
@@ -29,7 +29,7 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "friend_profile") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") }); //muss durch chat vairable ersetzt werden
+		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
 	}

@@ -33,11 +33,9 @@ function getTokenFromLS(): string | null {
 }
 
 async function ensureToken(): Promise<string | null> {
-    // сначала проверим LS
     let t = getTokenFromLS();
     if (t) return t;
 
-    // не было — попросим у сервера и сохраним
     t = await getFreshToken();
     return t;
 }
@@ -277,7 +275,6 @@ export async function connectDialog(
     }
     friendId = peerId;
     block = blocked;
-    //friendStatus = await getStatus(friendId);
     const chat = document.getElementById('chatMessages') as HTMLElement;
     chat.innerHTML = '';
 

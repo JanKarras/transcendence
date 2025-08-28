@@ -56,7 +56,7 @@ function getViewAndParamsFromHash(): { view: View; params: URLSearchParams | nul
   const hash = window.location.hash;
   if (!hash) return null;
 
-  const [viewPart, paramPart] = hash.substring(1).split('?'); // z.B. ['login', 'foo=bar']
+  const [viewPart, paramPart] = hash.substring(1).split('?');
 
   if (viewPart in renderers) {
     const params = paramPart ? new URLSearchParams(paramPart) : null;
@@ -103,7 +103,7 @@ export function initRouter() {
 
   const viewData = getViewAndParamsFromHash();
   if (viewData) {
-    navigateTo(viewData.view, viewData.params); 
+    navigateTo(viewData.view, viewData.params);
   } else {
     renderView('login', null);
   }

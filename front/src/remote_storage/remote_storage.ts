@@ -353,8 +353,6 @@ export async function getStatus(friendId: number): Promise<number> {
         headers: { Accept: 'application/json' },
     });
     if (!res.ok) throw new Error(`Failed to check user status: ${res.status}`);
-    // const data = (await res.json()) as { status: number };
-    // return data.status;
 
     const data: { status: number | string | boolean } = await res.json();
     return Number(data.status) ? 1 : 0;
@@ -376,7 +374,6 @@ export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry
 		const data: { matchHistory: MatchHistoryEntry[] } = await res.json();
 		console.log("Match History für User", userId, data.matchHistory);
 
-		// return the match history
 		return data.matchHistory;
 	} catch (err: any) {
 		console.error("Error fetching match history:", err);

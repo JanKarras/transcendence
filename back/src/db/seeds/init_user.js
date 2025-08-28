@@ -1,17 +1,14 @@
 const bcrypt = require('bcrypt');
 
-// Prüfen, ob User schon existieren
 const existingUsers = db.prepare("SELECT COUNT(*) as count FROM users").get();
 
 if (existingUsers.count === 0) {
-    // Default-User mit personalisierten Bildern
     const defaultUsers = [
         { username: "jkarras", email: "karras.jan@web.de", path: "jkarras.png" },
         { username: "rmatthes", email: "xxtrickz@web.de", path: "rmatthes.png" },
         { username: "atoepper", email: "atoepper@student.42wolfsburg.de", path: "atoepper.png" },
     ];
 
-    // Extra-User mit Standardbild
     const extraUsers = [];
     for (let i = 1; i <= 10; i++) {
         extraUsers.push({ username: `user${i}`, email: `user${i}@example.com`, path: "std_user_img.png" });

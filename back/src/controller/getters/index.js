@@ -202,9 +202,6 @@ exports.getUserForProfile = async (req, reply) => {
 	}
 };
 
-
-// Chat
-
 exports.getToken = async (req, reply) => {
 	try {
 		const token =

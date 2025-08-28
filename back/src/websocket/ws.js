@@ -3,24 +3,19 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const clients = new Map(); // userId -> ws
+const clients = new Map();
 const activeDialog = new Map();
 let isPeerOpenWithMe = false;
-// function getUsernameById(id) {
-//     const row = db.prepare(`SELECT username FROM users WHERE id = ?`).get(id);
-//     return row ? row.username : `User${id}`;
-// }
 
 function startWebSocketServer(server) {
     const wss = new WebSocket.Server({ server });
     console.log('Message 1');
     wss.on('connection', (ws, req) => {
-        // Авторизация через Cookie или Query
         const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
         const token = parsedUrl.searchParams.get('token');
         if (!token) {
             console.log('❌ No token found');
-            ws.close(); // <-- здесь отваливается соединение
+            ws.close();
             return;
         }
         let senderId = null;

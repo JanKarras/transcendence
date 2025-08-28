@@ -94,7 +94,7 @@ export async function render_friends(params: URLSearchParams | null) {
 			Array.from(tabNav.children).forEach(child => child.classList.remove("border-blue-500", "font-semibold"));
 			btn.classList.add("border-blue-500", "font-semibold");
 			contentContainer.innerHTML = "";
-			contentContainer.setAttribute("data-active-tab", tab.id); // <== HIER!
+			contentContainer.setAttribute("data-active-tab", tab.id); 
 			tab.render();
 		});
 
@@ -310,7 +310,6 @@ function renderAddFriends(
 
 	const friendUsernames = new Set(friends.map(f => f.username));
 
-	// Map username → status für empfangene Freundesanfragen
 	const recvFriendStatus = new Map<string, string>();
 	recvRequests
 		.filter(r => r.type === "friend")
@@ -318,7 +317,6 @@ function renderAddFriends(
 			if (r.sender_username) recvFriendStatus.set(r.sender_username, r.status);
 		});
 
-	// Map username → status für gesendete Freundesanfragen
 	const sendFriendStatus = new Map<string, string>();
 	sendRequests
 		.filter(r => r.type === "friend")
@@ -465,7 +463,6 @@ function renderFriendRequests(
 	const wrapper = document.createElement("div");
 	wrapper.className = "flex gap-8";
 
-	// Links: Empfangene Anfragen
 	const recvSection = document.createElement("div");
 	recvSection.className = "flex-1";
 	recvSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.receivedTitle, LANGUAGE)}</h3>`;
@@ -481,7 +478,6 @@ function renderFriendRequests(
 		});
 	}
 
-	// Rechts: Gesendete Anfragen
 	const sendSection = document.createElement("div");
 	sendSection.className = "flex-1";
 	sendSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.sentTitle, LANGUAGE)}</h3>`;
@@ -503,8 +499,6 @@ function renderFriendRequests(
 	container.appendChild(wrapper);
 }
 
-
-// Hilfsfunktion, jetzt mit einem zusätzlichen Parameter für Richtung
 function createRequestBox(
 	request: RequestInfo,
 	canRespond: boolean,
@@ -554,8 +548,6 @@ function createRequestBox(
 		}
 	}
 
-
-	// Status-Text & Stil je nach status
 	const statusColorMap: Record<string, string> = {
 		nothandled: "text-gray-400 italic",
 		accepted: "text-green-600 font-semibold",
