@@ -320,8 +320,6 @@ export async function getStatus(friendId) {
     });
     if (!res.ok)
         throw new Error(`Failed to check user status: ${res.status}`);
-    // const data = (await res.json()) as { status: number };
-    // return data.status;
     const data = await res.json();
     return Number(data.status) ? 1 : 0;
 }
@@ -338,7 +336,6 @@ export async function getMatchHistory(userId) {
         }
         const data = await res.json();
         console.log("Match History für User", userId, data.matchHistory);
-        // return the match history
         return data.matchHistory;
     }
     catch (err) {
