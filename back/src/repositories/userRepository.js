@@ -60,11 +60,21 @@ function getFriends(userId) {
 	`).all(userId)
 }
 
+function isUserBlockedByFriend(friendId, userId) {
+    return db.prepare(`
+        SELECT EXISTS(
+            SELECT 1 FROM blocks
+            WHERE blocker_id = ? AND blocked_id = ?
+        ) AS blocked
+    `).get(friendId, userId);
+}
+
 module.exports = {
     getUserById,
     getFriendsInfoByUserId,
     getAllUsers,
     isFriend,
     getFriends,
+    isUserBlockedByFriend,
 }
 
