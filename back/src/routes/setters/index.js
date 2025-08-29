@@ -1,4 +1,4 @@
-const settersController = require('../../controller/setters');
+const settersController = require('../../controllers/setters');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {

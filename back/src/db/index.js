@@ -18,15 +18,15 @@ function runScriptsFromDir(dir) {
   });
 }
 
-console.log('📂 Erstelle Tabellen...');
+console.log('📂 Creating tables...');
 runScriptsFromDir('./schemes');
 
-console.log('🌱 Führe Seeds aus...');
+console.log('🌱 Running initial user seeds...');
 require('./seeds/init_user.js');
 
-console.log('🌱 Führe Match-Seeds aus...');
+console.log('🌱 Running match seeds...');
 require('./seeds/init_matches.js');
 
-console.log('✅ DB-Setup abgeschlossen.');
+console.log('✅ Database setup complete.');
 
 module.exports = db;

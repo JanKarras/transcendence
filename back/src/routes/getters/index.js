@@ -1,4 +1,4 @@
-const gettersController = require('../../controller/getters');
+const gettersController = require('../../controllers/getters');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {

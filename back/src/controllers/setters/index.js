@@ -1,4 +1,5 @@
 const db = require("../../db");
+const userUtil = require("../../utils/userUtil");
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const transporter = require("../../email")
@@ -7,26 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const logger = require('../../logger/logger');
 const fs = require('fs');
 const path = require('path');
-
-function getUserIdFromRequest(req) {
-	try {
-		const token = req.cookies?.auth_token;
-
-		if (!token) {
-			return null;
-		}
-
-		const payload = jwt.verify(token, JWT_SECRET);
-
-		if (payload && typeof payload.id === 'number') {
-			return payload.id;
-		}
-
-		return null;
-	} catch(err) {
-		return null;
-	}
-}
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -304,7 +285,7 @@ exports.two_fa_api = async (request, reply) => {
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 exports.updateUser = async function (req, reply) {
-	const userId = getUserIdFromRequest(req);
+	const userId = await userUtil.getUserIdFromRequest(req);
 	if (!userId) {
 		return reply.code(401).send({ success: false, error: "Not authenticated" });
 	}
@@ -435,7 +416,7 @@ exports.handleAcceptRequest = async function (req, reply) {
 
 	try {
 		const transaction = db.transaction(() => {
-			const userId = getUserIdFromRequest(req);
+			const userId = userUtil.getUserIdFromRequest(req);
 			if (!userId) {
 				return reply.code(401).send({ error: "Not authenticated" });
 			}
@@ -486,7 +467,7 @@ exports.handleDeclineRequest = async function (req, reply) {
 		return reply.code(400).send({ error: "Request ID missing" });
 	}
 
-	const userId = getUserIdFromRequest(req);
+	const userId = userUtil.getUserIdFromRequest(req);
 	if (!userId) {
 		return reply.code(401).send({ error: "Not authenticated" });
 	}
@@ -522,7 +503,7 @@ exports.removeFriend = async function (req, reply) {
 		return reply.code(400).send({ error: "friendUsername is required" });
 	}
 
-	const userId = getUserIdFromRequest(req);
+	const userId = userUtil.getUserIdFromRequest(req);
 	if (!userId) {
 		return reply.code(401).send({ error: "Not authenticated" });
 	}
