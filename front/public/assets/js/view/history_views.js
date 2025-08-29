@@ -47,7 +47,7 @@ function getViewAndParamsFromHash() {
     const hash = window.location.hash;
     if (!hash)
         return null;
-    const [viewPart, paramPart] = hash.substring(1).split('?'); // z.B. ['login', 'foo=bar']
+    const [viewPart, paramPart] = hash.substring(1).split('?');
     if (viewPart in renderers) {
         const params = paramPart ? new URLSearchParams(paramPart) : null;
         return { view: viewPart, params };
