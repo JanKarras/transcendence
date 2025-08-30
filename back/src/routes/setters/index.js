@@ -1,15 +1,17 @@
-const settersController = require('../../controllers/setters');
+const userController = require('../../controllers/userController');
+const authController = require('../../controllers/authController');
+const requestController = require('../../controllers/requestController');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {
-  fastify.post('/createUser', settersController.createUser);
-  fastify.post('/login', settersController.login);
-  fastify.post('/logout', settersController.logout);
-  fastify.post('/emailValidation', settersController.emailValidation);
-  fastify.post('/two_fa_api', settersController.two_fa_api);
-  fastify.post('/updateUser', {preHandler: authMiddleware}, settersController.updateUser);
-	fastify.post('/sendFriendRequest', {preHandler: authMiddleware}, settersController.sendFriendRequest);
-	fastify.post('/handleAcceptRequest', {preHandler: authMiddleware}, settersController.handleAcceptRequest);
-	fastify.post('/handleDeclineRequest', {preHandler: authMiddleware}, settersController.handleDeclineRequest);
-	fastify.post('/removeFriend', {preHandler: authMiddleware}, settersController.removeFriend);
+  fastify.post('/createUser', userController.createUser);
+  fastify.post('/login', authController.login);
+  fastify.post('/logout', authController.logout);
+  fastify.post('/emailValidation', authController.emailValidation);
+  fastify.post('/two_fa_api', authController.two_fa_api);
+  fastify.post('/updateUser', {preHandler: authMiddleware}, userController.updateUser);
+  fastify.post('/sendFriendRequest', {preHandler: authMiddleware}, requestController.sendFriendRequest);
+  fastify.post('/handleAcceptRequest', {preHandler: authMiddleware}, requestController.handleAcceptRequest);
+  fastify.post('/handleDeclineRequest', {preHandler: authMiddleware}, requestController.handleDeclineRequest);
+  fastify.post('/removeFriend', {preHandler: authMiddleware}, userController.removeFriend);
 };

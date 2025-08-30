@@ -18,7 +18,42 @@ function getReceivedRequestsByUserId(userId) {
     `).all(userId);
 }
 
+function doesFriendRequestExist(senderId, receiverId) {
+    return db.prepare(`
+        SELECT * FROM requests
+        WHERE sender_id = ? AND receiver_id = ? AND type = 'friend'
+    `).get(senderId, receiverId)
+}
+
+function addFriendRequest(senderId, receiverId) {
+    return db.prepare(`
+			INSERT INTO requests (sender_id, receiver_id, type)
+			VALUES (?, ?, 'friend')
+		`).run(senderId, receiverId);
+}
+
+function getRequestById(id) {
+    return db.prepare('SELECT sender_id, receiver_id, status FROM requests WHERE id = ?').get(id);
+}
+
+function updateRequestStatusById(status, id) {
+    db.prepare('UPDATE requests SET status = ? WHERE id = ?').run(status, id)
+}
+
+function deleteRequestBySenderIdAndReceiverId(senderId, receiverId) {
+    db.prepare(`
+			DELETE FROM requests
+			WHERE (sender_id = ? AND receiver_id = ?)
+			OR (sender_id = ? AND receiver_id = ?)
+		`).run(senderId, receiverId, receiverId, senderId);
+}
+
 module.exports = {
     getSentRequestsByUserId,
     getReceivedRequestsByUserId,
+    doesFriendRequestExist,
+    addFriendRequest,
+    getRequestById,
+    updateRequestStatusById,
+    deleteRequestBySenderIdAndReceiverId
 }

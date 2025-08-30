@@ -22,12 +22,10 @@ function getFriendsInfoByUserId(userId) {
     `).all(userId, userId);
 }
 
-function getAllUsers() {
-    return db.prepare(`
-        SELECT id, username, first_name, last_name, age, path, last_seen 
-        FROM users 
-        WHERE validated = 1
-    `).all();
+function addFriend(userId, friendId) {
+    const insertFriend = db.prepare('INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)');
+    insertFriend.run(userId, friendId);
+    insertFriend.run(friendId, userId);
 }
 
 function isFriend(userId, id) {
@@ -60,6 +58,14 @@ function getFriends(userId) {
 	`).all(userId)
 }
 
+function deleteFriends(userId, friendId) {
+    return db.prepare(`
+			DELETE FROM friends
+			WHERE (user_id = ? AND friend_id = ?)
+			OR (user_id = ? AND friend_id = ?)
+		`).run(userId, friendId, friendId, userId);
+}
+
 function isUserBlockedByFriend(friendId, userId) {
     return db.prepare(`
         SELECT EXISTS(
@@ -69,12 +75,68 @@ function isUserBlockedByFriend(friendId, userId) {
     `).get(friendId, userId);
 }
 
+function getAllUsers() {
+    return db.prepare(`
+        SELECT id, username, first_name, last_name, age, path, last_seen 
+        FROM users 
+        WHERE validated = 1
+    `).all();
+}
+
+function addUser(cleanUsername, email, hashedPw) {
+    return  db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)')
+        .run(cleanUsername, email, hashedPw);
+}
+
+function getUserByEmail(email) {
+    return db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+}
+
+function getUserByUsername(username) {
+    return db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+}
+
+function getUserIdByUsername(username) {
+    return db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+}
+
+function updateUserAfterValidation(userId) {
+    db.prepare('UPDATE users SET validated = 1 WHERE id = ?').run(userId);
+}
+
+function updateUserFirstName(firstName, userId) {
+    db.prepare('UPDATE users SET first_name = ? WHERE id = ?').run(firstName, userId)
+}
+
+function updateUserLastName(lastName, userId) {
+    db.prepare('UPDATE users SET last_name = ? WHERE id = ?').run(lastName, userId)
+}
+
+function updateUserAge(age, userId) {
+    db.prepare('UPDATE users SET age = ? WHERE id = ?').run(age, userId)
+}
+
+function updateUserImageName(imageName, userId) {
+    db.prepare('UPDATE users SET path = ? WHERE id = ?').run(imageName, userId)
+}
+
 module.exports = {
     getUserById,
     getFriendsInfoByUserId,
-    getAllUsers,
+    addFriend,
     isFriend,
     getFriends,
+    deleteFriends,
+    getAllUsers,
     isUserBlockedByFriend,
+    addUser,
+    getUserByEmail,
+    getUserByUsername,
+    updateUserAfterValidation,
+    updateUserAge,
+    updateUserImageName,
+    updateUserFirstName,
+    updateUserLastName,
+    getUserIdByUsername
 }
 

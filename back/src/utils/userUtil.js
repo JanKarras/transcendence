@@ -15,7 +15,7 @@ function getUserIdFromRequest(req) {
         }
 
         return null;
-    } catch(err) {
+    } catch (err) {
         return null;
     }
 }

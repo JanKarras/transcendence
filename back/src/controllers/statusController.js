@@ -1,5 +1,5 @@
 const statusRepository = require("../repositories/statusRepository");
-const validator = require("../validator/validator");
+const validator = require("../utils/validator");
 
 exports.getStatus = async (req, reply) => {
     const userId = req.user?.id;

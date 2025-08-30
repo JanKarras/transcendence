@@ -1,5 +1,5 @@
 db.prepare(`
-  CREATE TABLE IF NOT EXISTS validation_codes (
+  CREATE TABLE IF NOT EXISTS verification_codes (
   	id INTEGER PRIMARY KEY AUTOINCREMENT,
   	user_id INTEGER NOT NULL,
   	code TEXT NOT NULL UNIQUE,
