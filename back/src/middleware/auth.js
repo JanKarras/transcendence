@@ -9,7 +9,7 @@ function updateLastSeen(userId) {
 
 async function authMiddleware(request, reply) {
   const token = request.cookies.auth_token;
-  logger.info(`Middleware: Checking token for user`);
+  //logger.info(`Middleware: Checking token for user`);
 
   if (!token) {
     logger.warn(`Middleware: No token found for user`);
@@ -19,7 +19,7 @@ async function authMiddleware(request, reply) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     request.user = decoded;
-    logger.info(`Middleware: Token verified for user: ${decoded.id}`);
+    //logger.info(`Middleware: Token verified for user: ${decoded.id}`);
 
 	updateLastSeen(decoded.id);
 

@@ -2,6 +2,7 @@ import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headern
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
 import { Friend, UserInfo, UserStats } from "../constants/structs.js";
+import { registerUser } from "../login/register.js";
 import { getUser, logOutApi } from "../remote_storage/remote_storage.js";
 import { showFriendsDropdown } from "../templates/freinds_menu.js";
 import { buildMenuItems, showMenu } from "../templates/menu.js";
@@ -17,6 +18,8 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		return;
 	}
 
+		connecy();
+	return;
 	render_header();
 
 	const html = `
@@ -76,7 +79,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		</div>`
 
 
-	bodyContainer.innerHTML = html;
+	//bodyContainer.innerHTML = html;
 
 	const online = document.getElementById("online")
 
@@ -85,3 +88,51 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	const matches = document.getElementById("matches")
 
 }
+
+async function connecy() {
+  const wsUrl = `wss://${location.host}/api/wsGame/webSocketGame?token=${localStorage.getItem('auth_token')}`;
+const socket = new WebSocket(wsUrl);
+	if (!bodyContainer) {
+		return;
+
+	}
+	bodyContainer.innerHTML = "<button id='sendHelloBtn'>Send Hello</button>"
+
+
+  // Promise, das resolved sobald die Verbindung offen ist
+  await new Promise<void>((resolve, reject) => {
+    socket.onopen = () => {
+      console.log(`✅ WebSocket connected to ${wsUrl}`);
+      resolve();
+    };
+    socket.onerror = (err) => {
+      console.error(`⚠️ WebSocket error:`, err);
+      reject(err);
+    };
+  });
+
+  // jetzt kann gesendet werden
+  socket.send("hello");
+  console.log("📤 Message sent: hello");
+
+  socket.onmessage = (event) => {
+    console.log(`📩 Message from server:`, event.data);
+  };
+
+  socket.onclose = (event) => {
+    console.warn(
+      `❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`
+    );
+  };
+
+  	const btn = document.getElementById('sendHelloBtn');
+  console.log(btn)
+	btn?.addEventListener('click', () => {
+		console.log(socket)
+		console.log("renemenenenenenen")
+		socket.send('renemenenenenenen')
+	})
+}
+
+
+
