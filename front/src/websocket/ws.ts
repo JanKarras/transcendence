@@ -51,7 +51,7 @@ export async function connectWebSocket() {
         console.warn('WebSocket: No auth token found in cookies.');
     }
 
-    const wsUrl = `wss://${location.host}/ws/?token=${token}`;
+    const wsUrl = `wss://${location.host}/ws/chat?token=${token}`;
 
     // const token = await ensureToken();
     // if (!token) {
@@ -64,7 +64,7 @@ export async function connectWebSocket() {
     // console.log('WS connect with token:', token.slice(0, 12) + '…');
 
     socket = new WebSocket(wsUrl);
-
+	
     socket.onopen = () => {
         console.log('🔌 WebSocket connected', currentId);
         isConnecting = 1;

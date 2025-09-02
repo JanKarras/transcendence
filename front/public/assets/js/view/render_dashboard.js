@@ -7,8 +7,8 @@ export async function render_dashboard(params) {
         console.error("bodyContainer Container missing");
         return;
     }
-    connecy();
-    return;
+    //connecy();
+    //return;
     render_header();
     const html = `
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
@@ -65,13 +65,13 @@ export async function render_dashboard(params) {
 				</a>
 			</div>
 		</div>`;
-    //bodyContainer.innerHTML = html;
+    bodyContainer.innerHTML = html;
     const online = document.getElementById("online");
     const tourn = document.getElementById("tourn");
     const matches = document.getElementById("matches");
 }
 async function connecy() {
-    const wsUrl = `wss://${location.host}/api/wsGame/webSocketGame?token=${localStorage.getItem('auth_token')}`;
+    const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
     const socket = new WebSocket(wsUrl);
     if (!bodyContainer) {
         return;

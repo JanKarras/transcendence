@@ -18,8 +18,8 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		return;
 	}
 
-		connecy();
-	return;
+	//connecy();
+	//return;
 	render_header();
 
 	const html = `
@@ -79,7 +79,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		</div>`
 
 
-	//bodyContainer.innerHTML = html;
+	bodyContainer.innerHTML = html;
 
 	const online = document.getElementById("online")
 
@@ -90,7 +90,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 }
 
 async function connecy() {
-  const wsUrl = `wss://${location.host}/api/wsGame/webSocketGame?token=${localStorage.getItem('auth_token')}`;
+  const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 const socket = new WebSocket(wsUrl);
 	if (!bodyContainer) {
 		return;
