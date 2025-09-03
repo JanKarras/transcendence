@@ -11,10 +11,12 @@ import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { render_chat } from "./render_chat.js";
 import { render_friend_profile } from "./render_friend_profile.js";
+import { render_matchmaking } from "./render_matchmaking.js";
+import { render_game } from "./render_game.js";
 
-export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile';
+export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game';
 
-const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile'];
+const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game'];
 
 type ViewRenderFunction = (params: URLSearchParams | null) => void;
 
@@ -27,7 +29,9 @@ const renderers: Record<View, ViewRenderFunction> = {
   profile : render_profile_settings,
   friends : render_friends,
   chat : render_chat,
-  friend_profile : render_friend_profile
+  friend_profile : render_friend_profile,
+  matchmaking : render_matchmaking,
+  game : render_game
 };
 
 let currentView: View | null = null;

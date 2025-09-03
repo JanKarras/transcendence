@@ -45,7 +45,7 @@ export async function render_header() {
 	}
 	friendsCotnainer.innerHTML = t(lang.friends, LANGUAGE)
 
-	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa") {
+	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa" && pos !== "matchmaking") {
 		headernavs.classList.remove('hidden');
 	} else {
 		headernavs.classList.add('hidden');

@@ -2,8 +2,12 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 function getUserIdFromRequest(req) {
+    const token = req.cookies?.auth_token;
+    return getUserIdFromToken(token);
+}
+
+function getUserIdFromToken(token) {
     try {
-        const token = req.cookies?.auth_token;
         if (!token) {
             return null;
         }
@@ -22,4 +26,5 @@ function getUserIdFromRequest(req) {
 
 module.exports = {
     getUserIdFromRequest,
+    getUserIdFromToken
 }
