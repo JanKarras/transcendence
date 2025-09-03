@@ -1,10 +1,10 @@
-import { GameState } from './GameState';
+import { GameInfo } from './GameInfo';
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import type { PaddleSizeOption } from './GameConfig.js';
 import { PaddleSizes } from './GameConfig.js';
 
-export function updateGameState(state: GameState, canvasHeight: number): void {
+export function updateGameInfo(state: GameInfo, canvasHeight: number): void {
   const ball = state.ball;
   moveBall(ball);
   bounceBall(ball, canvasHeight);
@@ -24,7 +24,7 @@ function bounceBall(ball: Ball, canvasHeight: number): void {
   }
 }
 
-function movePaddles(state: GameState, canvasHeight: number): void {
+function movePaddles(state: GameInfo, canvasHeight: number): void {
   // Move paddles using their velocity vector
   state.paddleLeft.position.y += state.paddleLeft.velocity.y;
   state.paddleRight.position.y += state.paddleRight.velocity.y;
@@ -36,7 +36,7 @@ function movePaddles(state: GameState, canvasHeight: number): void {
   }
 }
 
-function handleCollisions(state: GameState): void {
+function handleCollisions(state: GameInfo): void {
   const { ball, paddleLeft, paddleRight } = state;
   const bx = ball.position.x;
   const by = ball.position.y;
@@ -62,7 +62,7 @@ function handleCollisions(state: GameState): void {
   }
 }
 
-function handleScoring(state: GameState): void {
+function handleScoring(state: GameInfo): void {
   const ball = state.ball;
   const bx = ball.position.x;
 

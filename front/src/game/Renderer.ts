@@ -1,8 +1,7 @@
-import { GameState } from './GameState.js';
+import { GameInfo } from './GameInfo.js';
 
-export function renderFrame(ctx: CanvasRenderingContext2D, state: GameState): void {
+export function renderFrame(ctx: CanvasRenderingContext2D, state: GameInfo): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
   // Draw ball
   ctx.beginPath();
   ctx.arc(state.ball.position.x, state.ball.position.y, state.ball.radius, 0, Math.PI * 2);

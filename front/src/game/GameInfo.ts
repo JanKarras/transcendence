@@ -4,7 +4,7 @@ import type { PaddleSizeOption } from './GameConfig.js';
 import { PaddleSizes } from './GameConfig.js';
 import type {Player} from './Player.js'
 
-export interface GameState {
+export interface GameInfo {
   ball: Ball;
   paddleLeft: Paddle;
   paddleRight: Paddle;
@@ -13,7 +13,7 @@ export interface GameState {
   end: boolean;
 }
 
-export function createInitialState( paddleSize: PaddleSizeOption = 'medium',  ): GameState {
+export function createInitialState( paddleSize: PaddleSizeOption = 'medium',  ): GameInfo {
 	const baseSpeed = { x: 5, y: 4 }
 	const angle = (Math.random() - 0.5) * (Math.PI / 2);
 

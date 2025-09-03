@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
-
+const userUtilsRepo = require("../repositories/userUtilsRepository")
 function getUserIdFromRequest(req) {
     const token = req.cookies?.auth_token;
     return getUserIdFromToken(token);
@@ -24,7 +24,13 @@ function getUserIdFromToken(token) {
     }
 }
 
+function getUser(userId) {
+    const res = userUtilsRepo.getUserById(userId);
+    return (res);
+}
+
 module.exports = {
     getUserIdFromRequest,
-    getUserIdFromToken
+    getUserIdFromToken,
+    getUser
 }

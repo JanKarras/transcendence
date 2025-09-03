@@ -3,8 +3,11 @@ import { renderFrame } from "../game/Renderer.js";
 import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
+import { GameInfo } from "../game/GameInfo.js"
 
 let socket: WebSocket | null = null;
+let gameInfo : GameInfo;
+let gameState = 0;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
@@ -70,29 +73,34 @@ export async function render_game(params: URLSearchParams | null) {
 	canvas.width = 800;
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
-	connect(ctx);
+
+	
+
+	connect();
 
 	if (!ctx) {
 		// disconnect?
 		throw new Error('Canvas 2D context not supported');
 	}
 
-	// Setup keyboard controls for paddles -->> maybe after countdown?
-	// const keysPressed = new Set<string>();
+	function enablePaddles (){
+		window.addEventListener('keydown', (e) => {
+			console.log(e)
+			if (e.key === 'ArrowUp') {
+				socket?.send('movePaddleUp');
+				console.log("movePaddleUp send");
+			} else if (e.key === 'ArrowDown') {
+				console.log("movePaddleUp send")
+				socket?.send('movePaddleDown');
+			}
+		});
 
-	window.addEventListener('keydown', (e) => {
-		// keysPressed.add(e.key);
-		socket?.send('movePaddle');
-	});
-
-	window.addEventListener('keyup', (e) => {
-		// keysPressed.delete(e.key);
-		socket?.send('stopPaddle');
-	});
-
+		window.addEventListener('keyup', (e) => {
+			socket?.send('stopPaddle');
+		});
+	}
 	
-
-	/* 	function startCountdown() {
+	function startCountdown() {
 		let counter = 5;
 		countdownEl.textContent = counter.toString();
 		countdownEl.classList.remove('hidden');
@@ -104,65 +112,93 @@ export async function render_game(params: URLSearchParams | null) {
 			} else {
 				clearInterval(interval);
 				countdownEl.classList.add('hidden');
-				gameLoop(); // start the game after countdown
+				socket?.send("countdownFinished")
+				console.log("countdownFinished");
+				enablePaddles();
+				gameLoop();
 			}
 		}, 1000);
-	} */
+	}
 
-/* 	function gameLoop() {
-		updateGameState(state, canvas.height);
-		render(ctx, state);
-		if (state.end) {
+	function gameLoop() {
+		// calculate estimation
+		renderFrame(ctx, gameInfo);
+		if (gameState >= 4) {
 			showWinner();
 			return; // stop the loop
 		}
 		requestAnimationFrame(gameLoop);
 	}
- */
-/* 	function showWinner() {
+
+	function showWinner() {
 		const winnerModal = document.getElementById('winnerModal')!;
 		const winnerText = document.getElementById('winnerText')!;
 		const playAgainBtn = document.getElementById('playAgainBtn')!;
 		const exitBtn = document.getElementById('exitBtn')!;
 
 		// Determine winner
-		const winnerName = state.playerLeft.score > state.playerRight.score ? state.playerLeft.name : state.playerRight.name;
+		const winnerName = gameInfo.playerLeft.score > gameInfo.playerRight.score ? gameInfo.playerLeft.name : gameInfo.playerRight.name;
 		winnerText.textContent = `${winnerName} wins! 🎉`;
 
 		winnerModal.classList.remove('hidden');
 
 		playAgainBtn.onclick = () => {
-			winnerModal.classList.add('hidden');
-			resetGame();
-			startCountdown();
+			// disconnect
+			navigateTo("matchmaking");
 		};
 
 		exitBtn.onclick = () => {
 			navigateTo("dashboard");
 		};
-	} */
-
-/* 	function resetGame() {
-		state.playerLeft.score = 0;
-		state.playerRight.score = 0;
-
-		state.paddleLeft.position.y = canvas.height / 2;
-		state.paddleRight.position.y = canvas.height / 2;
-
-		// Reset ball to center
-		state.ball.position.x = canvas.width / 2;
-		state.ball.position.y = canvas.height / 2;
-		state.ball.velocity.x = state.ballSpeedOption === 'medium' ? 3 : 5;
-		state.ball.velocity.y = state.ballSpeedOption === 'medium' ? 3 : 5;
-
-		state.end = false;
-
-		// Update scores in UI
-		document.getElementById('playerLeftScore')!.textContent = state.playerLeft.score.toString();
-		document.getElementById('playerRightScore')!.textContent = state.playerRight.score.toString();
 	}
- */
 
+
+	async function connect() {
+
+		const token = await getFreshToken();
+		console.log(token)
+		const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
+		socket = new WebSocket(wsUrl);	
+		await new Promise<void>((resolve, reject) => {
+		if (!socket) return reject("Socket not created");	
+		socket.onopen = () => {
+			console.log(`✅ WebSocket connected to ${wsUrl}`);
+			resolve();
+		};
+		socket.onerror = (err) => {
+			console.error(`⚠️ WebSocket error:`, err);
+			reject(err);
+		};
+		});	
+		socket.send("waiting");
+		
+		socket.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+		switch (data.type) {
+			case 'startGame':
+				gameState = data.gameState;
+				gameInfo = data.gameInfo;
+				renderFrame(ctx, gameInfo)
+				startCountdown();
+				break;
+			case 'sendFrames':
+				gameInfo = data.gameInfo;
+				gameState = data.gameState;
+				break;
+/* 			case 'partnerLeft':
+				// winner modal + 
+				break;
+			case 'gameover':
+				break; */
+			default:
+			
+		}
+		};	
+		socket.onclose = (event) => {
+		console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
+		};
+	}
+}
 
 /* 	function updatePaddleVelocity(state: GameState, keys: Set<string>) {
 		// Reset velocities
@@ -176,54 +212,3 @@ export async function render_game(params: URLSearchParams | null) {
 			state.paddleRight.velocity.y = state.paddleRight.speed;
 		}
 	} */
-}
-
-async function connect(ctx: CanvasRenderingContext2D) {
-
-	const token = await getFreshToken();
-	console.log(token)
-	const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-	socket = new WebSocket(wsUrl);	
-	await new Promise<void>((resolve, reject) => {
-	  if (!socket) return reject("Socket not created");	
-	  socket.onopen = () => {
-		console.log(`✅ WebSocket connected to ${wsUrl}`);
-		resolve();
-	  };
-	  socket.onerror = (err) => {
-		console.error(`⚠️ WebSocket error:`, err);
-		reject(err);
-	  };
-	});	
-	socket.send("matchmaking");
-	
-	socket.onmessage = (event) => {
-		const data = JSON.parse(event.data);
-		console.log(event.data);
-	  switch (data.type) {
-		case 'countdown':
-			break;
-		case 'start':
-			// enable paddlemovement
-			// rendern first state
-			break;
-		case 'frame':
-			// const gameState = data??
-			// renderFrame(ctx, gameState);
-			break;
-		case 'partnerLeft':
-			break;
-		case 'gameover':
-			break;
-		default:
-		
-	  }
-	};	
-	socket.onclose = (event) => {
-	  console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
-	};
-}
-
-
-
-
