@@ -44,17 +44,25 @@ function getFriends(userId) {
 			u.id,
 			u.username,
 			u.last_seen,
+			CASE WHEN b.blocked_id IS NOT NULL THEN 1 ELSE 0 END AS blocked,
 			CASE
-				WHEN b.blocked_id IS NOT NULL THEN 1
+				WHEN EXISTS (
+				SELECT 1
+				FROM messages m
+				WHERE m.sender_id = u.id
+					AND m.receiver_id = f.user_id
+					AND m.is_read = 1
+				LIMIT 1
+				) THEN 1
 				ELSE 0
-			END AS blocked
-		FROM friends f
-		JOIN users u
+			END AS has_unread
+			FROM friends f
+			JOIN users u
 			ON u.id = f.friend_id
-		LEFT JOIN blocks b
+			LEFT JOIN blocks b
 			ON b.blocker_id = f.user_id
-		   AND b.blocked_id = f.friend_id
-		WHERE f.user_id = ?
+			AND b.blocked_id = f.friend_id
+			WHERE f.user_id = ?;
 	`).all(userId)
 }
 
@@ -68,17 +76,24 @@ function deleteFriends(userId, friendId) {
 
 function isUserBlockedByFriend(friendId, userId) {
     return db.prepare(`
-        SELECT EXISTS(
-            SELECT 1 FROM blocks
-            WHERE blocker_id = ? AND blocked_id = ?
-        ) AS blocked
-    `).get(friendId, userId);
+          SELECT CASE
+    WHEN EXISTS(
+        SELECT 1 FROM blocks
+        WHERE blocker_id = ? AND blocked_id = ?
+    ) THEN 2
+    WHEN EXISTS(
+        SELECT 1 FROM blocks
+        WHERE blocker_id = ? AND blocked_id = ?
+    ) THEN 1
+    ELSE 0
+END AS blocked
+    `).get(friendId, userId, userId, friendId);
 }
 
 function getAllUsers() {
     return db.prepare(`
-        SELECT id, username, first_name, last_name, age, path, last_seen 
-        FROM users 
+        SELECT id, username, first_name, last_name, age, path, last_seen
+        FROM users
         WHERE validated = 1
     `).all();
 }

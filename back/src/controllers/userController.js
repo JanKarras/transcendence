@@ -102,8 +102,8 @@ exports.getBlocked = async (req, reply) => {
         return reply.code(400).send({ error: 'friendId must be a positive integer' });
     }
 
-    const blockedByFriend = await userRepository.isUserBlockedByFriend(friendId, userId);
-    return reply.send({ blocked: !!blockedByFriend.blocked });
+    const row = await userRepository.isUserBlockedByFriend(friendId, userId);
+    return reply.send({ blocked: row.blocked });
 };
 
 exports.createUser = async (request, reply) => {

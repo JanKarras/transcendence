@@ -341,9 +341,9 @@ export async function getBlocked(friendId: number) {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
-    if (!res.ok) throw new Error(`Failed to check block status: ${res.status}`);
-    const data = (await res.json()) as { blocked: boolean };
-    return !!data.blocked;
+    if (!res.ok) throw Error(`Failed to check block status: ${res.status}`);
+    const data = (await res.json()) as { blocked: number };
+    return data.blocked;
 }
 
 export async function getStatus(friendId: number): Promise<number> {
@@ -381,7 +381,19 @@ export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry
 	}
 }
 
-
+export async function checkUnread(friendId: number): Promise<number> {
+    try {
+        const res = await fetch(`/api/get/unread/${friendId}`, {
+            credentials: 'include',
+        });
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+        const data = await res.json();
+        return data.has_unread ? 1 : 0;
+    } catch (e) {
+        console.error('Ошибка при получении has_unread:', e);
+        return 0;
+    }
+}
 
 export const api = {
 	createUser,

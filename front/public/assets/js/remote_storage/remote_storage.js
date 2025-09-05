@@ -308,9 +308,9 @@ export async function getBlocked(friendId) {
         headers: { Accept: 'application/json' },
     });
     if (!res.ok)
-        throw new Error(`Failed to check block status: ${res.status}`);
+        throw Error(`Failed to check block status: ${res.status}`);
     const data = (await res.json());
-    return !!data.blocked;
+    return data.blocked;
 }
 export async function getStatus(friendId) {
     const res = await fetch(`/api/get/status/${friendId}`, {
@@ -341,6 +341,21 @@ export async function getMatchHistory(userId) {
     catch (err) {
         console.error("Error fetching match history:", err);
         return [];
+    }
+}
+export async function checkUnread(friendId) {
+    try {
+        const res = await fetch(`/api/get/unread/${friendId}`, {
+            credentials: 'include',
+        });
+        if (!res.ok)
+            throw new Error(`HTTP error: ${res.status}`);
+        const data = await res.json();
+        return data.has_unread ? 1 : 0;
+    }
+    catch (e) {
+        console.error('Ошибка при получении has_unread:', e);
+        return 0;
     }
 }
 export const api = {

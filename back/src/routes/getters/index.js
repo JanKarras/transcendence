@@ -18,6 +18,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/status/:friendId',{ preHandler: authMiddleware },statusController.getStatus);
 	fastify.get('/token',{ preHandler: authMiddleware },authController.getToken);
 	fastify.get('/getMatchHistory',{ preHandler: authMiddleware },matchController.getMatchHistory);
+	fastify.get('/unread/:friendId',{ preHandler: authMiddleware }, messageController.getUnread);
 };
 
 

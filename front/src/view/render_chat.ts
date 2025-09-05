@@ -1,5 +1,5 @@
 import { bodyContainer } from "../constants/constants.js";
-import { connectWebSocket, friendChat, refreshFriendsList } from "../websocket/ws.js";
+import { connectWebSocket, friendChat, refreshFriendsList, connectDialog } from "../websocket/ws.js";
 import { render_header } from "./render_header.js";
 
 export async function render_chat(params: URLSearchParams | null) {
@@ -30,6 +30,12 @@ export async function render_chat(params: URLSearchParams | null) {
 
     connectWebSocket();
 
+    const storedId = localStorage.getItem('selectedFriendId');
+    if (storedId){
+        connectDialog( parseInt(storedId), '');
+        localStorage.removeItem('selectedFriendId');
+    }
+
     const sendBtn = document.getElementById('sendBtn') as HTMLButtonElement;
     sendBtn.addEventListener('click', () => {
         const input = document.getElementById('chatInput') as HTMLInputElement;
@@ -39,4 +45,6 @@ export async function render_chat(params: URLSearchParams | null) {
             input.value = '';
         }
     });
+
+
 }
