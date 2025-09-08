@@ -39,32 +39,34 @@ function isFriend(userId, id) {
 }
 
 function getFriends(userId) {
-    return  db.prepare(`
-		SELECT
-			u.id,
-			u.username,
-			u.last_seen,
-			CASE WHEN b.blocked_id IS NOT NULL THEN 1 ELSE 0 END AS blocked,
-			CASE
-				WHEN EXISTS (
-				SELECT 1
-				FROM messages m
-				WHERE m.sender_id = u.id
-					AND m.receiver_id = f.user_id
-					AND m.is_read = 1
-				LIMIT 1
-				) THEN 1
-				ELSE 0
-			END AS has_unread
-			FROM friends f
-			JOIN users u
-			ON u.id = f.friend_id
-			LEFT JOIN blocks b
-			ON b.blocker_id = f.user_id
-			AND b.blocked_id = f.friend_id
-			WHERE f.user_id = ?;
-	`).all(userId)
+    return db.prepare(`
+        SELECT
+            u.id,
+            u.username,
+            u.last_seen,
+            u.path,
+            CASE WHEN b.blocked_id IS NOT NULL THEN 1 ELSE 0 END AS blocked,
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM messages m
+                    WHERE m.sender_id = u.id
+                      AND m.receiver_id = f.user_id
+                      AND m.is_read = 1
+                    LIMIT 1
+                ) THEN 1
+                ELSE 0
+            END AS has_unread
+        FROM friends f
+        JOIN users u
+          ON u.id = f.friend_id
+        LEFT JOIN blocks b
+          ON b.blocker_id = f.user_id
+          AND b.blocked_id = f.friend_id
+        WHERE f.user_id = ?;
+    `).all(userId);
 }
+
 
 function deleteFriends(userId, friendId) {
     return db.prepare(`

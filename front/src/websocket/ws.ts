@@ -5,6 +5,7 @@ import {
     getStatus,
     getFreshToken,
 } from '../remote_storage/remote_storage.js';
+import { navigateTo } from '../view/history_views.js';
 
 let socket: WebSocket | null = null;
 let isConnecting = 0;
@@ -25,6 +26,7 @@ interface Friend {
     online: boolean;
     blocked: boolean;
     has_unread: number;
+	path: string;
 }
 
 interface Message {
@@ -197,18 +199,21 @@ export async function connectWebSocket() {
             return;
         }
         if (msg.type === 'friend_status') {
-            const key = String(msg.userId);
-            const li = friendElById.get(key);
-            if (!li) return;
-            const nameSpan = li.querySelector<HTMLSpanElement>('.friend-name');
-            if (!nameSpan) return;
-            const username = li.dataset.name || '';
-            const online = Number(msg.status);
-            nameSpan.textContent = `${username} ${
-                online === 1 ? '(online)' : '(offline)'
-            }`;
-            return;
-        }
+    const key = String(msg.userId);
+    const li = friendElById.get(key);
+    if (!li) return;
+
+    const avatarWrapper = li.querySelector<HTMLDivElement>('.relative');
+    if (!avatarWrapper) return;
+
+    const statusDot = avatarWrapper.querySelector<HTMLSpanElement>('span');
+    if (!statusDot) return;
+
+    const online = Number(msg.status);
+    statusDot.className = `w-3 h-3 rounded-full border-2 border-[#0f0f2a] absolute bottom-0 right-0 ${
+        online === 1 ? 'bg-green-400' : 'bg-green-900'
+    }`;
+}
         if (msg.type === 'new_massage') {
             const key = String(msg.userId);
             const badge = friendBadgeById.get(key);
@@ -431,6 +436,40 @@ export async function connectDialog(
             }
         }
     });
+	const chatControls = document.getElementById('chatControls') as HTMLDivElement;
+chatControls.innerHTML = ''; // vorher leeren
+
+// --- Block/Unblock Button ---
+const blockBtn = document.createElement('button');
+const isBlocked = await blockedCheck(peerId) === 1;
+if (isBlocked) {
+    blockBtn.textContent = '🔓';
+    blockBtn.title = 'Unblock';
+    blockBtn.onclick = async () => {
+        await unblockUser(peerId);
+        await connectDialog(peerId, peerName); // Header neu rendern
+    };
+} else {
+    blockBtn.textContent = '🚫';
+    blockBtn.title = 'Block';
+    blockBtn.onclick = async () => {
+        await blockUser(peerId);
+        await connectDialog(peerId, peerName);
+    };
+}
+chatControls.appendChild(blockBtn);
+
+// --- Play/Invite Button ---
+const playBtn = document.createElement('button');
+playBtn.textContent = '🎮';
+playBtn.title = 'Invite to game';
+playBtn.onclick = async () => {
+    if (!friendId) return;
+    await inviteFriend(friendId, peerName);
+    inviteStatus = 1;
+    playBtn.disabled = true; // optional: Button nach Klick deaktivieren
+};
+chatControls.appendChild(playBtn);
 
 }
 
@@ -570,71 +609,93 @@ export async function renderFriendsList(friends: Friend[]): Promise<void> {
     const list = document.getElementById('friendsList') as HTMLUListElement;
     list.innerHTML = '';
     friendElById.clear();
+
     const statuses = await Promise.all(
-        friends.map((f) => getStatus(f.id).catch(() => 0)) // 0 = offline
+        friends.map((f) => getStatus(f.id).catch(() => 0))
     );
+
     friends.forEach((friend, i) => {
-        const li = document.createElement('li');
-        const key = String(friend.id);
-        li.dataset.id = key;
-        li.dataset.name = friend.username;
-        const isOnline = statuses[i] === 1;
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'friend-name';
-        nameSpan.textContent = `${friend.username} ${
-            isOnline ? '(online)' : '(offline)'
-        }`;
-        const badge = document.createElement('span');
-        badge.dataset.id = key;
-        badge.className = 'unread-badge';
-        badge.textContent = friend.has_unread ? ' 📩' : '';
-        friendBadgeById.set(key, badge);
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2 p-2 rounded hover:bg-[#1a1a3d]';
+    const key = String(friend.id);
+    li.dataset.id = key;
+    li.dataset.name = friend.username;
 
-        nameSpan.style.cursor = 'pointer';
-        nameSpan.onclick = () => {
-            connectDialog(friend.id, friend.username);
+    // Avatar Wrapper (relative)
+    const avatarWrapper = document.createElement('div');
+    avatarWrapper.className = 'relative w-8 h-8';
+
+    // Avatar
+    const avatar = document.createElement('img');
+    avatar.src = `/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}`;
+    avatar.alt = friend.username;
+    avatar.className = 'w-8 h-8 rounded-full object-cover cursor-pointer';
+
+    // Klick aufs Avatar öffnet Profil
+    avatar.onclick = () => {
+        openProfile(friend.id);
+    };
+
+    // Online-Punkt (absolute)
+    const isOnline = statuses[i] === 1;
+    const statusDot = document.createElement('span');
+    statusDot.className = `w-3 h-3 rounded-full border-2 border-[#0f0f2a] absolute bottom-0 right-0 ${
+        isOnline ? 'bg-green-400' : 'bg-green-900'
+    }`;
+
+    avatarWrapper.appendChild(avatar);
+    avatarWrapper.appendChild(statusDot);
+
+    // Name
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'friend-name text-white cursor-pointer';
+    nameSpan.textContent = friend.username;
+    nameSpan.onclick = () => connectDialog(friend.id, friend.username);
+
+    // Block & Invite Buttons
+    const blockBtn = document.createElement('button');
+    if (friend.blocked) {
+        blockBtn.textContent = '🔓';
+        blockBtn.title = 'Unblock';
+        blockBtn.onclick = async () => {
+            await unblockUser(friend.id);
+            refreshFriendsList();
         };
+    } else {
+        blockBtn.textContent = '🚫';
+        blockBtn.title = 'Block';
+        blockBtn.onclick = async () => {
+            await blockUser(friend.id);
+            refreshFriendsList();
+        };
+    }
 
-        const blockBtn = document.createElement('button');
-        if (friend.blocked) {
-            blockBtn.textContent = '🔓';
-            blockBtn.title = 'Unblock';
-            blockBtn.onclick = async (e) => {
-                await unblockUser(friend.id);
-                refreshFriendsList();
-            };
-        } else {
-            blockBtn.textContent = '🚫';
-            blockBtn.title = 'Block';
-            blockBtn.onclick = async (e) => {
-                await blockUser(friend.id);
-                refreshFriendsList();
-            };
-        }
-        const InviteBtn = document.createElement('button');
-        InviteBtn.textContent = '🎮';
-            InviteBtn.title = 'Invite';
-            InviteBtn.onclick = async (e) => {
+    const inviteBtn = document.createElement('button');
+    inviteBtn.textContent = '🎮';
+    inviteBtn.title = 'Invite';
+    inviteBtn.onclick = async () => {
+        await inviteFriend(friend.id, friend.username);
+    };
 
-                    await inviteFriend(friend.id, friend.username);
+    const badge = document.createElement('span');
+    badge.dataset.id = key;
+    badge.className = 'unread-badge ml-auto';
+    badge.textContent = friend.has_unread ? '📩' : '';
+    friendBadgeById.set(key, badge);
 
-            };
-        const ProfileBtn = document.createElement('button');
-        ProfileBtn.textContent = '...';
-            ProfileBtn.title = 'Profile';
-            ProfileBtn.onclick = async (e) => {
+    // Append in order: avatarWrapper + name + buttons + badge
+    li.appendChild(avatarWrapper);
+    li.appendChild(nameSpan);
+    //li.appendChild(blockBtn);
+    //li.appendChild(inviteBtn);
+    li.appendChild(badge);
 
-            };
+    list.appendChild(li);
+    friendElById.set(key, li);
+});
 
-        li.appendChild(nameSpan);
-        li.appendChild(blockBtn);
-        li.appendChild(InviteBtn);
-        li.appendChild(ProfileBtn);
-        li.appendChild(badge);
-        list.appendChild(li);
-        friendElById.set(key, li);
-    });
 }
+
 
 export async function refreshFriendsList(): Promise<void> {
     friends = await getFriends();
@@ -694,36 +755,49 @@ async function inviteCheckStatus(inviterId: number): Promise<number>
     return 0;
 }
 
-async function makeButton(username: string, content: string, statusInv: number): Promise<void>
-{
+async function makeButton(username: string, content: string, statusInv: number): Promise<void> {
     const chat = document.getElementById('chatMessages') as HTMLElement;
     const container = document.createElement('div');
-    const declineBtn = document.createElement('button');
-    const acceptBtn = document.createElement('button');
-    if (statusInv === 1){
-    declineBtn.textContent = "[Cancel]";
-    declineBtn.classList.add('cancel');}
-    else if (statusInv === 2){
-        acceptBtn.textContent = "[Accept]";
-        acceptBtn.classList.add('accept');
-        acceptBtn.onclick = () => {
-            //window.location.href = `/pong?friendId=${data.from}`;
-            };
-        declineBtn.textContent = "[Cancel]";
-                declineBtn.classList.add('decline');
-    }
-    declineBtn.onclick = () => {
-        console.log('onclick friend = ', friendId)
-        if (friendId)
-        {
-            sendMessage(friendId, content);
+    container.className = 'flex gap-2 mt-2'; // optional: Abstand zwischen Buttons
 
+    // --- Accept Button ---
+    const acceptBtn = document.createElement('button');
+    if (statusInv === 2) {
+        acceptBtn.title = 'Accept Invite';
+        acceptBtn.classList.add('accept-btn'); // für CSS Styling
+        // z.B. Icon als Bild
+        const acceptIcon = document.createElement('img');
+        acceptIcon.src = '/assets/img/icon/accept.png'; // Pfad zum Accept-Icon
+        acceptIcon.alt = 'Accept';
+        acceptIcon.className = 'w-6 h-6'; // Größe anpassen
+        acceptBtn.appendChild(acceptIcon);
+
+        acceptBtn.onclick = () => {
+            // z.B. Spiel starten
+            console.log('Accept clicked for', friendId);
+        };
+        container.appendChild(acceptBtn);
+    }
+
+    // --- Decline / Cancel Button ---
+    const declineBtn = document.createElement('button');
+    declineBtn.title = statusInv === 1 ? 'Cancel Invite' : 'Decline Invite';
+    declineBtn.classList.add('decline-btn');
+    const declineIcon = document.createElement('img');
+    declineIcon.src = '/assets/img/icon/cancel.png'; // Pfad zum Accept-Icon
+    declineIcon.alt = 'Cancel';
+    declineIcon.className = 'w-6 h-6';
+    declineBtn.appendChild(declineIcon);
+
+    declineBtn.onclick = () => {
+        if (friendId) {
+            sendMessage(friendId, content);
             refreshDialog(friendId);
         }
         addMessageToChat('You', content, -1);
         inviteStatus = 0;
-        if (socket && socket.readyState === WebSocket.OPEN)
-        {
+
+        if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(
                 JSON.stringify({
                     type: "invite_message",
@@ -736,11 +810,14 @@ async function makeButton(username: string, content: string, statusInv: number):
         }
         container.remove();
     };
-    if (statusInv === 2)
-    {
-        container.appendChild(acceptBtn);
-    }
+
     container.appendChild(declineBtn);
     chat.appendChild(container);
     chat.scrollTop = chat.scrollHeight;
+}
+
+async function openProfile(userId: number): Promise<void> {
+  const params = new URLSearchParams();
+  params.set('id', userId.toString());  // ID als String setzen
+  await navigateTo('friend_profile', params);
 }
