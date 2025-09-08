@@ -169,7 +169,7 @@ export async function connectWebSocket() {
             }
 
             if (content === 'block' && userId === currentId) {
-                const newContent = ' has blocked you ❌ ';
+                const newContent = ' has blocked you ❌ '; // uebersetzen
 
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     const chat = document.getElementById('chatMessages') as HTMLElement;

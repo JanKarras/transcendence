@@ -954,6 +954,32 @@ export const lang = {
 		ua: "Історія матчів",
 	},
 
+	selectChatPartner: {
+		ger: "Waehle einen chat partner aus",
+		eng: "Select a chat partner",
+		nig: "Sélectionnez un partenaire de discussion",
+		fr: "Họrọ onye ị ga-akparịta ụka na ya",
+		ua:"Виберіть співрозмовника",
+	},
+
+	EnterMessage: {
+		ger: "Nachricht schreiben",
+		eng: "Enter massage",
+		fr: "Saisir un message",
+		nig: "Tinye ozi",
+		ua: "Введіть повідомлення",
+	},
+
+	send: {
+		ger: "verschicken",
+		eng: "send",
+		fr: "Envoyer",
+		nig: "Zipu",
+		ua: "Надіслати",
+	},
+
+	
+
 };
 
 
