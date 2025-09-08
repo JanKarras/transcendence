@@ -11,7 +11,9 @@ import { lang, t } from "../constants/language_vars.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { render_chat } from "./render_chat.js";
 import { render_friend_profile } from "./render_friend_profile.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile'];
+import { render_matchmaking } from "./render_matchmaking.js";
+import { render_game } from "./render_game.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -21,7 +23,9 @@ const renderers = {
     profile: render_profile_settings,
     friends: render_friends,
     chat: render_chat,
-    friend_profile: render_friend_profile
+    friend_profile: render_friend_profile,
+    matchmaking: render_matchmaking,
+    game: render_game
 };
 let currentView = null;
 let currentParams = null;

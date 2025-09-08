@@ -87,6 +87,12 @@ export async function render_header() {
     }
 
     const userData = await getUser();
+	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa" && pos !== "matchmaking") {
+		headernavs.classList.remove('hidden');
+	} else {
+		headernavs.classList.add('hidden');
+		return;
+	}
 
     if (!userData) {
         showErrorMessage(t(lang.databaseError, LANGUAGE));

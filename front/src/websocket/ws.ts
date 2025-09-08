@@ -3,6 +3,7 @@ import {
     getBlocked,
     getFriends,
     getStatus,
+    getFreshToken,
 } from '../remote_storage/remote_storage.js';
 
 let socket: WebSocket | null = null;
@@ -283,22 +284,6 @@ async function closeDialog() {
     chatHeader.textContent = `Select a chat partner`;
     const chat = document.getElementById('chatMessages') as HTMLElement;
     chat.innerHTML = 'You left the chat!';
-}
-
-async function getFreshToken(): Promise<string | null> {
-    try {
-        const res = await fetch('/api/get/token', { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to get token');
-        const data = await res.json();
-        if (data?.token) {
-            localStorage.setItem('auth_token', data.token); // ← сохраняем!
-            return data.token;
-        }
-        return null;
-    } catch (err) {
-        console.error('Token refresh error:', err);
-        return null;
-    }
 }
 
 export function addMessageToChat(

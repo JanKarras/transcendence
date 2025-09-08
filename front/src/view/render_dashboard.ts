@@ -11,6 +11,7 @@ import { removeEventListenerByClone } from "../utils/remove_eventlistener.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
+import { render_matchmaking } from "./render_matchmaking.js";
 
 export async function render_dashboard(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
@@ -18,8 +19,6 @@ export async function render_dashboard(params: URLSearchParams | null) {
 		return;
 	}
 
-	//connecy();
-	//return;
 	render_header();
 
 	const html = `
@@ -39,7 +38,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 							<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t(lang.playTitle, LANGUAGE)}</h5>
 						</a>
 						<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${t(lang.playDesc, LANGUAGE)}</p>
-						<a href="#" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+						<a href="#" id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
 							${t(lang.playNowBtn, LANGUAGE)}
 						</a>
 					</div>
@@ -87,52 +86,10 @@ export async function render_dashboard(params: URLSearchParams | null) {
 
 	const matches = document.getElementById("matches")
 
+	const playNowBtn = document.getElementById("playNowBtn")
+
+	playNowBtn?.addEventListener("click", () => {
+		navigateTo("matchmaking")
+	});
+
 }
-
-async function connecy() {
-  const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-const socket = new WebSocket(wsUrl);
-	if (!bodyContainer) {
-		return;
-
-	}
-	bodyContainer.innerHTML = "<button id='sendHelloBtn'>Send Hello</button>"
-
-
-  // Promise, das resolved sobald die Verbindung offen ist
-  await new Promise<void>((resolve, reject) => {
-    socket.onopen = () => {
-      console.log(`✅ WebSocket connected to ${wsUrl}`);
-      resolve();
-    };
-    socket.onerror = (err) => {
-      console.error(`⚠️ WebSocket error:`, err);
-      reject(err);
-    };
-  });
-
-  // jetzt kann gesendet werden
-  socket.send("hello");
-  console.log("📤 Message sent: hello");
-
-  socket.onmessage = (event) => {
-    console.log(`📩 Message from server:`, event.data);
-  };
-
-  socket.onclose = (event) => {
-    console.warn(
-      `❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`
-    );
-  };
-
-  	const btn = document.getElementById('sendHelloBtn');
-  console.log(btn)
-	btn?.addEventListener('click', () => {
-		console.log(socket)
-		console.log("renemenenenenenen")
-		socket.send('renemenenenenenen')
-	})
-}
-
-
-
