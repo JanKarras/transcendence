@@ -12,6 +12,8 @@ export async function render_chat(params: URLSearchParams | null) {
 
     render_header();
 
+	
+
     bodyContainer.innerHTML = `
   <div class="chat flex gap-6 w-full h-full max-h-[calc(100vh-8rem)] bg-gradient-to-br from-[#1a1a3d] to-[#252565] rounded-xl shadow-xl p-4">
     <!-- Sidebar -->

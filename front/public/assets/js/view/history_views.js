@@ -13,7 +13,8 @@ import { render_chat } from "./render_chat.js";
 import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game'];
+import { render_tournament } from "./render_tournament.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -25,7 +26,8 @@ const renderers = {
     chat: render_chat,
     friend_profile: render_friend_profile,
     matchmaking: render_matchmaking,
-    game: render_game
+    game: render_game,
+    tournament: render_tournament,
 };
 let currentView = null;
 let currentParams = null;

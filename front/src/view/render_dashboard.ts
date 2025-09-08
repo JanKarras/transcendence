@@ -52,9 +52,10 @@ export async function render_dashboard(params: URLSearchParams | null) {
 							<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t(lang.tournamentTitle, LANGUAGE)}</h5>
 						</a>
 						<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${t(lang.tournamentDesc, LANGUAGE)}</p>
-						<a href="#" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+						<button id="startTournamentBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
 							${t(lang.tournamentBtn, LANGUAGE)}
-						</a>
+						</button>
+
 					</div>
 				</div>
 			</div>
@@ -91,5 +92,13 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	playNowBtn?.addEventListener("click", () => {
 		navigateTo("matchmaking")
 	});
+
+	const startTournamentBtn = document.getElementById("startTournamentBtn");
+
+	startTournamentBtn?.addEventListener("click", () => {
+		console.log("Tournament clicked");
+		navigateTo("tournament");
+	});
+
 
 }

@@ -978,7 +978,7 @@ export const lang = {
 		ua: "Надіслати",
 	},
 
-	
+
 
 };
 
