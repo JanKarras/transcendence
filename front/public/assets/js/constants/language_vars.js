@@ -3,7 +3,8 @@ export const AVAILABLE_LANGUAGES = [
     { code: "ger", label: "Deutsch", flag: "./assets/img/lang/de.webp" },
     { code: "nig", label: "Nigerian", flag: "./assets/img/lang/nig.webp" },
     { code: "fr", label: "Français", flag: "./assets/img/lang/fr.webp" },
-    { code: "ua", label: "українська", flag: "./assets/img/lang/ua.webp" },
+    { code: "ua", label: "Українська", flag: "./assets/img/lang/ua.webp" },
+    { code: "bel", label: "Беларуская", flag: "./assets/img/lang/bel.webp" },
 ];
 export const lang = {
     playNowBtn: {
@@ -12,6 +13,7 @@ export const lang = {
         nig: "Nzube ọzọ dị njikere?",
         fr: "Prêt pour le prochain match ?",
         ua: "Готові до наступного матчу?",
+        bel: "Гатовы да наступнага матчу?"
     },
     readyTitle: {
         ger: "Bereit für das nächste Match?",
@@ -19,6 +21,7 @@ export const lang = {
         nig: "Nzube ọzọ dị njikere?",
         fr: "Prêt pour le prochain match ?",
         ua: "Готові до наступного матчу?",
+        bel: "Гатовы да наступнага матчу?"
     },
     readySubtitle: {
         ger: "Spiele online Ping Pong gegen Freunde oder im Turnier!",
@@ -26,6 +29,7 @@ export const lang = {
         nig: "Kporie Ping Pong n'ịntanetị megide enyi ma ọ bụ sonye na asọmpi!",
         fr: "Jouez au ping-pong en ligne contre des amis ou participez à un tournoi !",
         ua: "Грайте в настільний теніс онлайн з друзями або беріть участь у турнірі!",
+        bel: "Гуляйце ў пінг-понг анлайн супраць сяброў або ўдзельнічайце ў турніры!"
     },
     playTitle: {
         ger: "Spielen",
@@ -33,6 +37,7 @@ export const lang = {
         nig: "Kporie",
         fr: "Jouer",
         ua: "Грати",
+        bel: "Гуляць"
     },
     playDesc: {
         ger: "Starte ein schnelles Spiel",
@@ -40,6 +45,7 @@ export const lang = {
         nig: "Malite egwuregwu ozugbo",
         fr: "Commencez une partie rapide",
         ua: "Почніть швидкий матч",
+        bel: "Пачаць хуткi матч"
     },
     tournamentTitle: {
         ger: "Turnier",
@@ -47,6 +53,7 @@ export const lang = {
         nig: "Asọmpi",
         fr: "Tournoi",
         ua: "Турнір",
+        bel: "Турнір"
     },
     tournamentDesc: {
         ger: "Starte ein Turnier",
@@ -54,6 +61,7 @@ export const lang = {
         nig: "Malite asọmpi",
         fr: "Lancez un tournoi",
         ua: "Почніть турнір",
+        bel: "Пачаць турнір"
     },
     tournamentBtn: {
         ger: "Jetzt starten!",
@@ -61,6 +69,7 @@ export const lang = {
         nig: "Malite ugbu a!",
         fr: "Commencer maintenant !",
         ua: "Почати зараз!",
+        bel: "Пачаць зараз!"
     },
     onlinePlayers: {
         ger: "Spieler online",
@@ -68,6 +77,7 @@ export const lang = {
         nig: "Ụmụ egwuregwu dị n'ịntanetị",
         fr: "Joueurs en ligne",
         ua: "Гравців онлайн",
+        bel: "Гульцы анлайн"
     },
     activeTournaments: {
         ger: "Aktive Turniere",
@@ -75,6 +85,7 @@ export const lang = {
         nig: "Asọmpi dị na-aga",
         fr: "Tournois actifs",
         ua: "Активні турніри",
+        bel: "Актыўныя турнiры"
     },
     matchesToday: {
         ger: "Spiele heute",
@@ -82,12 +93,14 @@ export const lang = {
         nig: "Egwuregwu taa",
         fr: "Matchs aujourd'hui",
         ua: "Матчів сьогодні",
+        bel: "Матчэй сёння"
     },
     emailTitle: {
         ger: "E-Mail bestätigen",
         eng: "Email Validation",
         fr: "Validation d'e-mail",
         ua: "Підтвердження електронної пошти",
+        bel: "Падцверджанне электроннай пошты",
         nig: "Nyocha Email"
     },
     emailInstruction: {
@@ -95,6 +108,7 @@ export const lang = {
         eng: "Please enter the 6-digit code sent to",
         fr: "Veuillez entrer le code à 6 chiffres envoyé à",
         ua: "Будь ласка, введіть 6-значний код, надісланий на",
+        bel: "Калі ласка, увядзіце 6-значны код, адпраўлены на",
         nig: "Biko tinye koodu 6 nke a zitere na"
     },
     emailVerifyBtn: {
@@ -102,6 +116,7 @@ export const lang = {
         eng: "Verify Email",
         fr: "Vérifier l'e-mail",
         ua: "Підтвердити email",
+        bel: "Пацвердзіце адрас электроннай пошты",
         nig: "Nyocha Email"
     },
     emailMissingWarning: {
@@ -109,6 +124,7 @@ export const lang = {
         eng: "Please use the link we sent you! You will be redirected to login in 3 seconds.",
         fr: "Veuillez utiliser le lien que nous vous avons envoyé ! Redirection vers la connexion dans 3 secondes.",
         ua: "Будь ласка, скористайтесь посиланням, яке ми вам надіслали! Вас буде перенаправлено до входу через 3 секунди.",
+        bel: "Калі ласка, скарыстайцеся спасылкай, якую мы вам даслалі! Вы будзеце перанакіраваны на старонку ўваходу праз 3 секунды.",
         nig: "Biko jiri njikọ anyị zitere gị! Ị ga-agba ọsọ gaa na nbanye n'ime sekọnd 3."
     },
     loginTitle: {
@@ -116,6 +132,7 @@ export const lang = {
         eng: "Login",
         fr: "Connexion",
         ua: "Вхід",
+        bel: "Уваход",
         nig: "Nbanye"
     },
     loginUserField: {
@@ -123,6 +140,7 @@ export const lang = {
         eng: "Username or Email:",
         fr: "Nom d’utilisateur ou e-mail :",
         ua: "Ім’я користувача або електронна пошта:",
+        bel: "Імя карыстальніка або адрас электроннай пошты",
         nig: "Aha njirimara ma ọ bụ Email:"
     },
     loginPasswordField: {
@@ -130,6 +148,7 @@ export const lang = {
         eng: "Password:",
         fr: "Mot de passe :",
         ua: "Пароль:",
+        bel: "Пароль:",
         nig: "Okwuntughe:"
     },
     loginBtn: {
@@ -137,6 +156,7 @@ export const lang = {
         eng: "Login",
         fr: "Se connecter",
         ua: "Увійти",
+        bel: "Увайсцi",
         nig: "Banye"
     },
     loginToRegisterBtn: {
@@ -144,6 +164,7 @@ export const lang = {
         eng: "Register",
         fr: "S’inscrire",
         ua: "Зареєструватися",
+        bel: "Зарэгістравацца",
         nig: "Debanye"
     },
     dashboard: {
@@ -151,6 +172,7 @@ export const lang = {
         eng: "Dashboard",
         fr: "Tableau de bord",
         ua: "Дашборд",
+        bel: "Панэль кiравання",
         nig: "Dashbọọdụ"
     },
     profileDbError: {
@@ -158,6 +180,7 @@ export const lang = {
         eng: "Database error. You will be logged out.",
         fr: "Erreur de base de données. Vous serez déconnecté.",
         ua: "Помилка бази даних. Вас буде виведено.",
+        bel: "Памылка базы дадзеных. Вы выйдзеце з сістэмы.",
         nig: "Njehie n'ọrụ nchekwa. A ga-apụ gị."
     },
     profileAgeUnknown: {
@@ -165,6 +188,7 @@ export const lang = {
         eng: "Not provided",
         fr: "Non fourni",
         ua: "Не вказано",
+        bel: "не пазначана",
         nig: "Enweghị"
     },
     profileChangePhoto: {
@@ -172,6 +196,7 @@ export const lang = {
         eng: "Change",
         fr: "Changer",
         ua: "Змінити",
+        bel: "Змянiць",
         nig: "Gbanwe"
     },
     profileSaveBtn: {
@@ -179,6 +204,7 @@ export const lang = {
         eng: "Save",
         fr: "Enregistrer",
         ua: "Зберегти",
+        bel: "Захаваць",
         nig: "Chekwaa"
     },
     profileCancelBtn: {
@@ -186,6 +212,7 @@ export const lang = {
         eng: "Cancel",
         fr: "Annuler",
         ua: "Скасувати",
+        bel: "Адмянiць",
         nig: "Kwụsị"
     },
     profileLabel_username: {
@@ -193,6 +220,7 @@ export const lang = {
         eng: "Username",
         fr: "Nom d’utilisateur",
         ua: "Ім'я користувача",
+        bel: "Імя карыстальніка",
         nig: "Aha njirimara"
     },
     profileLabel_first_name: {
@@ -200,6 +228,7 @@ export const lang = {
         eng: "First Name",
         fr: "Prénom",
         ua: "Ім’я",
+        bel: "Імя",
         nig: "Aha mbụ"
     },
     profileLabel_last_name: {
@@ -207,6 +236,7 @@ export const lang = {
         eng: "Last Name",
         fr: "Nom de famille",
         ua: "Прізвище",
+        bel: "Прозвiшча",
         nig: "Aha ezinụlọ"
     },
     profileLabel_age: {
@@ -214,6 +244,7 @@ export const lang = {
         eng: "Age",
         fr: "Âge",
         ua: "Вік",
+        bel: "Узрост",
         nig: "Afọ"
     },
     profileLabel_last_seen: {
@@ -221,6 +252,7 @@ export const lang = {
         eng: "Last seen",
         fr: "Dernière connexion",
         ua: "Останнє відвідування",
+        bel: "Апошні раз анлайн",
         nig: "Hụ ikpeazụ"
     },
     registerTitle: {
@@ -229,6 +261,7 @@ export const lang = {
         nig: "Debanye",
         fr: "S'inscrire",
         ua: "Реєстрація",
+        bel: "Рэгістрацыя",
     },
     registerUsername: {
         eng: "Username",
@@ -236,6 +269,7 @@ export const lang = {
         nig: "Aha njirimara",
         fr: "Nom d'utilisateur",
         ua: "Ім'я користувача",
+        bel: "Імя карыстальніка",
     },
     registerEmail: {
         eng: "Email",
@@ -243,6 +277,7 @@ export const lang = {
         nig: "Imel",
         fr: "E-mail",
         ua: "Електронна пошта",
+        bel: "Электронная пошта",
     },
     registerPassword: {
         eng: "Password",
@@ -250,6 +285,7 @@ export const lang = {
         nig: "Okwuntughe",
         fr: "Mot de passe",
         ua: "Пароль",
+        bel: "Пароль",
     },
     registerPasswordConfirm: {
         eng: "Confirm Password",
@@ -257,6 +293,7 @@ export const lang = {
         nig: "Kwado okwuntughe",
         fr: "Confirmez le mot de passe",
         ua: "Підтвердіть пароль",
+        bel: "Пацвердзіць пароль",
     },
     registerBtn: {
         eng: "Register",
@@ -264,6 +301,7 @@ export const lang = {
         nig: "Debanye",
         fr: "S'inscrire",
         ua: "Зареєструватися",
+        bel: "Зарэгістравацца",
     },
     backBtn: {
         eng: "Back",
@@ -271,12 +309,14 @@ export const lang = {
         nig: "Laghachi",
         fr: "Retour",
         ua: "Назад",
+        bel: "Назад",
     },
     emailTitle2: {
         ger: "E-Mail bestätigen",
         eng: "Email Validation",
         fr: "Validation d'e-mail",
         ua: "Підтвердження електронної пошти",
+        bel: "Падцверджанне электроннай пошты",
         nig: "Nyocha Email"
     },
     emailInstruction2: {
@@ -284,6 +324,7 @@ export const lang = {
         eng: "Please enter the 6-digit code sent to",
         fr: "Veuillez entrer le code à 6 chiffres envoyé à",
         ua: "Будь ласка, введіть 6-значний код, надісланий на",
+        bel: "Калі ласка, увядзіце 6-значны код, адпраўлены на",
         nig: "Biko tinye koodu 6 nke a zitere na"
     },
     emailVerifyBtn2: {
@@ -291,6 +332,7 @@ export const lang = {
         eng: "Verify Email",
         fr: "Vérifier l'e-mail",
         ua: "Підтвердити email",
+        bel: "Падцвердзiце электронную пошту",
         nig: "Nyocha Email"
     },
     showFriendsBtn: {
@@ -298,6 +340,7 @@ export const lang = {
         eng: "👥 Show Friends",
         fr: "👥 Voir les amis",
         ua: "👥 Показати друзів",
+        bel: "👥 Паказаць сяброў",
         nig: "👥 Gosi Ndị enyi"
     },
     noFriends: {
@@ -305,6 +348,7 @@ export const lang = {
         eng: "No friends",
         fr: "Aucun ami",
         ua: "Немає друзів",
+        bel: "Няма сяброў",
         nig: "Enweghị ndị enyi"
     },
     online: {
@@ -312,6 +356,7 @@ export const lang = {
         eng: "Online",
         fr: "En ligne",
         ua: "Онлайн",
+        bel: "Анлайн",
         nig: "N'ịntanetị"
     },
     offline: {
@@ -319,6 +364,7 @@ export const lang = {
         eng: "Offline",
         fr: "Hors ligne",
         ua: "Офлайн",
+        bel: "Афлайн",
         nig: "Na-apụ n'ịntanetị"
     },
     startChat: {
@@ -326,6 +372,7 @@ export const lang = {
         eng: "Start chat",
         fr: "Démarrer le chat",
         ua: "Почати чат",
+        bel: "Пачаць чат",
         nig: "Bido mkparịta ụka"
     },
     startGame: {
@@ -333,6 +380,7 @@ export const lang = {
         eng: "Start game",
         fr: "Démarrer le jeu",
         ua: "Почати гру",
+        bel: "Пачаць гульню",
         nig: "Bido egwuregwu"
     },
     profile: {
@@ -340,6 +388,7 @@ export const lang = {
         eng: "Profile",
         fr: "Profil",
         ua: "Профіль",
+        bel: "Профіль",
         nig: "Nkọwapụta onwe"
     },
     dashboard2: {
@@ -347,6 +396,7 @@ export const lang = {
         eng: "Dashboard",
         fr: "Tableau de bord",
         ua: "Панель",
+        bel: "Панэль",
         nig: "Dashboard"
     },
     logout: {
@@ -354,6 +404,7 @@ export const lang = {
         eng: "Logout",
         fr: "Déconnexion",
         ua: "Вийти",
+        bel: "Выйсцi",
         nig: "Pụọ"
     },
     languageLabel: {
@@ -361,6 +412,7 @@ export const lang = {
         eng: "🌐 Language:",
         fr: "🌐 Langue:",
         ua: "🌐 Мова:",
+        bel: "🌐 Мова:",
         nig: "🌐 Asụsụ:"
     },
     successDefaultMessage: {
@@ -368,6 +420,7 @@ export const lang = {
         eng: "Success!",
         fr: "Succès !",
         ua: "Успіх!",
+        bel: "Поспех!",
         nig: "Ihe gara nke ọma!"
     },
     errorDefaultMessage: {
@@ -375,6 +428,7 @@ export const lang = {
         eng: "An error occurred.",
         fr: "Une erreur s'est produite.",
         ua: "Виникла помилка.",
+        bel: "Узнікла памылка.",
         nig: "Mperede mere."
     },
     loginRequired: {
@@ -382,6 +436,7 @@ export const lang = {
         eng: "You must be logged in to access this page.",
         fr: "Vous devez être connecté pour accéder à cette page.",
         ua: "Ви повинні увійти, щоб переглянути цю сторінку.",
+        bel: "Каб атрымаць доступ да гэтай старонкі, вы павінны ўвайсці ў сістэму.",
         nig: "Ị ga-abụ onye nbanye ka i nwee ike ịhụ ibe a."
     },
     friendsOnline: {
@@ -389,6 +444,7 @@ export const lang = {
         eng: "Friends Online",
         fr: "Amis en ligne",
         ua: "Друзі онлайн",
+        bel: "Сябры анлайн",
         nig: "Ụfọdụ enyi nọ n'ịntanetị"
     },
     allFriends: {
@@ -396,6 +452,7 @@ export const lang = {
         eng: "All Friends",
         fr: "Tous les amis",
         ua: "Усі друзі",
+        bel: "Усе сябры",
         nig: "Enyi niile"
     },
     addFriends: {
@@ -403,6 +460,7 @@ export const lang = {
         eng: "Add Friends",
         fr: "Ajouter des amis",
         ua: "Додати друзів",
+        bel: "Дадаць сяброў",
         nig: "Tinye ndị enyi"
     },
     friendRequests: {
@@ -410,6 +468,7 @@ export const lang = {
         eng: "Requests",
         fr: "Demandes",
         ua: "Запити",
+        bel: "Запыты",
         nig: "Arịrịọ"
     },
     domLoadError: {
@@ -417,6 +476,7 @@ export const lang = {
         eng: "Error with DOM loading. You will be logged out. Please try again later.",
         fr: "Erreur lors du chargement du DOM. Vous serez déconnecté. Veuillez réessayer plus tard.",
         ua: "Помилка завантаження DOM. Вас буде виведено з системи. Будь ласка, спробуйте пізніше.",
+        bel: "Памылка загрузкі DOM. Вы выйдзеце з сістэмы. Паўтарыце спробу пазней.",
         nig: "Njehie na mbubata DOM. A ga-ewepụ gị. Biko nwalee ọzọ."
     },
     name: {
@@ -424,6 +484,7 @@ export const lang = {
         eng: "Name",
         fr: "Nom",
         ua: "Ім'я",
+        bel: "Имя",
         nig: "Aha"
     },
     age: {
@@ -431,6 +492,7 @@ export const lang = {
         eng: "Age",
         fr: "Âge",
         ua: "Вік",
+        bel: "Узрост",
         nig: "Afọ"
     },
     wins: {
@@ -438,6 +500,7 @@ export const lang = {
         eng: "Wins",
         fr: "Victoires",
         ua: "Перемоги",
+        bel: "Перамогі",
         nig: "Mmeri"
     },
     loses: {
@@ -445,6 +508,7 @@ export const lang = {
         eng: "Loses",
         fr: "Défaites",
         ua: "Поразки",
+        bel: "Паражэнні",
         nig: "Nfu"
     },
     tournamentWins: {
@@ -452,6 +516,7 @@ export const lang = {
         eng: "Tournament Wins",
         fr: "Victoires en tournoi",
         ua: "Перемоги в турнірах",
+        bel: "Перамогі ў турнірах",
         nig: "Mmeri asọmpi"
     },
     startMatch: {
@@ -459,6 +524,7 @@ export const lang = {
         eng: "Start Match",
         fr: "Démarrer le match",
         ua: "Почати матч",
+        bel: "Пачаць матч",
         nig: "Malite Egwuregwu"
     },
     chatWith: {
@@ -466,6 +532,7 @@ export const lang = {
         eng: "Chat with",
         fr: "Discuter avec",
         ua: "Чат з",
+        bel: "Чат з",
         nig: "Mkparịta ụka na"
     },
     inviteToGame: {
@@ -473,6 +540,7 @@ export const lang = {
         eng: "Invite to game",
         fr: "Invitation au jeu",
         ua: "Запрошення до гри",
+        bel: "Запрашэнні да гульнi",
         nig: "Nkwenye egwuregwu"
     },
     requestsLater: {
@@ -480,6 +548,7 @@ export const lang = {
         eng: "Requests will be loaded later...",
         fr: "Les demandes seront chargées plus tard...",
         ua: "Запити будуть завантажені пізніше...",
+        bel: "Запыты будуць загружаны пазней...",
         nig: "A ga-ebudata arịrịọ mgbe e mesịrị..."
     },
     databaseError: {
@@ -487,6 +556,7 @@ export const lang = {
         eng: "Database Error. You will be logged out.",
         fr: "Erreur de base de données. Vous serez déconnecté.",
         ua: "Помилка бази даних. Ви будете виведені з системи.",
+        bel: "Памылка базы дадзеных. Вы выйдзеце з сістэмы.",
         nig: "Njehie nchekwa data. A ga-ewepụ gị."
     },
     invalidCode: {
@@ -494,6 +564,7 @@ export const lang = {
         eng: "Please enter a valid 6-digit code.",
         fr: "Veuillez entrer un code valide à 6 chiffres.",
         ua: "Будь ласка, введіть дійсний 6-значний код.",
+        bel: "Калі ласка, увядзіце сапраўдны 6-значны код.",
         nig: "Biko tinye koodu 6 ziri ezi."
     },
     emailValidated: {
@@ -501,6 +572,7 @@ export const lang = {
         eng: "You validated your account successfully. You will be redirected to login in 3 seconds.",
         fr: "Vous avez validé votre compte avec succès. Vous serez redirigé vers la connexion dans 3 secondes.",
         ua: "Ви успішно підтвердили свій акаунт. Ви будете перенаправлені до входу через 3 секунди.",
+        bel: "Вы паспяхова пацвердзілі свой акаўнт. Праз 3 секунды вы будзеце перанакіраваны на старонку ўваходу.",
         nig: "Ị kwadoro akaụntụ gị nke ọma. A ga-ebufe gị na nbanye n'ime sekọnd 3."
     },
     loginSuccess: {
@@ -508,6 +580,7 @@ export const lang = {
         eng: "Login successful for user {username}",
         fr: "Connexion réussie pour l'utilisateur {username}",
         ua: "Вхід успішний для користувача {username}",
+        bel: "Паспяховы ўваход карыстальніка {username}",
         nig: "Nbanye gara nke ọma maka onye ọrụ {username}"
     },
     loginFailed: {
@@ -515,6 +588,7 @@ export const lang = {
         eng: "Login failed: {error}",
         fr: "Échec de la connexion : {error}",
         ua: "Помилка входу: {error}",
+        bel: "Памылка ўваходу: {error}",
         nig: "Nbanye dara ada: {error}"
     },
     passwordLength: {
@@ -522,6 +596,7 @@ export const lang = {
         eng: "Password must be at least 8 characters long.",
         fr: "Le mot de passe doit contenir au moins 8 caractères.",
         ua: "Пароль повинен містити щонайменше 8 символів.",
+        bel: "Пароль павінен быць не менш за 8 сімвалаў.",
         nig: "Paswọọdụ ga-adịkarị nkeji 8 ma ọ dịkarịa ala."
     },
     passwordUppercase: {
@@ -529,6 +604,7 @@ export const lang = {
         eng: "Password must contain at least one uppercase letter.",
         fr: "Le mot de passe doit contenir au moins une lettre majuscule.",
         ua: "Пароль повинен містити принаймні одну велику літеру.",
+        bel: "Пароль павінен мець хаця б адну вялікую літару.",
         nig: "Paswọọdụ ga-enwe otu mkpụrụedemede ukwu."
     },
     passwordLowercase: {
@@ -536,6 +612,7 @@ export const lang = {
         eng: "Password must contain at least one lowercase letter.",
         fr: "Le mot de passe doit contenir au moins une lettre minuscule.",
         ua: "Пароль повинен містити принаймні одну маленьку літеру.",
+        bel: "Пароль павінен мець хаця б адну маленькую літару.",
         nig: "Paswọọdụ ga-enwe otu mkpụrụedemede obere."
     },
     passwordNumber: {
@@ -543,6 +620,7 @@ export const lang = {
         eng: "Password must contain at least one number.",
         fr: "Le mot de passe doit contenir au moins un chiffre.",
         ua: "Пароль повинен містити принаймні одну цифру.",
+        bel: "Пароль павінен мець хаця б адну лiчбу.",
         nig: "Paswọọdụ ga-enwe otu nọmba."
     },
     passwordSpecialChar: {
@@ -550,6 +628,7 @@ export const lang = {
         eng: "Password must contain at least one special character.",
         fr: "Le mot de passe doit contenir au moins un caractère spécial.",
         ua: "Пароль повинен містити принаймні один спеціальний символ.",
+        bel: "Пароль павінен мець хаця б адзін спецыяльны сімвал.",
         nig: "Paswọọdụ ga-enwe otu akara pụrụ iche."
     },
     passwordNoSpaces: {
@@ -557,6 +636,7 @@ export const lang = {
         eng: "Password cannot contain spaces.",
         fr: "Le mot de passe ne peut pas contenir d'espaces.",
         ua: "Пароль не може містити пробілів.",
+        bel: "",
         nig: "Paswọọdụ apụghị ịnwe oghere."
     },
     passwordMismatch: {
@@ -564,6 +644,7 @@ export const lang = {
         eng: "Passwords do not match!",
         fr: "Les mots de passe ne correspondent pas!",
         ua: "Паролі не співпадають!",
+        bel: "Пароль не можа ўтрымліваць прабелы.",
         nig: "Paswọọdụ adịghị dakọtara!"
     },
     unknownError: {
@@ -571,13 +652,15 @@ export const lang = {
         eng: "Unknown error",
         fr: "Erreur inconnue",
         ua: "Невідома помилка",
+        bel: "Невядомая памылка",
         nig: "Ihe mberede amaghị"
     },
     registerSuccess: {
         ger: "Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse.",
-        eng: "Register was successful. Please remember to validate your email address.",
+        eng: "Registration was successful. Please remember to validate your email address.",
         fr: "L'inscription a réussi. Veuillez valider votre adresse e-mail.",
         ua: "Реєстрація пройшла успішно. Будь ласка, підтвердьте свою електронну адресу.",
+        bel: "Рэгістрацыя прайшла паспешна. Калі ласка, не забудзьце падцвердзіць свой адрас электроннай пошты.",
         nig: "Enyemaka debanye aha gara nke ọma. Biko gosi email gi."
     },
     registerFailed: {
@@ -585,6 +668,7 @@ export const lang = {
         eng: "Registration failed: {error}",
         fr: "Échec de l'inscription : {error}",
         ua: "Помилка реєстрації: {error}",
+        bel: "Памылка рэгістрацыi: {error}",
         nig: "Ndebanye aha dara ada: {error}"
     },
     invalid6DigitCode: {
@@ -592,6 +676,7 @@ export const lang = {
         eng: "Please enter a valid 6-digit code.",
         fr: "Veuillez saisir un code valide à 6 chiffres.",
         ua: "Будь ласка, введіть дійсний 6-значний код.",
+        bel: "Калі ласка, увядзіце сапраўдны 6-значны код.",
         nig: "Biko tinye koodu ziri ezi nke mkpụrụ 6."
     },
     twoFASuccess: {
@@ -599,6 +684,7 @@ export const lang = {
         eng: "2FA was successful. You will be redirected to the dashboard in 3 seconds.",
         fr: "2FA a réussi. Vous serez redirigé vers le tableau de bord dans 3 secondes.",
         ua: "2FA пройшло успішно. Вас буде перенаправлено на панель керування через 3 секунди.",
+        bel: "Двухфактарная аўтэнтыфікацыя прайшла паспяхова. Вы будзеце перанакіраваны на панэль кіравання праз 3 секунды.",
         nig: "2FA gara nke ọma. A ga-eduga gị na dashboard n’ime sekọnd atọ."
     },
     friends: {
@@ -606,6 +692,7 @@ export const lang = {
         eng: "Friends",
         fr: "Amis",
         ua: "Друзі",
+        bel: "Сябры",
         nig: "Enyi"
     },
     unfriend: {
@@ -613,6 +700,7 @@ export const lang = {
         eng: "Unfriend",
         fr: "Supprimer ami",
         ua: "Видалити друга",
+        bel: "Выдаліць з сяброў",
         nig: "Hapụ enyi",
     },
     addFriend: {
@@ -620,6 +708,7 @@ export const lang = {
         eng: "Add Friend",
         fr: "Ajouter un ami",
         ua: "Додати друга",
+        bel: "Дадаць сябра",
         nig: "Tinye enyi",
     },
     searchFriend: {
@@ -627,6 +716,7 @@ export const lang = {
         eng: "Search friend...",
         fr: "Rechercher un ami...",
         ua: "Пошук друга...",
+        bel: "Пошук сябра...",
         nig: "Chọọ enyi...",
     },
     confirmUnfriend: {
@@ -634,6 +724,7 @@ export const lang = {
         eng: "Do you really want to remove {username}?",
         fr: "Voulez-vous vraiment supprimer {username} ?",
         ua: "Ви дійсно хочете видалити {username}?",
+        bel: "Вы сапраўды хочаце выдаліць {username}?",
         nig: "Ị chọrọ iwepu {username} n’ezie?",
     },
     friendRequestSent: {
@@ -641,6 +732,7 @@ export const lang = {
         eng: "Friend request sent to {username}.",
         fr: "Demande d'ami envoyée à {username}.",
         ua: "Запит дружби надіслано до {username}.",
+        bel: "Запыт у сябры адпраўлены {username}.",
         nig: "Izitere {username} arịrịọ enyi.",
     },
     friendRequestFailed: {
@@ -648,6 +740,7 @@ export const lang = {
         eng: "Friend request to {username} failed.",
         fr: "Échec de la demande d'ami à {username}.",
         ua: "Не вдалося надіслати запит дружби до {username}.",
+        bel: "Не атрымалася адправіць запыт у сябры да {username}.",
         nig: "Arịrịọ enyi gara na {username} emerughị emezu.",
     },
     friendRequestAccepted: {
@@ -655,6 +748,7 @@ export const lang = {
         eng: "Friend request from {username} accepted.",
         fr: "Demande d'ami de {username} acceptée.",
         ua: "Запит дружби від {username} прийнято.",
+        bel: "Запыт у сябры ад {username} прыняты.",
         nig: "Anabatara arịrịọ enyi si {username}.",
     },
     friendRequestAcceptFailed: {
@@ -662,6 +756,7 @@ export const lang = {
         eng: "Failed to accept friend request from {username}.",
         fr: "Échec de l'acceptation de la demande d'ami de {username}.",
         ua: "Не вдалося прийняти запит дружби від {username}.",
+        bel: "Не атрымалася прыняць запыт у сябры ад {username}.",
         nig: "Ọ dịghị arụsi ike ịnakwere arịrịọ enyi si {username}.",
     },
     friendRequestDeclined: {
@@ -669,6 +764,7 @@ export const lang = {
         eng: "Friend request from {username} declined.",
         fr: "Demande d'ami de {username} refusée.",
         ua: "Запит дружби від {username} відхилено.",
+        bel: "Запыт у сябры ад {username} адхілены.",
         nig: "Ajụla arịrịọ enyi si {username}.",
     },
     friendRequestDeclineFailed: {
@@ -676,6 +772,7 @@ export const lang = {
         eng: "Failed to decline friend request from {username}.",
         fr: "Échec du refus de la demande d'ami de {username}.",
         ua: "Не вдалося відхилити запит дружби від {username}.",
+        bel: "Не атрымалася адхіліць запыт у сябры ад {username}.",
         nig: "Ọ dịghị arụsi ike ịjụ arịrịọ enyi si {username}.",
     },
     friendRemoved: {
@@ -683,6 +780,7 @@ export const lang = {
         eng: "{username} has been removed from your friends list.",
         fr: "{username} a été retiré de votre liste d'amis.",
         ua: "{username} було видалено з вашого списку друзів.",
+        bel: "{username} быў выдалены са спісу вашых сяброў.",
         nig: "E wepụrụ {username} n'usoro ndị enyi gị.",
     },
     friendRemoveFailed: {
@@ -690,6 +788,7 @@ export const lang = {
         eng: "Failed to remove {username} from your friends list.",
         fr: "Échec de la suppression de {username} de votre liste d'amis.",
         ua: "Не вдалося видалити {username} зі списку друзів.",
+        bel: "Не атрымалася выдаліць {username} са спісу сяброў.",
         nig: "Ọ dịghị arụsi ike iwepụ {username} n'usoro ndị enyi gị.",
     },
     status: {
@@ -699,6 +798,7 @@ export const lang = {
             nig: "Arịrịọ ka na-eche",
             fr: "Demande en attente",
             ua: "Запит у очікуванні",
+            bel: "Запыт чакае разгляду"
         },
         accepted: {
             ger: "Anfrage angenommen",
@@ -706,6 +806,7 @@ export const lang = {
             nig: "Arịrịọ anabatara",
             fr: "Demande acceptée",
             ua: "Запит прийнято",
+            bel: "Запыт прыняты"
         },
         declined: {
             ger: "Anfrage abgelehnt",
@@ -713,6 +814,7 @@ export const lang = {
             nig: "Arịrịọ ajụrụ",
             fr: "Demande refusée",
             ua: "Запит відхилено",
+            bel: "Запыт адхілены"
         },
         unknown: {
             ger: "Status unbekannt",
@@ -720,6 +822,7 @@ export const lang = {
             nig: "Ọnọdụ amaghị",
             fr: "Statut inconnu",
             ua: "Невідомий статус",
+            bel: "Невядомы статус"
         }
     },
     requestBox: {
@@ -729,6 +832,7 @@ export const lang = {
             nig: "chọrọ itinye gị dị ka enyi",
             fr: "veut vous ajouter comme ami",
             ua: "хоче додати вас у друзі",
+            bel: "хоча дадаць вас ў сябры"
         },
         gameInviteRecv: {
             ger: "lädt dich zu einem Spiel ein",
@@ -736,6 +840,7 @@ export const lang = {
             nig: "kpọrọ gị ka ị bịa n’egwuregwu",
             fr: "vous invite à un jeu",
             ua: "запрошує вас до гри",
+            bel: "запрашае вас на гульню"
         },
         friendRequestSend: {
             ger: "Du hast eine Freundschaftsanfrage gesendet",
@@ -743,6 +848,7 @@ export const lang = {
             nig: "Izitere arịrịọ enyi",
             fr: "Vous avez envoyé une demande d'ami",
             ua: "Ви надіслали запит у друзі",
+            bel: "Вы адправілі запыт у сябры"
         },
         gameInviteSend: {
             ger: "Du hast eine Spieleinladung gesendet",
@@ -750,6 +856,7 @@ export const lang = {
             nig: "Izitere ọkpọ egwuregwu",
             fr: "Vous avez envoyé une invitation à un jeu",
             ua: "Ви надіслали запрошення до гри",
+            bel: "Вы адправілі запрашэнне ў гульню"
         },
         accept: {
             ger: "Annehmen",
@@ -757,6 +864,7 @@ export const lang = {
             nig: "Nabata",
             fr: "Accepter",
             ua: "Прийняти",
+            bel: "Прыняць"
         },
         decline: {
             ger: "Ablehnen",
@@ -764,6 +872,7 @@ export const lang = {
             nig: "Jụ",
             fr: "Refuser",
             ua: "Відхилити",
+            bel: "Адхіліць"
         },
         status: {
             nothandled: {
@@ -772,6 +881,7 @@ export const lang = {
                 nig: "Na-eche",
                 fr: "En attente",
                 ua: "В очікуванні",
+                bel: "Чакаецца"
             },
             accepted: {
                 ger: "Angenommen",
@@ -779,6 +889,7 @@ export const lang = {
                 nig: "Anabatara",
                 fr: "Accepté",
                 ua: "Прийнято",
+                bel: "Прынята"
             },
             declined: {
                 ger: "Abgelehnt",
@@ -786,6 +897,7 @@ export const lang = {
                 nig: "Ajụrụ",
                 fr: "Refusé",
                 ua: "Відхилено",
+                bel: "Адхілена"
             },
             unknown: {
                 ger: "Unbekannt",
@@ -793,6 +905,7 @@ export const lang = {
                 nig: "Amaghị",
                 fr: "Inconnu",
                 ua: "Невідомо",
+                bel: "Невядома"
             },
         },
     },
@@ -803,22 +916,25 @@ export const lang = {
             nig: "Amaghị",
             fr: "Inconnu",
             ua: "Невідомо",
+            bel: "Невядома"
         },
     },
     renderFriendRequests: {
         receivedTitle: {
             ger: "Empfangene Anfragen",
-            eng: "Received Requests",
+            eng: "Received requests",
             nig: "Arịrịọ nataara",
             fr: "Demandes reçues",
             ua: "Отримані запити",
+            bel: "Атрыманыя запыты"
         },
         sentTitle: {
             ger: "Gesendete Anfragen",
-            eng: "Sent Requests",
+            eng: "Sent requests",
             nig: "Arịrịọ zigara",
             fr: "Demandes envoyées",
             ua: "Відправлені запити",
+            bel: "Адпраўленыя запыты"
         },
         noReceived: {
             ger: "Keine empfangenen Anfragen.",
@@ -826,6 +942,7 @@ export const lang = {
             nig: "Enweghị arịrịọ natara.",
             fr: "Aucune demande reçue.",
             ua: "Немає отриманих запитів.",
+            bel: "Няма атрыманых запытаў"
         },
         noSent: {
             ger: "Keine gesendeten Anfragen.",
@@ -833,6 +950,7 @@ export const lang = {
             nig: "Enweghị arịrịọ zigara.",
             fr: "Aucune demande envoyée.",
             ua: "Немає відправлених запитів.",
+            bel: "Няма адпраўленых запытаў"
         },
     },
     no_id_msg: {
@@ -841,6 +959,7 @@ export const lang = {
         nig: "Enweghị ID onye ọrụ enyere.",
         fr: "Aucun identifiant utilisateur fourni.",
         ua: "Не передано ідентифікатор користувача.",
+        bel: "Ідэнтыфікатар карыстальніка не пададзены.",
     },
     missing_req_dom_elem: {
         ger: "Benötigtes DOM-Element fehlt.",
@@ -848,20 +967,23 @@ export const lang = {
         nig: "Ihe dị mkpa DOM adịghị.",
         fr: "Élément DOM requis manquant.",
         ua: "Відсутній необхідний DOM-елемент.",
+        bel: "Адсутнічае неабходны DOM элемент."
     },
     chat: {
         ger: "Chat",
         eng: "Chat",
         nig: "Mkparịta ụka",
         fr: "Discussion",
-        ua: "Чат"
+        ua: "Чат",
+        bel: "Чат"
     },
     translationObj: {
         ger: "Chat",
         eng: "Chat",
         nig: "Mkparịta ụka",
         fr: "Discussion",
-        ua: "Чат"
+        ua: "Чат",
+        bel: "Чат"
     },
     unknown: {
         ger: "Unbekannt",
@@ -869,13 +991,15 @@ export const lang = {
         nig: "Amaghị",
         fr: "Inconnu",
         ua: "Невідомо",
+        bel: "Невядома",
     },
     matchHistoryTitle: {
         ger: "Spielverlauf",
-        eng: "Match History",
+        eng: "Match history",
         nig: "Akụkọ egwuregwu",
         fr: "Historique des matchs",
         ua: "Історія матчів",
+        bel: "Гісторыя матчаў",
     },
     matchType1v1Local: {
         ger: "1v1 (Lokal)",
@@ -883,6 +1007,7 @@ export const lang = {
         nig: "1v1 (Obodo)",
         fr: "1v1 (Local)",
         ua: "1v1 (Локально)",
+        bel: "1v1 (Лакальна)",
     },
     matchType1v1Remote: {
         ger: "1v1 (Online)",
@@ -890,6 +1015,7 @@ export const lang = {
         nig: "1v1 (Ntanetị)",
         fr: "1v1 (En ligne)",
         ua: "1v1 (Віддалено)",
+        bel: "1v1 (Дыстанцыйна)",
     },
     matchTypeTournament: {
         ger: "Turnier",
@@ -897,6 +1023,7 @@ export const lang = {
         nig: "Asọmpi",
         fr: "Tournoi",
         ua: "Турнір",
+        bel: "Турнір",
     },
     round: {
         ger: "Runde",
@@ -904,6 +1031,7 @@ export const lang = {
         nig: "Ọgba",
         fr: "Manche",
         ua: "Раунд",
+        bel: "Раунд",
     },
     score: {
         ger: "Punkte",
@@ -911,6 +1039,7 @@ export const lang = {
         nig: "Nsonaazụ",
         fr: "Score",
         ua: "Рахунок",
+        bel: "Балы",
     },
     backToProfile: {
         ger: "Zurück zum Profil",
@@ -918,6 +1047,7 @@ export const lang = {
         nig: "Laghachi na profaịlụ",
         fr: "Retour au profil",
         ua: "Назад до профілю",
+        bel: "Назад да профілю",
     },
     trophy: {
         ger: "🏆",
@@ -925,13 +1055,15 @@ export const lang = {
         nig: "🏆",
         fr: "🏆",
         ua: "🏆",
+        bel: "🏆",
     },
     matchHis: {
         ger: "Spielverlauf",
-        eng: "Match History",
+        eng: "Match history",
         nig: "Akụkọ egwuregwu",
         fr: "Historique des matchs",
         ua: "Історія матчів",
+        bel: "Гісторыя матчаў",
     },
     selectChatPartner: {
         ger: "Waehle einen chat partner aus",
