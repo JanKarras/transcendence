@@ -576,14 +576,23 @@ video {
 .bottom-0 {
   bottom: 0px;
 }
+.left-1 {
+  left: 0.25rem;
+}
 .left-1\/2 {
   left: 50%;
+}
+.left-7 {
+  left: 1.75rem;
 }
 .left-\[-200px\] {
   left: -200px;
 }
 .right-0 {
   right: 0px;
+}
+.right-4 {
+  right: 1rem;
 }
 .right-5 {
   right: 1.25rem;
@@ -593,6 +602,9 @@ video {
 }
 .top-0 {
   top: 0px;
+}
+.top-1 {
+  top: 0.25rem;
 }
 .top-1\/2 {
   top: 50%;
@@ -605,6 +617,18 @@ video {
 }
 .top-64 {
   top: 16rem;
+}
+.top-6 {
+  top: 1.5rem;
+}
+.top-12 {
+  top: 3rem;
+}
+.top-2 {
+  top: 0.5rem;
+}
+.top-24 {
+  top: 6rem;
 }
 .z-50 {
   z-index: 50;
@@ -721,6 +745,9 @@ video {
 .max-h-\[calc\(100vh-8rem\)\] {
   max-height: calc(100vh - 8rem);
 }
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
 .min-h-\[200px\] {
   min-height: 200px;
 }
@@ -735,6 +762,9 @@ video {
 }
 .w-10 {
   width: 2.5rem;
+}
+.w-14 {
+  width: 3.5rem;
 }
 .w-24 {
   width: 6rem;
@@ -780,6 +810,9 @@ video {
 }
 .w-full {
   width: 100%;
+}
+.w-96 {
+  width: 24rem;
 }
 .max-w-5xl {
   max-width: 64rem;
@@ -846,6 +879,9 @@ video {
 }
 .justify-start {
   justify-content: flex-start;
+}
+.justify-end {
+  justify-content: flex-end;
 }
 .justify-center {
   justify-content: center;
@@ -1092,6 +1128,9 @@ video {
 }
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
+}
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
@@ -1381,6 +1420,10 @@ video {
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
@@ -1486,6 +1529,10 @@ video {
 .hover\:bg-red-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(185 28 28 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-gray-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(107 114 128 / var(--tw-bg-opacity, 1));
 }
 .hover\:text-black:hover {
   --tw-text-opacity: 1;
