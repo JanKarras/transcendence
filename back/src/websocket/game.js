@@ -71,7 +71,6 @@ module.exports = async function chatWebSocketRoute(fastify) {
 		case "matchmaking" :
 			matchmaking(userId, ws)
 			break;
-		
 		case "waiting" : {
 			matchConnectUser(userId, ws, remoteAddress);
 			break;
@@ -167,7 +166,6 @@ function setCountdownFinished(userId) {
 
 const interValdId = setInterval(() => {
 	mainGameLoop();
-	
 }, 1000/60)
 
 function mainGameLoop() {
@@ -192,7 +190,6 @@ function mainGameLoop() {
 					SafeGameToMatchHistory(match)
 					break;
 					case 5:
-						
 						break;
 						default:
 							break;
@@ -205,7 +202,6 @@ function mainGameLoop() {
 						match.gameState = 3
 					}
 				}
-				
 				function CheckForBothConnected(match) {
 					if (match.user1Connected && match.user2Connected) {
 						match.gameState = 1;
@@ -213,14 +209,14 @@ function mainGameLoop() {
 }
 
 function Startgame(match) {
-	const startMessage = { 
-		type: "startGame", 
+	const startMessage = {
+		type: "startGame",
 		gameInfo: match.gameInfo,
 		userId1 : match.userId1,
 		userId2 : match.userId2,
 		gameState : match.gameState
 	};
-	
+
     match.wsUser1.send(JSON.stringify(startMessage));
     match.wsUser2.send(JSON.stringify(startMessage));
 	// Countdown
@@ -229,8 +225,8 @@ function Startgame(match) {
 
 
 function SendFrames(match) {
-	const startMessage = { 
-		type: "sendFrames", 
+	const startMessage = {
+		type: "sendFrames",
 		gameInfo: match.gameInfo,
 		userId1 : match.userId1,
 		userId2 : match.userId2,
@@ -242,11 +238,11 @@ function SendFrames(match) {
 }
 
 function SendWinner(match) {
-	
+
 }
 
 function SafeGameToMatchHistory(match) {
-	
+
 }
 
 function matchmaking(userId, ws, remoteAddress) {

@@ -6,20 +6,11 @@ import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
 import { Friend, UserInfo } from "../constants/structs.js";
 
-let socket: WebSocket | null = null;
-let gameInfo : GameInfo;
-let gameState = 0;
-
-const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-
-const localNames = [];
-const remoteNames = [];
-
 export async function render_tournament(params: URLSearchParams | null, mode: "remote" | "local" = "local") {
   if (!bodyContainer) return;
 
   render_header();
-
+	connect()
 	const userData = await getUser();
 	if (!userData) {
 		console.error("User data not found.");
@@ -208,14 +199,15 @@ function renderRemoteTournament(user: UserInfo, friends: Friend[]) {
       const friendId = cb.parentElement?.getAttribute("data-id");
       const friend = friends.find(f => f.id.toString() === friendId);
       if (!friend) return;
-      if (idx === 0) {
-        card!.innerHTML = `
-          <span class="font-bold text-xl">${friend.username}</span>
-          <img src="/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}"
-               class="w-24 h-24 rounded-full object-cover" alt="Avatar">
-          <span class="text-sm text-gray-400">${currentCardId.replace("player","Player ")}</span>
-        `;
-      }
+      if (currentCardId && idx === 0) {
+  	card!.innerHTML = `
+  	  <span class="font-bold text-xl">${friend.username}</span>
+  	  <img src="/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}"
+  	       class="w-24 h-24 rounded-full object-cover" alt="Avatar">
+  	  <span class="text-sm text-gray-400">${currentCardId.replace("player","Player ")}</span>
+  	`;
+	}
+
     });
 
     document.getElementById("inviteModal")?.classList.add("hidden");
@@ -233,10 +225,32 @@ function renderRemoteTournament(user: UserInfo, friends: Friend[]) {
   });
 }
 
+let socket: WebSocket | null = null;
+
+const wsUrl = `wss://${location.host}/ws/tournament?token=${localStorage.getItem('auth_token')}`;
+
+async function connect() {
+	socket = new WebSocket(wsUrl);
+	await new Promise<void>((resolve, reject) => {
+		if (!socket) return reject("Socket not created");
+		socket.onopen = () => {
+			console.log(`✅ WebSocket connected to ${wsUrl}`);
+			resolve();
+		};
+		socket.onerror = (err) => {
+			console.error(`⚠️ WebSocket error:`, err);
+			reject(err);
+		};
+	});
+}
 
 async function startLocalTournament(username: string, aliases: string[]) {
-	console.log("Starting local tournament with players:", [username, ...aliases]);
-	const gameId = "123" //startLocalTournamentBackend([username, ...aliases]);
-
-	navigateTo('local_tournament_game', new URLSearchParams({ gameId }));
+	const data = {
+		player1: username,
+		player2: aliases[0],
+		player3: aliases[1],
+		player4: aliases[2],
+	}
+	socket?.send(JSON.stringify({ type: "createLocalTournament", data }));
+	navigateTo('local_tournament_game');
 }

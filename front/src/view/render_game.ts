@@ -74,7 +74,7 @@ export async function render_game(params: URLSearchParams | null) {
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
 
-	
+
 
 	connect();
 
@@ -99,7 +99,7 @@ export async function render_game(params: URLSearchParams | null) {
 			socket?.send('stopPaddle');
 		});
 	}
-	
+
 	function startCountdown() {
 		let counter = 5;
 		countdownEl.textContent = counter.toString();
@@ -158,9 +158,9 @@ export async function render_game(params: URLSearchParams | null) {
 		const token = await getFreshToken();
 		console.log(token)
 		const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-		socket = new WebSocket(wsUrl);	
+		socket = new WebSocket(wsUrl);
 		await new Promise<void>((resolve, reject) => {
-		if (!socket) return reject("Socket not created");	
+		if (!socket) return reject("Socket not created");
 		socket.onopen = () => {
 			console.log(`✅ WebSocket connected to ${wsUrl}`);
 			resolve();
@@ -169,9 +169,9 @@ export async function render_game(params: URLSearchParams | null) {
 			console.error(`⚠️ WebSocket error:`, err);
 			reject(err);
 		};
-		});	
+		});
 		socket.send("waiting");
-		
+
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 		switch (data.type) {
@@ -186,14 +186,14 @@ export async function render_game(params: URLSearchParams | null) {
 				gameState = data.gameState;
 				break;
 /* 			case 'partnerLeft':
-				// winner modal + 
+				// winner modal +
 				break;
 			case 'gameover':
 				break; */
 			default:
-			
+
 		}
-		};	
+		};
 		socket.onclose = (event) => {
 		console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
 		};

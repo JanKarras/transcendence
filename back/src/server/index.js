@@ -6,6 +6,7 @@ const multipart = require('@fastify/multipart');
 const fastifyWebsocket = require('@fastify/websocket');
 const wsGame = require('../websocket/game');
 const wsChat = require('../websocket/ws');
+const wsTournament = require('../websocket/tournament');
 const fastify = Fastify({ logger: { level: 'info' } });
 
 fastify.register(fastifyWebsocket);
@@ -24,6 +25,7 @@ fastify.setNotFoundHandler((request, reply) => {
 
 fastify.register(wsChat);
 fastify.register(wsGame);
+fastify.register(wsTournament);
 
 const start = async () => {
   try {
