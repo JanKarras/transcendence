@@ -83,7 +83,7 @@ export async function render_game(params: URLSearchParams | null) {
 		throw new Error('Canvas 2D context not supported');
 	}
 
-	function enablePaddles (){
+	function enablePaddles() {
 		window.addEventListener('keydown', (e) => {
 			console.log(e)
 			if (e.key === 'ArrowUp') {
@@ -160,15 +160,15 @@ export async function render_game(params: URLSearchParams | null) {
 		const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 		socket = new WebSocket(wsUrl);	
 		await new Promise<void>((resolve, reject) => {
-		if (!socket) return reject("Socket not created");	
-		socket.onopen = () => {
-			console.log(`✅ WebSocket connected to ${wsUrl}`);
-			resolve();
-		};
-		socket.onerror = (err) => {
-			console.error(`⚠️ WebSocket error:`, err);
-			reject(err);
-		};
+            if (!socket) return reject("Socket not created");
+            socket.onopen = () => {
+                console.log(`✅ WebSocket connected to ${wsUrl}`);
+                resolve();
+            };
+            socket.onerror = (err) => {
+                console.error(`⚠️ WebSocket error:`, err);
+                reject(err);
+            };
 		});	
 		socket.send("waiting");
 		

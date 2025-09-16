@@ -4,7 +4,8 @@ const Fastify = require('fastify');
 const fastifyCookie = require('@fastify/cookie');
 const multipart = require('@fastify/multipart');
 const fastifyWebsocket = require('@fastify/websocket');
-const wsGame = require('../websocket/game');
+// const wsGame = require('../controllers/gameController');
+const gameController = require('../controllers/gameController');
 const wsChat = require('../websocket/ws');
 const fastify = Fastify({ logger: { level: 'info' } });
 
@@ -23,7 +24,8 @@ fastify.setNotFoundHandler((request, reply) => {
 });
 
 fastify.register(wsChat);
-fastify.register(wsGame);
+fastify.register(gameController.chatWebSocketRoute);
+// fastify.register(wsGame);
 
 const start = async () => {
   try {

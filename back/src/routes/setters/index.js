@@ -1,6 +1,7 @@
 const userController = require('../../controllers/userController');
 const authController = require('../../controllers/authController');
 const requestController = require('../../controllers/requestController');
+const gameController = require('../../controllers/gameController');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {
@@ -14,4 +15,5 @@ module.exports = async function (fastify, opts) {
   fastify.post('/handleAcceptRequest', {preHandler: authMiddleware}, requestController.handleAcceptRequest);
   fastify.post('/handleDeclineRequest', {preHandler: authMiddleware}, requestController.handleDeclineRequest);
   fastify.post('/removeFriend', {preHandler: authMiddleware}, userController.removeFriend);
+  fastify.post('/matchmaking/join',{ preHandler: authMiddleware }, gameController.joinQueue);
 };
