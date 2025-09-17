@@ -26,6 +26,7 @@ function getMatchByUserId(userId) {
 }
 
 function createMatch(userData1, userData2) {
+    console.log("createMatch");
     const matchData = initMatch(userData1, userData2);
     gameStore.onGoingMatches.push(matchData);
     userData1.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId2 }));
@@ -82,14 +83,16 @@ function initMatch(userData1, userData2) {
 
 function connectUserToMatch(data) {
     const userId = data.userId;
+    console.log("connecting userToMatch", userId);
     const ws = data.ws;
+    console.log(gameStore.onGoingMatches);
     for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
         const match = gameStore.onGoingMatches[i];
-        if (match.userId1 === userId) {
+        if (match.userId1 === userId && match.gameState === GameState.NOT_STARTED) {
             match.user1Connected = true;
             match.wsUser1 = ws;
             break;
-        } else if (match.userId2 === userId) {
+        } else if (match.userId2 === userId && match.gameState === GameState.NOT_STARTED) {
             match.user2Connected = true;
             match.wsUser2 = ws;
             break;

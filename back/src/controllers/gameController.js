@@ -4,7 +4,6 @@ const userUtils = require("../utils/userUtil");
 const userRepository = require("../repositories/userRepository");
 const gameService = require("../services/game/gameService");
 const webSocketService = require("../services/game/webSocketService");
-// const { queue } = require("../services/game/gameService")
 const gameStore = require("../services/game/gameStore");
 const matchService = require("../services/game/matchService");
 const gameProcessor = require("../services/game/gameProcessor");
@@ -32,7 +31,6 @@ exports.chatWebSocketRoute = async function (fastify) {
 
         ws.on('message', (msg) => {
             webSocketService.handleMessage(msg, userId, ws, remoteAddress);
-            console.log(gameStore.queue)
         });
 
         ws.on('close', (code, reason) => {
@@ -51,34 +49,34 @@ exports.chatWebSocketRoute = async function (fastify) {
 }
 
 exports.joinQueue = async (req, reply) => {
-    const { userId } = req.body;
+    const userId = userUtils.getUserIdFromRequest(req);
     if (!userId) {
-        return reply.status(400).json({ error: 'UserId required' });
+        return reply.status(400).send({ error: 'UserId required' });
     }
     // if (!gameStore.queue.has(userId)) {
     //     return res.status(404).json({ error: 'User not connected via websocket' });
     // }
 
     gameService.tryMatch(userId);
-    console.log("Waiting for joining the game");
+    console.log(`Waiting for joining the game ${userId}`);
     reply.send({ message: "Waiting for joining the game" });
 }
 
 exports.waitForTheGame = async (req, reply) => {
-    const { userId } = req.body;
+    const userId = userUtils.getUserIdFromRequest(req);
     if (!userId) {
-        return reply.status(400).json({ error: 'UserId required' });
+        return reply.status(400).send({ error: 'UserId required' });
     }
     const data = gameStore.connectedUsers.get(userId);
     matchService.connectUserToMatch(data);
-    console.log("Waiting for the game to start");
+    console.log(`Waiting for the game to start by ${userId}`);
     reply.send({ message: "Waiting for the game to start" });
 }
 
 exports.startTheGame = async (req, reply) => {
-    const { userId } = req.body;
+    const userId = userUtils.getUserIdFromRequest(req);
     if (!userId) {
-        return reply.status(400).json({ error: 'UserId required' });
+        return reply.status(400).send({ error: 'UserId required' });
     }
     gameProcessor.setCountdownFinished(userId);
     console.log("Game started");

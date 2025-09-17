@@ -4,8 +4,8 @@ import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
+import { connect, getSocket } from "../websocket/wsService.js";
 
-let socket: WebSocket | null = null;
 let gameInfo : GameInfo;
 let gameState = 0;
 
@@ -84,13 +84,16 @@ export async function render_game(params: URLSearchParams | null) {
 	}
 
 	function enablePaddles() {
+        const socket = getSocket();
+        if (!socket) {
+            throw new Error("WebSocket is not connected");
+        }
 		window.addEventListener('keydown', (e) => {
-			console.log(e)
 			if (e.key === 'ArrowUp') {
 				socket?.send('movePaddleUp');
 				console.log("movePaddleUp send");
 			} else if (e.key === 'ArrowDown') {
-				console.log("movePaddleUp send")
+				console.log("movePaddleDown send")
 				socket?.send('movePaddleDown');
 			}
 		});
@@ -105,19 +108,30 @@ export async function render_game(params: URLSearchParams | null) {
 		countdownEl.textContent = counter.toString();
 		countdownEl.classList.remove('hidden');
 
-		const interval = setInterval(() => {
-			counter--;
-			if (counter > 0) {
-				countdownEl.textContent = counter.toString();
-			} else {
-				clearInterval(interval);
-				countdownEl.classList.add('hidden');
-				socket?.send("countdownFinished")
-				console.log("countdownFinished");
-				enablePaddles();
-				gameLoop();
-			}
-		}, 1000);
+		const interval = setInterval(async () => {
+            counter--;
+            if (counter > 0) {
+                countdownEl.textContent = counter.toString();
+            } else {
+                clearInterval(interval);
+                countdownEl.classList.add('hidden');
+                // socket?.send("countdownFinished")
+                const response = await fetch(`https://${window.location.host}/api/set/matchmaking/start`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+                    },
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+                console.log(data);
+
+                console.log("countdownFinished");
+                enablePaddles();
+                gameLoop();
+            }
+        }, 1000);
 	}
 
 	function gameLoop() {
@@ -157,46 +171,61 @@ export async function render_game(params: URLSearchParams | null) {
 
 		const token = await getFreshToken();
 		console.log(token)
-		const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-		socket = new WebSocket(wsUrl);	
-		await new Promise<void>((resolve, reject) => {
-            if (!socket) return reject("Socket not created");
-            socket.onopen = () => {
-                console.log(`✅ WebSocket connected to ${wsUrl}`);
-                resolve();
-            };
-            socket.onerror = (err) => {
-                console.error(`⚠️ WebSocket error:`, err);
-                reject(err);
-            };
-		});	
-		socket.send("waiting");
+        const socket = getSocket();
+        if (!socket) {
+            throw new Error("WebSocket is not connected");
+        }
+
+		// const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
+		// socket = new WebSocket(wsUrl);
+		// await new Promise<void>((resolve, reject) => {
+        //     if (!socket) return reject("Socket not created");
+        //     socket.onopen = () => {
+        //         console.log(`✅ WebSocket connected to ${wsUrl}`);
+        //         resolve();
+        //     };
+        //     socket.onerror = (err) => {
+        //         console.error(`⚠️ WebSocket error:`, err);
+        //         reject(err);
+        //     };
+		// });
+		// socket.send("waiting");
+        const response = await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+            },
+            credentials: "include"
+        });
+
+        const data = await response.json();
+        console.log(data);
 		
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
-		switch (data.type) {
-			case 'startGame':
-				gameState = data.gameState;
-				gameInfo = data.gameInfo;
-				renderFrame(ctx, gameInfo)
-				startCountdown();
-				break;
-			case 'sendFrames':
-				gameInfo = data.gameInfo;
-				gameState = data.gameState;
-				break;
-/* 			case 'partnerLeft':
-				// winner modal + 
-				break;
-			case 'gameover':
-				break; */
-			default:
-			
-		}
+            switch (data.type) {
+                case 'startGame':
+                    gameState = data.gameState;
+                    gameInfo = data.gameInfo;
+                    renderFrame(ctx, gameInfo)
+                    startCountdown();
+                    break;
+                case 'sendFrames':
+                    gameInfo = data.gameInfo;
+                    gameState = data.gameState;
+                    break;
+    /* 			case 'partnerLeft':
+                    // winner modal +
+                    break;
+                case 'gameover':
+                    break; */
+                default:
+
+            }
 		};	
-		socket.onclose = (event) => {
-		console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
-		};
+		// socket.onclose = (event) => {
+		// console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
+		// };
 	}
 }
 

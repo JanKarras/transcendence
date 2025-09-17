@@ -1,5 +1,4 @@
 const { GameState } = require("../../constants/constants");
-// const { gameStore.onGoingMatches } = require("./gameService")
 const gameStore = require("./gameStore");
 const gameEngine = require("./gameEngine");
 
@@ -16,7 +15,9 @@ function mainGameLoop() {
                 checkForBothConnected(match);
                 break;
             case GameState.BOTH_CONNECTED:
+                console.log("BOTH_CONNECTED")
                 sendMessage(match, "startGame");
+                match.gameState = GameState.STARTED;
                 break;
             case GameState.STARTED:
                 isCountdownFinished(match)
@@ -43,7 +44,7 @@ function checkForBothConnected(match) {
 
 function isCountdownFinished(match) {
     if (match.coutndownFinished1 && match.coutndownFinished2) {
-        match.gameState = GameState.STARTED;
+        match.gameState = GameState.FINISHED;
     }
 }
 
