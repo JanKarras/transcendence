@@ -8,6 +8,8 @@ function updateGameInfo(match) {
     movePaddles(match.gameInfo, CANVAS_HEIGHT);
     handleCollisions(match.gameInfo);
     handleScoring(match.gameInfo);
+    if (match.gameInfo.state.end)
+        match.gameState = "GAMEOVER";
 }
 
 function moveBall(ball) {
@@ -90,7 +92,7 @@ function handleScoring(state) {
         state.playerLeft.score++;
         resetBall(ball);
     }
-    if (state.playerLeft.score >= 10 || state.playerRight.score >= 10)
+    if (state.playerLeft.score >= 3 || state.playerRight.score >= 3)
         state.end = true;
 }
 

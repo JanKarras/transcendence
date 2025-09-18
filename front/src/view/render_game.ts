@@ -8,6 +8,7 @@ import { connect, getSocket } from "../websocket/wsService.js";
 
 let gameInfo : GameInfo;
 let gameState = 0;
+let gameOver = false;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
@@ -137,7 +138,7 @@ export async function render_game(params: URLSearchParams | null) {
 	function gameLoop() {
 		// calculate estimation
 		renderFrame(ctx, gameInfo);
-		if (gameState >= 4) {
+		if (gameOver) {
 			showWinner();
 			return; // stop the loop
 		}
@@ -214,11 +215,13 @@ export async function render_game(params: URLSearchParams | null) {
                     gameInfo = data.gameInfo;
                     gameState = data.gameState;
                     break;
-    /* 			case 'partnerLeft':
+			    case 'gameover':
+					gameOver = true;
+                    break; 
+					/* 			case 'partnerLeft':
                     // winner modal +
                     break;
-                case 'gameover':
-                    break; */
+					*/
                 default:
 
             }
