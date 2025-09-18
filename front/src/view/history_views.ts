@@ -15,10 +15,11 @@ import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
 import { render_tournament } from "./render_tournament.js";
 import { render_local_tournament_game } from "./render_local_tournament_game.js";
+import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
 
-export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game';
+export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game' | 'remote_tournament_game';
 
-const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game'];
+const protectedViews: View[] = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game', 'remote_tournament_game'];
 
 type ViewRenderFunction = (params: URLSearchParams | null) => void;
 
@@ -36,6 +37,7 @@ const renderers: Record<View, ViewRenderFunction> = {
   game : render_game,
   tournament : render_tournament,
   local_tournament_game : render_local_tournament_game,
+  remote_tournament_game : render_remote_tournament_game,
 };
 
 let currentView: View | null = null;

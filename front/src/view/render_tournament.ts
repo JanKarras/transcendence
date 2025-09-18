@@ -31,7 +31,7 @@ bodyContainer.innerHTML = toggleHtml;
 
 
 	const gameId = params?.get("gameId");
-
+	
 	if (gameId) {
 		socket?.send(JSON.stringify({
 			type: "joinGame",

@@ -11,7 +11,7 @@ let gameState = 0;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
-export async function render_game(params: URLSearchParams | null) {
+export async function render_remote_tournament_game(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
 		console.error("bodyContainer Container missing")
 		return;

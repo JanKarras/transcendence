@@ -15,7 +15,8 @@ import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
 import { render_tournament } from "./render_tournament.js";
 import { render_local_tournament_game } from "./render_local_tournament_game.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game'];
+import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game', 'remote_tournament_game'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -30,6 +31,7 @@ const renderers = {
     game: render_game,
     tournament: render_tournament,
     local_tournament_game: render_local_tournament_game,
+    remote_tournament_game: render_remote_tournament_game,
 };
 let currentView = null;
 let currentParams = null;
