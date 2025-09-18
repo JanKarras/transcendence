@@ -28,9 +28,8 @@ export async function render_game(params: URLSearchParams | null) {
 		<div class="flex items-center gap-8 relative">
 			<!-- Left Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerLeftName" class="text-xl font-bold">Left Player</span>
+				<span id="playerLeftName" class="text-xl font-bold">Left</span>
 				<span class="text-sm">Controls: W / S</span>
-				<span id="playerLeftScore" class="text-2xl font-bold mt-2">0</span>
 			</div>
 
 			<!-- Game Canvas -->
@@ -38,9 +37,8 @@ export async function render_game(params: URLSearchParams | null) {
 
 			<!-- Right Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerRightName" class="text-xl font-bold">Right Player</span>
+				<span id="playerRightName" class="text-xl font-bold">Right</span>
 				<span class="text-sm">Controls: ↑ / ↓</span>
-				<span id="playerRightScore" class="text-2xl font-bold mt-2">0</span>
 			</div>
 		</div>
 
@@ -167,6 +165,10 @@ export async function render_game(params: URLSearchParams | null) {
 		};
 	}
 
+	function displayNames() {
+		(document.getElementById("playerLeftName") as HTMLElement).textContent = gameInfo.playerLeft.name;
+  		(document.getElementById("playerRightName") as HTMLElement).textContent = gameInfo.playerRight.name;
+	}
 
 	async function connect() {
 
@@ -208,6 +210,7 @@ export async function render_game(params: URLSearchParams | null) {
                 case 'startGame':
                     gameState = data.gameState;
                     gameInfo = data.gameInfo;
+					displayNames();
                     renderFrame(ctx, gameInfo)
                     startCountdown();
                     break;
