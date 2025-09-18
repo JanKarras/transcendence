@@ -215,7 +215,7 @@ export async function render_game(params: URLSearchParams | null) {
                     gameInfo = data.gameInfo;
                     gameState = data.gameState;
                     break;
-			    case 'gameover':
+			    case 'gameOver':
 					gameOver = true;
                     break; 
 					/* 			case 'partnerLeft':
