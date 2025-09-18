@@ -28,7 +28,12 @@ function mainGameLoop() {
                 break;
             case GameState.ERROR:
                 sendWinner(match)
-                safeGameToMatchHistory(match)
+                saveGameToMatchHistory(match)
+                break;
+            case GameState.GAMEOVER:
+                sendMessage(match, "gameOver");
+                saveGameToMatchHistory(match);
+                // removeGameFromStore
                 break;
             default:
                 break;
@@ -77,7 +82,7 @@ function sendWinner(match) {
 
 }
 
-function safeGameToMatchHistory(match) {
+function saveGameToMatchHistory(match) {
 
 }
 

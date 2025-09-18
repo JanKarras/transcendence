@@ -9,6 +9,7 @@ const GameState = {
     STARTED: "STARTED",
     FINISHED: "FINISHED",
     ERROR: "ERROR",
+    GAMEOVER: "GAMEOVER",
 }
 
 const CANVAS_HEIGHT = 600;
