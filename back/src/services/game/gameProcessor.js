@@ -33,7 +33,7 @@ function mainGameLoop() {
             case GameState.GAMEOVER:
                 sendMessage(match, "gameOver");
                 saveGameToMatchHistory(match);
-                // removeGameFromStore
+                gameStore.onGoingMatches.splice(i, 1);
                 break;
             default:
                 break;
