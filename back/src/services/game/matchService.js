@@ -52,6 +52,7 @@ function initMatch(userData1, userData2) {
                 position: { x: 400, y: 300 },
                 radius: 10,
                 velocity: { x: 5, y: 4 },
+                speed: 5,
             },
             paddleLeft: {
                 position: { x: 20, y: 250 },
