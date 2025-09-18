@@ -77,7 +77,8 @@ function initMatch(userData1, userData2) {
                 name: user2.username || "Player2",
                 path: user2.path || "std_user_img.png",
                 score: 0,
-            }
+            },
+            end : false,
         },
     };
 }

@@ -8,7 +8,7 @@ function updateGameInfo(match) {
     movePaddles(match.gameInfo, CANVAS_HEIGHT);
     handleCollisions(match.gameInfo);
     handleScoring(match.gameInfo);
-    if (match.gameInfo.state.end)
+    if (match.gameInfo.end)
         match.gameState = "GAMEOVER";
 }
 
