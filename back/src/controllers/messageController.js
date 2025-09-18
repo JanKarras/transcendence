@@ -10,7 +10,7 @@ exports.getMessages = async (req, reply) => {
 exports.getUnread = async (req, reply) => {
     const userId = req.user.id;
     const { friendId } = req.params;
-	const res = await messageRepository.getUnreadDB(userId, friendId);
+	const res = messageRepository.getUnreadDB(userId, friendId);
 	console.log('Unread messages count:', res);
     reply.send({ has_unread: res });
 };

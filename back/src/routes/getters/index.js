@@ -4,6 +4,7 @@ const statusController = require('../../controllers/statusController');
 const matchController = require('../../controllers/matchController');
 const authController = require('../../controllers/authController');
 const userController = require('../../controllers/userController');
+const gameController = require('../../controllers/gameController');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {

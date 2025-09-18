@@ -1,4 +1,4 @@
-const matchService = require("../services/matchService");
+const matchService = require("../services/game/matchService");
 
 exports.getMatchHistory = async (req, reply) => {
     try {

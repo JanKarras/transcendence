@@ -37,5 +37,4 @@ function getUser(userId) {
 module.exports = {
     getUserIdFromRequest,
     getUserIdFromToken,
-    getUser
 }
