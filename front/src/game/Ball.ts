@@ -4,4 +4,5 @@ export interface Ball {
   position: Vector;
   radius: number;
   velocity: Vector;
+  speed: number;
 }

@@ -8,7 +8,6 @@ import { connect, getSocket } from "../websocket/wsService.js";
 
 let gameInfo : GameInfo;
 let gameState = 0;
-let gameOver = false;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
@@ -28,8 +27,9 @@ export async function render_game(params: URLSearchParams | null) {
 		<div class="flex items-center gap-8 relative">
 			<!-- Left Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerLeftName" class="text-xl font-bold">Left</span>
+				<span id="playerLeftName" class="text-xl font-bold">Left Player</span>
 				<span class="text-sm">Controls: W / S</span>
+				<span id="playerLeftScore" class="text-2xl font-bold mt-2">0</span>
 			</div>
 
 			<!-- Game Canvas -->
@@ -37,8 +37,9 @@ export async function render_game(params: URLSearchParams | null) {
 
 			<!-- Right Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerRightName" class="text-xl font-bold">Right</span>
+				<span id="playerRightName" class="text-xl font-bold">Right Player</span>
 				<span class="text-sm">Controls: ↑ / ↓</span>
+				<span id="playerRightScore" class="text-2xl font-bold mt-2">0</span>
 			</div>
 		</div>
 
@@ -73,9 +74,9 @@ export async function render_game(params: URLSearchParams | null) {
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
 
+	
 
-	// await startGame();
-	await startLocalGame();
+	connect();
 
 	if (!ctx) {
 		// disconnect?
@@ -94,28 +95,15 @@ export async function render_game(params: URLSearchParams | null) {
 			} else if (e.key === 'ArrowDown') {
 				console.log("movePaddleDown send")
 				socket?.send('movePaddleDown');
-			} else if (e.key?.toLowerCase() === 'w') {
-                socket?.send('moveLeftPaddleUp');
-                console.log("moveLeftPaddleUp send");
-            } else if (e.key?.toLowerCase() === 's') {
-                console.log("moveLeftPaddleDown send")
-                socket?.send('moveLeftPaddleDown');
-            }
+			}
 		});
 
 		window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                socket?.send('stopPaddle');
-                console.log("stopPaddle send");
-            } else if (e.key.toLowerCase() === 'w' || e.key.toLowerCase() === 's') {
-                socket?.send('stopLeftPaddle');
-                console.log("stopLeftPaddle send");
-            }
-			// socket?.send('stopPaddle');
+			socket?.send('stopPaddle');
 		});
 	}
 	
-	function startCountdown(mode: "local" | "remote") {
+	function startCountdown() {
 		let counter = 5;
 		countdownEl.textContent = counter.toString();
 		countdownEl.classList.remove('hidden');
@@ -128,15 +116,11 @@ export async function render_game(params: URLSearchParams | null) {
                 clearInterval(interval);
                 countdownEl.classList.add('hidden');
                 // socket?.send("countdownFinished")
-                const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
+                const response = await fetch(`https://${window.location.host}/api/set/matchmaking/start`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
                     },
-                    body: JSON.stringify({
-                        mode: mode,
-                    }),
                     credentials: "include"
                 });
 
@@ -153,7 +137,7 @@ export async function render_game(params: URLSearchParams | null) {
 	function gameLoop() {
 		// calculate estimation
 		renderFrame(ctx, gameInfo);
-		if (gameOver) {
+		if (gameState >= 4) {
 			showWinner();
 			return; // stop the loop
 		}
@@ -182,62 +166,30 @@ export async function render_game(params: URLSearchParams | null) {
 		};
 	}
 
-    function displayNames() {
-        (document.getElementById("playerLeftName") as HTMLElement).textContent = gameInfo.playerLeft.name;
-        (document.getElementById("playerRightName") as HTMLElement).textContent = gameInfo.playerRight.name;
-    }
 
-    async function startLocalGame() {
-        const token = await getFreshToken();
-        const socket = await connect();
-        if (!socket) {
-            throw new Error("WebSocket is not connected");
-        }
+	async function connect() {
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            // console.log("data", data);
-            switch (data.type) {
-                case 'startGame':
-                    gameState = data.gameState;
-                    gameInfo = data.gameInfo;
-                    renderFrame(ctx, gameInfo)
-                    startCountdown("local");
-                    break;
-                case 'sendFrames':
-                    gameInfo = data.gameInfo;
-                    gameState = data.gameState;
-                    break;
-                default:
-
-            }
-        };
-
-        console.log(token);
-        const response = await fetch(`https://${window.location.host}/api/set/game/create`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
-            },
-            body: JSON.stringify({
-                username: "username",
-            }),
-            credentials: "include"
-        });
-
-        const data = await response.json();
-        console.log(data);
-    }
-
-	async function startGame() {
 		const token = await getFreshToken();
 		console.log(token)
-        const socket = await connect();
+        const socket = getSocket();
         if (!socket) {
             throw new Error("WebSocket is not connected");
         }
 
+		// const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
+		// socket = new WebSocket(wsUrl);
+		// await new Promise<void>((resolve, reject) => {
+        //     if (!socket) return reject("Socket not created");
+        //     socket.onopen = () => {
+        //         console.log(`✅ WebSocket connected to ${wsUrl}`);
+        //         resolve();
+        //     };
+        //     socket.onerror = (err) => {
+        //         console.error(`⚠️ WebSocket error:`, err);
+        //         reject(err);
+        //     };
+		// });
+		// socket.send("waiting");
         const response = await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
             method: "POST",
             headers: {
@@ -252,30 +204,21 @@ export async function render_game(params: URLSearchParams | null) {
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
             switch (data.type) {
-                case 'restoreGame':
-                    console.log('restoreGame');
-                    gameState = data.gameState;
-                    gameInfo = data.gameInfo;
-                    renderFrame(ctx, gameInfo);
-                    break;
                 case 'startGame':
                     gameState = data.gameState;
                     gameInfo = data.gameInfo;
-					displayNames();
                     renderFrame(ctx, gameInfo)
-                    startCountdown("remote");
+                    startCountdown();
                     break;
                 case 'sendFrames':
                     gameInfo = data.gameInfo;
                     gameState = data.gameState;
                     break;
-			    case 'gameOver':
-					gameOver = true;
-                    break;
-					/* 			case 'partnerLeft':
+    /* 			case 'partnerLeft':
                     // winner modal +
                     break;
-					*/
+                case 'gameover':
+                    break; */
                 default:
 
             }

@@ -110,6 +110,7 @@ function initGameInfo(playerLeft, playerRight) {
             position: { x: 400, y: 300 },
             radius: 10,
             velocity: { x: 5, y: 4 },
+            speed: 5,
         },
         paddleLeft: {
             position: { x: 20, y: 250 },
@@ -125,6 +126,7 @@ function initGameInfo(playerLeft, playerRight) {
         },
         playerLeft: playerLeft,
         playerRight: playerRight,
+        end : false,
     };
 }
 

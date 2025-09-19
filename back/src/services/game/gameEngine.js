@@ -8,6 +8,8 @@ function updateGameInfo(match) {
     movePaddles(match.gameInfo, CANVAS_HEIGHT);
     handleCollisions(match.gameInfo);
     handleScoring(match.gameInfo);
+    if (match.gameInfo.end)
+        match.gameState = "GAMEOVER";
 }
 
 function moveBall(ball) {
@@ -37,6 +39,24 @@ function movePaddles(state, canvasHeight) {
     }
 }
 
+function paddleBounce(ball, paddle) {
+	let relativeIntersectY = (ball.position.y - (paddle.position.y + paddle.size.y / 2));
+	let normalized = relativeIntersectY / (paddle.size.y / 2);
+
+	// Max bounce angle = 75 degrees
+	let bounceAngle = normalized * (Math.PI / 3);
+
+	let direction = (ball.position.x < CANVAS_WIDTH / 2) ? 1 : -1;
+	ball.velocity.x = direction * ball.speed * Math.cos(bounceAngle);
+	ball.velocity.y = ball.speed * Math.sin(bounceAngle);
+
+	// Ensure ball never goes fully horizontal
+	jitter(ball);
+
+	// Increase speed slightly
+	ball.speed += 0.5;
+}
+
 function handleCollisions(state) {
     const { ball, paddleLeft, paddleRight } = state;
     const bx = ball.position.x;
@@ -48,8 +68,7 @@ function handleCollisions(state) {
         by > paddleLeft.position.y &&
         by < paddleLeft.position.y + paddleLeft.size.y
     ) {
-        ball.velocity.x *= -1;
-        ball.position.x = paddleLeft.position.x + paddleLeft.size.x + ball.radius;
+        paddleBounce(ball, paddleLeft);
     }
 
     // Right paddle collision
@@ -58,8 +77,7 @@ function handleCollisions(state) {
         by > paddleRight.position.y &&
         by < paddleRight.position.y + paddleRight.size.y
     ) {
-        ball.velocity.x *= -1;
-        ball.position.x = paddleRight.position.x - ball.radius;
+        paddleBounce(ball, paddleRight);
     }
 }
 
@@ -70,21 +88,37 @@ function handleScoring(state) {
     if (bx < 0) {
         state.playerRight.score++;
         resetBall(ball);
-    } else if (bx > 800) {
+    } else if (bx > CANVAS_WIDTH) {
         state.playerLeft.score++;
         resetBall(ball);
     }
-    if (state.playerLeft.score >= 10 || state.playerRight.score >= 10)
+    if (state.playerLeft.score >= 3 || state.playerRight.score >= 3)
         state.end = true;
 }
 
-function resetBall(ball) {
-    ball.position.x = 400;
-    ball.position.y = 300;
+function jitter(ball) {
+    const MIN_DY = 2;
+    if (Math.abs(ball.velocity.y) < MIN_DY) {
+        let jitter = (Math.random() - 0.5) * 2;
+        ball.velocity.y = (ball.velocity.y < 0 ? -MIN_DY : MIN_DY) + jitter;
+    } 
+}
 
-    const baseSpeed = { x: 5, y: 4 };
-    ball.velocity.x = Math.random() > 0.5 ? baseSpeed.x : -baseSpeed.x;
-    ball.velocity.y = (Math.random() > 0.5 ? 1 : -1) * baseSpeed.y;
+function resetBall(ball) {
+    ball.position.x = CANVAS_WIDTH / 2;
+    ball.position.y = CANVAS_HEIGHT / 2;
+    ball.speed = 5;
+    // Choose left (-1) or right (+1)
+    const direction = Math.random() < 0.5 ? -1 : 1;
+
+    // Random angle within ±45° from horizontal
+    const maxAngle = 45 * (Math.PI / 180); // convert degrees to radians
+    const angle = (Math.random() * 2 - 1) * maxAngle; // random between -maxAngle and +maxAngle
+
+      // Compute velocity
+    ball.velocity.x = direction * ball.speed * Math.cos(angle);
+    ball.velocity.y = ball.speed * Math.sin(angle);
+    jitter(ball);
 }
 
 

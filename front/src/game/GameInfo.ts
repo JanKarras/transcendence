@@ -26,6 +26,7 @@ export function createInitialState( paddleSize: PaddleSizeOption = 'medium',  ):
 		velocity: { x: direction * baseSpeed.x * Math.cos(angle),
 		y: baseSpeed.y * Math.sin(angle) },
 		radius: 10,
+		speed: 5,
 		},
 		paddleLeft: {
 		position: { x: 20, y: 250 },
