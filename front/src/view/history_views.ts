@@ -14,6 +14,7 @@ import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
 import { render_tournament } from "./render_tournament.js";
+import { getSocket } from "../websocket/wsService.js";
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament';
 
@@ -74,6 +75,21 @@ function getViewAndParamsFromHash(): { view: View; params: URLSearchParams | nul
 
 export function initRouter() {
   window.addEventListener('popstate', async (event) => {
+      const currentPage = window.location.hash;
+
+      if (currentPage !== "#game" && currentPage !== "#matchmaking") {
+          try {
+              const socket = getSocket();
+                  if (socket && socket.readyState === WebSocket.OPEN) {
+                      socket.close(1000, "Leaving game page");
+                      console.log("🔴 WebSocket closed because user navigated away");
+                  }
+          }
+          catch (error) {
+              console.error(error);
+          }
+      }
+
     const state = event.state as { view: View; paramString: string } | null;
 
     if (state && state.view) {
@@ -117,6 +133,13 @@ export function initRouter() {
 
 
 export async function navigateTo(view: View, params: URLSearchParams | null = null) {
+    if (view !== "game" && view !== "matchmaking") {
+        const socket = getSocket();
+        if (socket) {
+            socket.close(100, "Navigated away from game");
+            // socket = null;
+        }
+    }
   if (protectedViews.includes(view)) {
     const isLoggedIn = await is_logged_in_api();
     if (!isLoggedIn) {

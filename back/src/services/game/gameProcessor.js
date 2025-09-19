@@ -15,7 +15,6 @@ function mainGameLoop() {
                 checkForBothConnected(match);
                 break;
             case GameState.BOTH_CONNECTED:
-                console.log("BOTH_CONNECTED")
                 sendMessage(match, "startGame");
                 match.gameState = GameState.STARTED;
                 break;
@@ -23,6 +22,7 @@ function mainGameLoop() {
                 isCountdownFinished(match)
                 break;
             case GameState.FINISHED:
+                console.log("FINISHED");
                 gameEngine.updateGameInfo(match)
                 sendMessage(match, "sendFrames");
                 break;
@@ -48,9 +48,14 @@ function isCountdownFinished(match) {
     }
 }
 
-function setCountdownFinished(userId) {
-    for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
-        const match = gameStore.onGoingMatches[i];
+function setCountdownFinished(userId, mode) {
+    const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
+    if (mode === "local") {
+        console.log("mode is local");
+        match.coutndownFinished1 = true;
+        match.coutndownFinished2 = true;
+    }
+    else {
         if (match.userId1 === userId) {
             match.coutndownFinished1 = true;
         } else if (match.userId2 === userId) {

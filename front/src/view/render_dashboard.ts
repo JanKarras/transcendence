@@ -12,6 +12,7 @@ import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { render_matchmaking } from "./render_matchmaking.js";
+import {getSocket} from "../websocket/wsService";
 
 export async function render_dashboard(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
@@ -90,7 +91,8 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	const playNowBtn = document.getElementById("playNowBtn")
 
 	playNowBtn?.addEventListener("click", () => {
-		navigateTo("matchmaking")
+		navigateTo("game")
+		// navigateTo("matchmaking")
 	});
 
 	const startTournamentBtn = document.getElementById("startTournamentBtn");

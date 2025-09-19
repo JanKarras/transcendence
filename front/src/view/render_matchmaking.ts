@@ -2,12 +2,9 @@ import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headern
 import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
-import { connect, getSocket } from "../websocket/wsService.js";
+import { connect } from "../websocket/wsService.js";
 
 let socket: WebSocket | null = null;
-
-const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-
 
 export async function render_matchmaking(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
@@ -91,43 +88,4 @@ async function startMatchmaking() {
 
     const result = await response.json();
     console.log("Waiting for game:", result);
-
-
-	// const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
-	// socket = new WebSocket(wsUrl);
-	// await new Promise<void>((resolve, reject) => {
-	//   if (!socket) return reject("Socket not created");
-	//   socket.onopen = () => {
-	//     console.log(`✅ WebSocket connected to ${wsUrl}`);
-	//     resolve();
-	//   };
-	//   socket.onerror = (err) => {
-	//     console.error(`⚠️ WebSocket error:`, err);
-	//     reject(err);
-	//   };
-	// });
-	// // socket.send("matchmaking");
-    // const response = await fetch(`https://${window.location.host}/api/set/matchmaking/join`, {
-    //     method: "POST",
-    //     headers: {
-    //         // "Content-Type": "application/json",
-    //         "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
-    //     },
-    //     credentials: "include"
-    // });
-    //
-    // const data = await response.json();
-    // console.log(data);
-    //
-	// socket.onmessage = (event) => {
-	// 	const data = JSON.parse(event.data);
-	// 	console.log(event.data);
-	//   if (data.type === "matchFound") {
-	// 	socket?.close(1000, "Moved to GameView");
-	// 	navigateTo('game')
-	//   }
-	// };
-	// socket.onclose = (event) => {
-	//   console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
-	// };
 }

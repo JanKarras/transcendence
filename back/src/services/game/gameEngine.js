@@ -88,11 +88,12 @@ function resetBall(ball) {
 }
 
 
-function updateVelocity(userId, dir) {
+function updateVelocity(userId, dir, side) {
     const match = matchService.getMatchByUserId(userId);
     console.log (dir);
     const state = match.gameInfo;
     const paddle = match.gameInfo.playerLeft.userId === userId
+        || (side === "left" && match.gameInfo.playerLeft.userId === null)
         ? match.gameInfo.paddleLeft
         : match.gameInfo.paddleRight;
     switch (dir) {

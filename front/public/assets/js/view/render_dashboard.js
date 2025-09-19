@@ -71,7 +71,8 @@ export async function render_dashboard(params) {
     const matches = document.getElementById("matches");
     const playNowBtn = document.getElementById("playNowBtn");
     playNowBtn?.addEventListener("click", () => {
-        navigateTo("matchmaking");
+        navigateTo("game");
+        // navigateTo("matchmaking")
     });
     const startTournamentBtn = document.getElementById("startTournamentBtn");
     startTournamentBtn?.addEventListener("click", () => {

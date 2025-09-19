@@ -10,15 +10,27 @@ function handleMessage(msg, userId, ws, remoteAddress) {
 
     switch (msgString) {
         case "movePaddleUp": {
-            gameEngine.updateVelocity(userId, "up")
+            gameEngine.updateVelocity(userId, "up", "right")
             break;
         }
         case "movePaddleDown": {
-            gameEngine.updateVelocity(userId, "down")
+            gameEngine.updateVelocity(userId, "down", "right")
+            break;
+        }
+        case "moveLeftPaddleUp": {
+            gameEngine.updateVelocity(userId, "up", "left")
+            break;
+        }
+        case "moveLeftPaddleDown": {
+            gameEngine.updateVelocity(userId, "down", "left")
             break;
         }
         case "stopPaddle": {
             gameEngine.updateVelocity(userId, "stop")
+            break;
+        }
+        case "stopLeftPaddle": {
+            gameEngine.updateVelocity(userId, "stop", "left")
             break;
         }
         default:
