@@ -31,7 +31,7 @@ bodyContainer.innerHTML = toggleHtml;
 
 
 	const gameId = params?.get("gameId");
-	
+
 	if (gameId) {
 		socket?.send(JSON.stringify({
 			type: "joinGame",
@@ -93,7 +93,7 @@ function renderLocalTournamentFrontend(tournament: any) {
         }).join("")}
       </div>
 
-      <button id="startLocalTournamentBtn" class="mt-8 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
+      <button id="startLocalTournamentBtn" disabled class="mt-8 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
         Start Tournament
       </button>
     </div>
@@ -212,9 +212,17 @@ async function renderRemoteTournament(players: {
 
       </div>
 
-      <button id="startTournamentBtn" class="mt-8 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
-        Start Tournament
-      </button>
+      <button
+  id="startTournamentBtn"
+  disabled
+  class="mt-8 px-6 py-3 font-bold rounded-lg transition
+         bg-green-600 hover:bg-green-700 text-white
+         disabled:bg-gray-400 disabled:text-gray-200
+         disabled:cursor-not-allowed disabled:hover:bg-gray-400"
+>
+  Start Tournament
+</button>
+
 
 	  <div id="chatContainer" class="w-full max-w-3xl bg-gray-900 rounded-lg mt-8 p-4 flex flex-col h-80">
       <div id="chatMessages" class="flex-1 overflow-y-auto text-sm text-white space-y-2 mb-2"></div>
@@ -294,13 +302,13 @@ async function renderRemoteTournament(players: {
 
 
 
-  document.getElementById("cancelInvite")?.addEventListener("click", () => {
-    modal.classList.add("hidden");
-  });
+	document.getElementById("cancelInvite")?.addEventListener("click", () => {
+		modal.classList.add("hidden");
+	});
 
-  document.getElementById("startTournamentBtn")?.addEventListener("click", () => {
-    socket?.send(JSON.stringify({ type: "startTournament" }));
-  });
+	document.getElementById("startTournamentBtn")?.addEventListener("click", () => {
+		socket?.send(JSON.stringify({ type: "startTournament" }));
+	});
 
 	const chatInput = document.getElementById("chatInput") as HTMLInputElement;
 	const chatSend = document.getElementById("chatSend");
@@ -375,6 +383,11 @@ async function connect() {
 					break;
 				case "remoteTournamentUpdated":
 					renderRemoteTournament(message.data.players, message.data.messages);
+					const startBtn = document.getElementById("startTournamentBtn");
+					if (startBtn instanceof HTMLButtonElement) {
+						console.log("Tournament ready state:", message.data.ready);
+						startBtn.disabled = !message.data.ready;
+					}
 					break;
 				case "endTournament":
 					showErrorMessage(message.data.message || "Tournament ended.");
@@ -386,6 +399,14 @@ async function connect() {
 				case "localTournamentUpdated":
 					renderLocalTournamentFrontend(message.data);
 					break;
+				case "pong":
+					console.log("Pong received");
+					break;
+				case "tournamentStarting":
+					const params = new URLSearchParams();
+    				params.set("gameId", message.data.gameId);
+					navigateTo('remote_tournament_game', params);
+					break;
 				default:
 					break;
 			}
@@ -396,6 +417,12 @@ async function connect() {
 			navigateTo('dashboard');
 		}
 	});
+	setInterval(() => {
+		if (socket?.readyState === WebSocket.OPEN) {
+			socket.send(JSON.stringify({ type: "ping" }));
+		}
+	}, 30000);
+
 }
 
 function renderChat(messages: { text: string, type: "system" | "user" }[]) {

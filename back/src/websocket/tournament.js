@@ -21,6 +21,7 @@ module.exports = async function chatWebSocketRoute(fastify) {
 
 			switch (data.type) {
 				case "createRemoteTournament":
+					deleteLocalTournament(userId);
 					const tournament = createRemoteTournament(userId, ws);
 					console.log(`🏆 Remote tournament created by host ${userId}`);
 					ws.send(JSON.stringify({ type: "tournamentCreated", data: getTournamentForFrontend(tournament) }));
@@ -37,7 +38,6 @@ module.exports = async function chatWebSocketRoute(fastify) {
 					console.log(`🙋 User ${userId} joined tournament ${data.data.gameId}`);
 					broadcastTournamentUpdate(tournamentToJoinData);
 					break;
-
 				case "tournamentChat":
 					const tournamentChat = findTournamentByUser(userId);
 					if (tournamentChat) {
@@ -47,26 +47,8 @@ module.exports = async function chatWebSocketRoute(fastify) {
 						broadcastTournamentUpdate(tournamentChat);
 					}
 					break;
-
 				case "createLocalTournament":
-					const tournamentRemote = onGoingTournaments.get(userId);
-					if (tournamentRemote) {
-						addSystemMessage(tournamentRemote, `Host has ended the tournament.`);
-						broadcastTournamentUpdate(tournamentRemote);
-						console.log(`🛑 Remote tournament of host ${userId} ended before starting local one.`);
-
-						setTimeout(() => {
-							for (let i = 1; i < tournamentRemote.players.length; i++) {
-								const players = tournamentRemote.players[i];
-								if (players.ws && players.ws.readyState === players.ws.OPEN) {
-									players.ws.send(JSON.stringify({ type: "endTournament", data: { message: "Tournament ended by host." } }));
-									players.ws.close();
-								}
-							}
-							onGoingTournaments.delete(userId);
-							fastify.log.info(`🗑️ Remote tournament ${userId} removed.`);
-						}, 3000);
-					}
+					deleteRemoteTournament(userId);
 					const tournamentLocal = createLocalTournament(userId, ws);
 					console.log(`🎮 Local tournament created by host ${userId}`);
 					ws.send(JSON.stringify({ type: "LocalTournamentCreated", data: getTournamentForFrontend(tournamentLocal) }));
@@ -76,7 +58,16 @@ module.exports = async function chatWebSocketRoute(fastify) {
 					updateLocalPlayerName(data.data.slot, data.data.name, userId, ws);
 					console.log(`✏️ Local player name updated in slot ${data.data.slot} to "${data.data.name}"`);
 					break;
-
+				case "ping":
+					ws.send(JSON.stringify({ type: "pong" }));
+				case "startTournament":
+					const tournamentToStart = onGoingTournaments.get(userId);
+					if (tournamentToStart && tournamentToStart.ready) {
+						for (let i = 0; i < tournamentToStart.players.length; i++) {
+							const player = tournamentToStart.players[i];
+							player.ws.send(JSON.stringify({ type: "tournamentStarting", data: { gameId: userId } }));
+						}
+					}
 				default:
 					console.log(`⚠️ Unknown message type received: ${data.type}`);
 					break;
@@ -113,6 +104,7 @@ module.exports = async function chatWebSocketRoute(fastify) {
 						player.status = "left";
 						player.ws = null;
 						addSystemMessage(tournament, `${player.username} has left the tournament.`);
+						checkTournamentReady(tournament);
 						broadcastTournamentUpdate(tournament);
 						console.log(`🚪 User ${userId} left the tournament.`);
 					}
@@ -125,6 +117,33 @@ module.exports = async function chatWebSocketRoute(fastify) {
 		});
 	});
 };
+
+function deleteRemoteTournament(userId) {
+	const tournamentRemote = onGoingTournaments.get(userId);
+	if (tournamentRemote) {
+		addSystemMessage(tournamentRemote, `Host has ended the tournament.`);
+		broadcastTournamentUpdate(tournamentRemote);
+		console.log(`🛑 Remote tournament of host ${userId} ended before starting local one.`);
+		setTimeout(() => {
+			for (let i = 1; i < tournamentRemote.players.length; i++) {
+				const players = tournamentRemote.players[i];
+				if (players.ws && players.ws.readyState === players.ws.OPEN) {
+					players.ws.send(JSON.stringify({ type: "endTournament", data: { message: "Tournament ended by host." } }));
+					players.ws.close();
+				}
+			}
+			onGoingTournaments.delete(userId);
+		}, 3000);
+	}
+}
+
+function deleteLocalTournament(userId) {
+	const tournamentLocal = onGoingLocalTournaments.get(userId);
+	if (tournamentLocal) {
+		console.log(`🛑 Local tournament of host ${userId} ended before starting remote one.`);
+		onGoingLocalTournaments.delete(userId);
+	}
+}
 
 function updateLocalPlayerName(slot, name, hostId, ws) {
 	const tournament = onGoingLocalTournaments.get(hostId);
@@ -153,9 +172,22 @@ function getTournamentForFrontend(tournament) {
 			slot: p.slot,
 			status: p.status
 		})),
-		messages: tournament.messages
+		messages: tournament.messages,
+		ready: tournament.ready || false
 	};
 }
+
+function checkTournamentReady(tournament) {
+	const allJoined = tournament.players.every(p => p.status === "joined");
+	tournament.ready = allJoined;
+	if (allJoined) {
+		addSystemMessage(tournament, "✅ All players joined. Tournament is ready to start!");
+	} else {
+		addSystemMessage(tournament, "⚠️ Tournament is no longer ready.");
+	}
+	broadcastTournamentUpdate(tournament);
+}
+
 
 function createRemoteTournament(hostId, ws) {
 	const user = userUtils.getUser(hostId);
@@ -166,7 +198,8 @@ function createRemoteTournament(hostId, ws) {
 			{ id: null, username: null, path: null, slot: 3, status: null, ws: null },
 			{ id: null, username: null, path: null, slot: 4, status: null, ws: null },
 		],
-		messages: []
+		messages: [],
+		ready: false
 	};
 	onGoingTournaments.set(hostId, tournament);
 	return tournament;
@@ -199,6 +232,7 @@ function inviteToTournament(hostId, guestId, slot) {
 	const user = userUtils.getUser(guestId);
 
 	const tournament = onGoingTournaments.get(hostId);
+	if (!tournament) return null;
 	let player = null;
 	if (slot === 2) player = tournament.players[1];
 	else if (slot === 3) player = tournament.players[2];
@@ -224,6 +258,7 @@ function joinTiournament(gameId, userId, ws) {
 			player.status = "joined";
 			player.ws = ws;
 			addSystemMessage(tournament, `${player.username} joined the tournament.`);
+			checkTournamentReady(tournament);
 			return tournament;
 		}
 	}
