@@ -47,12 +47,13 @@ function paddleBounce(ball, paddle) {
 	// Max bounce angle = 75 degrees
 	let bounceAngle = normalized * (Math.PI / 3);
 
+    const MIN_ANGLE = 0.1; 
+    if (Math.abs(bounceAngle) < MIN_ANGLE) {
+        bounceAngle = (bounceAngle >= 0 ? MIN_ANGLE : -MIN_ANGLE);
+    }
 	let direction = (ball.position.x < CANVAS_WIDTH / 2) ? 1 : -1;
 	ball.velocity.x = direction * ball.speed * Math.cos(bounceAngle);
 	ball.velocity.y = ball.speed * Math.sin(bounceAngle);
-
-	// Ensure ball never goes fully horizontal
-	jitter(ball);
 
 	// Increase speed slightly
 	ball.speed += 0.5;
