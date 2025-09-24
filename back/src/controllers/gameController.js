@@ -7,7 +7,6 @@ const webSocketService = require("../services/game/webSocketService");
 const gameStore = require("../services/game/gameStore");
 const matchService = require("../services/game/matchService");
 const gameProcessor = require("../services/game/gameProcessor");
-const {connectedUsers} = require("../services/game/gameStore");
 
 exports.chatWebSocketRoute = async function (fastify) {
     fastify.get('/game', { websocket: true }, (ws, request) => {
@@ -159,7 +158,7 @@ exports.startTheGame = async (req, reply) => {
         return reply.status(400).send({ error: 'UserId required' });
     }
     gameProcessor.setCountdownFinished(userId, mode);
-    console.log("Game started");
+    console.log("Game started lod");
     reply.send({ message: "Game started" });
 }
 

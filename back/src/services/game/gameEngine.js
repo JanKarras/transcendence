@@ -1,5 +1,6 @@
 const { CANVAS_HEIGHT, CANVAS_WIDTH } = require("../../constants/constants");
 const matchService = require("../../services/game/matchService");
+const gameStore = require("./gameStore");
 
 function updateGameInfo(match) {
     const ball = match.gameInfo.ball;
@@ -123,6 +124,7 @@ function resetBall(ball) {
 
 
 function updateVelocity(userId, dir, side) {
+    console.log(gameStore.onGoingMatches);
     const match = matchService.getMatchByUserId(userId);
     console.log (dir);
     const state = match.gameInfo;

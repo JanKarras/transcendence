@@ -120,8 +120,8 @@ export function initRouter() {
 export async function navigateTo(view, params = null) {
     if (view !== "game" && view !== "matchmaking") {
         const socket = getSocket();
-        if (socket) {
-            socket.close(100, "Navigated away from game");
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.close(1000, "Navigated away from game");
             // socket = null;
         }
     }

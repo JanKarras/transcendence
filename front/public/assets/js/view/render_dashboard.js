@@ -72,7 +72,7 @@ export async function render_dashboard(params) {
     const playNowBtn = document.getElementById("playNowBtn");
     playNowBtn?.addEventListener("click", () => {
         navigateTo("game");
-        // navigateTo("matchmaking")
+        // navigateTo("matchmaking");
     });
     const startTournamentBtn = document.getElementById("startTournamentBtn");
     startTournamentBtn?.addEventListener("click", () => {

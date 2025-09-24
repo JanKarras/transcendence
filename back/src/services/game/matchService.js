@@ -16,13 +16,10 @@ function getMatchesWithPlayersByUserId(userId) {
 }
 
 function getMatchByUserId(userId) {
-    for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
-        const match = gameStore.onGoingMatches[i];
-        if (match.userId1 === userId || match.userId2 === userId) {
-            return match;
-        }
-    }
-    return null
+    console.log(gameStore.onGoingMatches);
+    return gameStore.onGoingMatches.find(
+        m => m.userId1 === userId || m.userId2 === userId
+    );
 }
 
 function createMatch(userData1, userData2) {

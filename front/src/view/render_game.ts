@@ -84,34 +84,31 @@ export async function render_game(params: URLSearchParams | null) {
 
 	function enablePaddles() {
         const socket = getSocket();
-        if (!socket) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
             throw new Error("WebSocket is not connected");
         }
 		window.addEventListener('keydown', (e) => {
-			if (e.key === 'ArrowUp') {
-				socket?.send('movePaddleUp');
-				console.log("movePaddleUp send");
-			} else if (e.key === 'ArrowDown') {
-				console.log("movePaddleDown send")
-				socket?.send('movePaddleDown');
-			} else if (e.key?.toLowerCase() === 'w') {
-                socket?.send('moveLeftPaddleUp');
-                console.log("moveLeftPaddleUp send");
-            } else if (e.key?.toLowerCase() === 's') {
-                console.log("moveLeftPaddleDown send")
-                socket?.send('moveLeftPaddleDown');
+            if (socket.readyState === WebSocket.OPEN) {
+                if (e.key === 'ArrowUp') {
+                    socket?.send('movePaddleUp');
+                } else if (e.key === 'ArrowDown') {
+                    socket?.send('movePaddleDown');
+                } else if (e.key?.toLowerCase() === 'w') {
+                    socket?.send('moveLeftPaddleUp');
+                } else if (e.key?.toLowerCase() === 's') {
+                    socket?.send('moveLeftPaddleDown');
+                }
             }
 		});
 
 		window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                socket?.send('stopPaddle');
-                console.log("stopPaddle send");
-            } else if (e.key.toLowerCase() === 'w' || e.key.toLowerCase() === 's') {
-                socket?.send('stopLeftPaddle');
-                console.log("stopLeftPaddle send");
+            if (socket.readyState === WebSocket.OPEN) {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    socket?.send('stopPaddle');
+                } else if (e.key.toLowerCase() === 'w' || e.key.toLowerCase() === 's') {
+                    socket?.send('stopLeftPaddle');
+                }
             }
-			// socket?.send('stopPaddle');
 		});
 	}
 	
@@ -174,11 +171,14 @@ export async function render_game(params: URLSearchParams | null) {
 
 		playAgainBtn.onclick = () => {
 			// disconnect
-			navigateTo("matchmaking");
+			// navigateTo("matchmaking");
+			navigateTo("game");
+            gameOver = false;
 		};
 
 		exitBtn.onclick = () => {
 			navigateTo("dashboard");
+            gameOver = false;
 		};
 	}
 
@@ -201,12 +201,16 @@ export async function render_game(params: URLSearchParams | null) {
                 case 'startGame':
                     gameState = data.gameState;
                     gameInfo = data.gameInfo;
+                    displayNames();
                     renderFrame(ctx, gameInfo)
                     startCountdown("local");
                     break;
                 case 'sendFrames':
                     gameInfo = data.gameInfo;
                     gameState = data.gameState;
+                    break;
+                case 'gameOver':
+                    gameOver = true;
                     break;
                 default:
 

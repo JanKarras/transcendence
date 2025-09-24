@@ -91,8 +91,8 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	const playNowBtn = document.getElementById("playNowBtn")
 
 	playNowBtn?.addEventListener("click", () => {
-		navigateTo("game")
-		// navigateTo("matchmaking")
+		navigateTo("game");
+		// navigateTo("matchmaking");
 	});
 
 	const startTournamentBtn = document.getElementById("startTournamentBtn");
