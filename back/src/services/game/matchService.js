@@ -2,7 +2,7 @@ const matchRepository = require("../../repositories/matchRepository");
 const matchPlayerRepository = require("../../repositories/matchPlayerRepository");
 const userRepository = require("../../repositories/userRepository");
 const gameStore = require("./gameStore");
-const { GameState } = require("../../constants/constants");
+const { GameState, CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_HEIGHT, PADDLE_SPEED, PADDLE_WIDTH } = require("../../constants/constants");
 
 function getMatchesWithPlayersByUserId(userId) {
     const userMatches = matchRepository.getMatchesByUserId(userId);
@@ -104,21 +104,21 @@ function initLocalMatch(userData1, username) {
 function initGameInfo(playerLeft, playerRight) {
     return {
         ball: {
-            position: { x: 400, y: 300 },
+            position: { x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2 },
             radius: 10,
             velocity: { x: 5, y: 4 },
             speed: 5,
         },
         paddleLeft: {
-            position: { x: 20, y: 250 },
-            size: { x: 10, y: 50 },
-            speed: 5,
+            position: { x: 20, y: (CANVAS_HEIGHT - PADDLE_HEIGHT) / 2},
+            size: { x: PADDLE_WIDTH, y: PADDLE_HEIGHT },
+            speed: PADDLE_SPEED,
             velocity: { x: 0, y: 0 },
         },
         paddleRight: {
-            position: { x: 770, y: 250 },
-            size: { x: 10, y: 50 },
-            speed: 5,
+            position: { x: CANVAS_WIDTH - 20, y: (CANVAS_HEIGHT - PADDLE_HEIGHT) / 2 },
+            size: { x: PADDLE_WIDTH, y: PADDLE_HEIGHT },
+            speed: PADDLE_SPEED,
             velocity: { x: 0, y: 0 },
         },
         playerLeft: playerLeft,

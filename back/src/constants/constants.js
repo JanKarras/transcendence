@@ -14,6 +14,9 @@ const GameState = {
 
 const CANVAS_HEIGHT = 600;
 const CANVAS_WIDTH = 800;
+const PADDLE_HEIGHT = 50;
+const PADDLE_WIDTH = 10;
+const PADDLE_SPEED = 5;
 
 module.exports = {
     MIN_INTERVAL,
@@ -23,4 +26,7 @@ module.exports = {
     GameState,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
+    PADDLE_HEIGHT,
+    PADDLE_WIDTH,
+    PADDLE_SPEED,
 }
