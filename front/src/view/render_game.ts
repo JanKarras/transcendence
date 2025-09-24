@@ -9,6 +9,8 @@ import { connect, getSocket } from "../websocket/wsService.js";
 let gameInfo : GameInfo;
 let gameState = 0;
 let gameOver = false;
+let showUsernameModal = true;
+let username: string | null | undefined;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
@@ -18,9 +20,19 @@ export async function render_game(params: URLSearchParams | null) {
 		return;
 	}
 
-	render_header();
+    const mode = params?.get("mode");
+    username = params?.get("username");
+    if (mode === "remote" || !!username) {
+        showUsernameModal = false;
+    } else if (mode === "local" && !username) {
+        showUsernameModal = true;
+    }
+    console.log("username", username);
+    console.log("showUsernameModal", showUsernameModal);
 
-	const html = `<div class="flex flex-col items-center gap-8">
+    render_header();
+
+    const html = `<div class="flex flex-col items-center gap-8">
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
 			Welcome to Pong
 		</h1>
@@ -53,6 +65,21 @@ export async function render_game(params: URLSearchParams | null) {
 				</div>
 			</div>
 		</div>
+		
+		<!-- Username Modal -->
+        <div id="usernameModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 ${showUsernameModal ? "" : "hidden"}">
+          <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+            <h4 class="text-2xl font-bold text-white">Enter the username of the second player</h4>
+            <input id="usernameInput" 
+                   type="text" 
+                   placeholder="username" 
+                   class="px-4 py-2 rounded bg-gray-600 text-white text-center w-64">
+            <div class="flex gap-6 mt-4">
+              <button id="submitUsernameBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Submit</button>
+              <button id="cancelUsernameBtn" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Cancel</button>
+            </div>
+          </div>
+        </div>
 
 		<!-- Countdown display -->
 		<div id="countdown" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-white hidden"></div>
@@ -65,17 +92,37 @@ export async function render_game(params: URLSearchParams | null) {
 	const countdownEl = document.getElementById('countdown')!;
 	const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const winnerModal = document.getElementById('winnerModal')!;
-	const winnerText = document.getElementById('winnerText')!;
+	const usernameModal = document.getElementById('usernameModal')!;
+    const usernameInput = document.getElementById("usernameInput") as HTMLInputElement | null;
+    const winnerText = document.getElementById('winnerText')!;
 	const playAgainBtn = document.getElementById('playAgainBtn')!;
+	const submitUsernameBtn = document.getElementById('submitUsernameBtn')!;
+	const cancelUsernameBtn = document.getElementById('cancelUsernameBtn')!;
 	const exitBtn = document.getElementById('exitBtn')!;
 
 	canvas.width = 800;
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
 
+    submitUsernameBtn?.addEventListener("click", async () => {
+        if (usernameInput && usernameInput.value.trim() !== "") {
+            usernameModal?.classList.add("hidden");
+            username = usernameInput.value.trim();
+            await startLocalGame();
+        } else {
+            alert("Please enter a username!");
+        }
+    });
 
-	// await startGame();
-	await startLocalGame();
+    cancelUsernameBtn?.addEventListener("click", () => {
+        navigateTo("dashboard");
+    });
+
+    if (mode === "remote") {
+        await startGame();
+    } else if (!!username) {
+        await startLocalGame();
+    }
 
 	if (!ctx) {
 		// disconnect?
@@ -171,8 +218,16 @@ export async function render_game(params: URLSearchParams | null) {
 
 		playAgainBtn.onclick = () => {
 			// disconnect
-			// navigateTo("matchmaking");
-			navigateTo("game");
+            if (mode === "local") {
+                const params = new URLSearchParams();
+                params.set("mode", "local");
+                if (!!username) {
+                    params.set("username", username);
+                }
+                navigateTo("game", params);
+            } else {
+                navigateTo("matchmaking");
+            }
             gameOver = false;
 		};
 
@@ -225,7 +280,7 @@ export async function render_game(params: URLSearchParams | null) {
                 "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
             },
             body: JSON.stringify({
-                username: "username",
+                username: username,
             }),
             credentials: "include"
         });

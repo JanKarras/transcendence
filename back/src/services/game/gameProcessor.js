@@ -60,15 +60,15 @@ function isCountdownFinished(match) {
 
 function setCountdownFinished(userId, mode) {
     const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
-    if (mode === "local") {
+    if (mode === "local" && match) {
         console.log("mode is local");
         match.coutndownFinished1 = true;
         match.coutndownFinished2 = true;
     }
     else {
-        if (match.userId1 === userId) {
+        if (match?.userId1 === userId) {
             match.coutndownFinished1 = true;
-        } else if (match.userId2 === userId) {
+        } else if (match?.userId2 === userId) {
             match.coutndownFinished2 = true;
         }
     }

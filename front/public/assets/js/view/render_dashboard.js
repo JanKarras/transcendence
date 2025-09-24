@@ -26,9 +26,9 @@ export async function render_dashboard(params) {
 							<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t(lang.playTitle, LANGUAGE)}</h5>
 						</a>
 						<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${t(lang.playDesc, LANGUAGE)}</p>
-						<a href="#" id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+						<button id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
 							${t(lang.playNowBtn, LANGUAGE)}
-						</a>
+						</button>
 					</div>
 				</div>
 				<div class="w-[50%] bg-gradient-to-r from-[#8e00a8] to-[#7c0bac] border border-gray-200 rounded-lg shadow-[0_0_30px_#174de1] dark:border-gray-700">
@@ -64,15 +64,43 @@ export async function render_dashboard(params) {
 					<p class="font-normal text-gray-700 dark:text-gray-400">${t(lang.matchesToday, LANGUAGE)}</p>
 				</a>
 			</div>
+			
+            <!--  Mode modal  -->
+			<div id="modeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
+              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+                <h4 class="text-3xl font-bold text-white">Please, choose the game mode</h4>
+                <div class="flex gap-12 mt-4">
+                  <button id="localBtn" class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded">Local</button>
+                  <button id="remoteBtn" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">Remote</button>
+                </div>
+              </div>
+            </div>
 		</div>`;
     bodyContainer.innerHTML = html;
     const online = document.getElementById("online");
     const tourn = document.getElementById("tourn");
     const matches = document.getElementById("matches");
+    const mode = document.getElementById("modeModal");
     const playNowBtn = document.getElementById("playNowBtn");
+    const localBtn = document.getElementById("localBtn");
+    const remoteBtn = document.getElementById("remoteBtn");
     playNowBtn?.addEventListener("click", () => {
-        navigateTo("game");
+        mode?.classList.remove("hidden");
+        // navigateTo("game");
         // navigateTo("matchmaking");
+    });
+    mode?.addEventListener("click", (e) => {
+        if (e.target === mode) {
+            mode?.classList.add("hidden");
+        }
+    });
+    localBtn?.addEventListener("click", () => {
+        const params = new URLSearchParams();
+        params.set("mode", "local");
+        navigateTo("game", params);
+    });
+    remoteBtn?.addEventListener("click", () => {
+        navigateTo("matchmaking");
     });
     const startTournamentBtn = document.getElementById("startTournamentBtn");
     startTournamentBtn?.addEventListener("click", () => {

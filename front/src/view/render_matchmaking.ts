@@ -74,7 +74,9 @@ async function startMatchmaking() {
         console.log("📩", data);
 
         if (data.type === "matchFound") {
-            navigateTo("game");
+            const params = new URLSearchParams();
+            params.set("mode", "remote");
+            navigateTo("game", params);
         }
     };
 
