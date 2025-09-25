@@ -104,9 +104,6 @@ export async function render_game(params: URLSearchParams | null) {
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
 
-
-
-	connect();
     submitUsernameBtn?.addEventListener("click", async () => {
         if (usernameInput && usernameInput.value.trim() !== "") {
             usernameModal?.classList.add("hidden");
@@ -161,8 +158,6 @@ export async function render_game(params: URLSearchParams | null) {
             }
 		});
 	}
-
-	function startCountdown() {
 
 	function startCountdown(mode: "local" | "remote") {
 		let counter = 5;
