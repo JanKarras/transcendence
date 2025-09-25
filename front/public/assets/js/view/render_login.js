@@ -4,9 +4,13 @@ import { navigateTo } from "./history_views.js";
 import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
 import { render_header } from "./render_header.js";
-export function render_login(params) {
+async function setHash() {
+    window.location.hash = "#login";
+}
+export async function render_login(params) {
     if (!bodyContainer || !headernavs)
         return;
+    await setHash();
     render_header();
     bodyContainer.innerHTML = `
 		<div id="loginContainer" class="max-w-md p-6 bg-white rounded-lg shadow-lg">

@@ -56,7 +56,6 @@ let profileMenuListenerAttached = false;
 
 export async function render_header() {
     const pos = getPos();
-
     const friendsCotnainer = document.getElementById('FriendsContainer');
 
 	const headerTitle = document.getElementById("headline");
@@ -143,7 +142,8 @@ export async function render_header() {
 let intervalId: ReturnType<typeof setInterval>;
 
 intervalId = setInterval(async () => {
-    const pos = getPos();
+
+	const pos = getPos();
 
     if (
         pos == 'login' ||

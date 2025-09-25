@@ -14,8 +14,10 @@ import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
 import { render_tournament } from "./render_tournament.js";
+import { render_local_tournament_game } from "./render_local_tournament_game.js";
+import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
 import { getSocket } from "../websocket/wsService.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament'];
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game', 'remote_tournament_game'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,

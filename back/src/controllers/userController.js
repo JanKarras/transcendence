@@ -186,6 +186,7 @@ exports.updateUser = async function (req, reply) {
         } else if (part.fieldname === "twofa_active") {
 			twofaActive = part.value === "1";
 			const active = twofaActive ? 1 : 0;
+			console.log(active)
 			twofaActive = active;
 
 		}
