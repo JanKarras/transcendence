@@ -1,5 +1,6 @@
 const { CANVAS_HEIGHT, CANVAS_WIDTH } = require("../../constants/constants");
 const matchService = require("../../services/game/matchService");
+const gameStore = require("./gameStore");
 
 function updateGameInfo(match) {
     const ball = match.gameInfo.ball;
@@ -8,7 +9,7 @@ function updateGameInfo(match) {
     movePaddles(match.gameInfo, CANVAS_HEIGHT);
     handleCollisions(match.gameInfo);
     handleScoring(match.gameInfo);
-    if (match.gameInfo.state.end)
+    if (match.gameInfo.end)
         match.gameState = "GAMEOVER";
 }
 
@@ -20,6 +21,12 @@ function moveBall(ball) {
 function bounceBall(ball, canvasHeight) {
     if (ball.position.y - ball.radius < 0 || ball.position.y + ball.radius > canvasHeight) {
         ball.velocity.y *= -1;
+
+        // Ensure dy is not too small after wall bounce
+        const MIN_DY = 2;
+        if (Math.abs(ball.velocity.y) < MIN_DY) {
+            ball.velocity.y = (ball.velocity.y < 0 ? -MIN_DY : MIN_DY);
+        }
     }
 }
 
@@ -40,21 +47,27 @@ function movePaddles(state, canvasHeight) {
 }
 
 function paddleBounce(ball, paddle) {
-	let relativeIntersectY = (ball.position.y - (paddle.position.y + paddle.size.y / 2));
-	let normalized = relativeIntersectY / (paddle.size.y / 2);
+    let relativeIntersectY = (ball.position.y - (paddle.position.y + paddle.size.y / 2));
+    let normalized = relativeIntersectY / (paddle.size.y / 2);
 
-	// Max bounce angle = 75 degrees
-	let bounceAngle = normalized * (Math.PI / 3);
+    // Max bounce angle = 75 degrees
+    let bounceAngle = normalized * (Math.PI / 3);
 
-	let direction = (ball.position.x < CANVAS_WIDTH / 2) ? 1 : -1;
-	ball.velocity.x = direction * ball.speed * Math.cos(bounceAngle);
-	ball.velocity.y = ball.speed * Math.sin(bounceAngle);
+    // Clamp to avoid too flat (horizontal) or too steep (vertical)
+    const MIN_ANGLE = 0.1;                 // ~6°
+    const MAX_ANGLE = Math.PI / 2 - 0.1;   // ~84°
+    if (Math.abs(bounceAngle) < MIN_ANGLE) {
+        bounceAngle = (bounceAngle >= 0 ? MIN_ANGLE : -MIN_ANGLE);
+    } else if (Math.abs(bounceAngle) > MAX_ANGLE) {
+        bounceAngle = (bounceAngle >= 0 ? MAX_ANGLE : -MAX_ANGLE);
+    }
 
-	// Ensure ball never goes fully horizontal
-	jitter(ball);
+    let direction = (ball.position.x < CANVAS_WIDTH / 2) ? 1 : -1;
+    ball.velocity.x = direction * ball.speed * Math.cos(bounceAngle);
+    ball.velocity.y = ball.speed * Math.sin(bounceAngle);
 
-	// Increase speed slightly
-	ball.speed += 0.5;
+    // Increase speed slightly
+    ball.speed += 0.5;
 }
 
 function handleCollisions(state) {
@@ -122,11 +135,13 @@ function resetBall(ball) {
 }
 
 
-function updateVelocity(userId, dir) {
+function updateVelocity(userId, dir, side) {
+    console.log(gameStore.onGoingMatches);
     const match = matchService.getMatchByUserId(userId);
     console.log (dir);
     const state = match.gameInfo;
     const paddle = match.gameInfo.playerLeft.userId === userId
+        || (side === "left" && match.gameInfo.playerLeft.userId === null)
         ? match.gameInfo.paddleLeft
         : match.gameInfo.paddleRight;
     switch (dir) {

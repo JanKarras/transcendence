@@ -14,9 +14,8 @@ import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
 import { render_game } from "./render_game.js";
 import { render_tournament } from "./render_tournament.js";
-import { render_local_tournament_game } from "./render_local_tournament_game.js";
-import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
-const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament', 'local_tournament_game', 'remote_tournament_game'];
+import { getSocket } from "../websocket/wsService.js";
+const protectedViews = ['dashboard', 'profile', 'friends', 'chat', 'friend_profile', 'matchmaking', 'game', 'tournament'];
 const renderers = {
     login: render_login,
     dashboard: render_dashboard,
@@ -66,6 +65,19 @@ function getViewAndParamsFromHash() {
 }
 export function initRouter() {
     window.addEventListener('popstate', async (event) => {
+        const currentPage = window.location.hash;
+        if (currentPage !== "#game" && currentPage !== "#matchmaking") {
+            try {
+                const socket = getSocket();
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.close(1000, "Leaving game page");
+                    console.log("🔴 WebSocket closed because user navigated away");
+                }
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
         const state = event.state;
         if (state && state.view) {
             if (protectedViews.includes(state.view)) {
@@ -108,6 +120,13 @@ export function initRouter() {
     }
 }
 export async function navigateTo(view, params = null) {
+    if (view !== "game" && view !== "matchmaking") {
+        const socket = getSocket();
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.close(1000, "Navigated away from game");
+            // socket = null;
+        }
+    }
     if (protectedViews.includes(view)) {
         const isLoggedIn = await is_logged_in_api();
         if (!isLoggedIn) {

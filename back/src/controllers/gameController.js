@@ -21,11 +21,22 @@ exports.chatWebSocketRoute = async function (fastify) {
             return;
         }
 
+        ws.isAlive = true;
+        ws.on('pong', () => {
+            ws.isAlive = true;
+        });
+
         const data = {
             userId: userId,
             ws: ws,
             remoteAddress: remoteAddress
         }
+
+        console.log(gameStore.onGoingMatches);
+        // If user reconnects, handle it
+        // if (gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId)) {
+        //     reconnectUser(data);
+        // }
         gameStore.connectedUsers.set(userId, data);
         // console.log(gameStore.connectedUsers.get(userId));
 
@@ -33,13 +44,16 @@ exports.chatWebSocketRoute = async function (fastify) {
             webSocketService.handleMessage(msg, userId, ws, remoteAddress);
         });
 
-        ws.on('close', (code, reason) => {
+        ws.on('close', () => {
             fastify.log.info(
-                `❌ WS disconnected, code: ${code}, reason: ${reason?.toString() || ''}`
+                `User ${userId} disconnected`
             );
+            request.socket = null;
             // sicherstellen dass er nicht mehr in der Queue hängt
             gameStore.queue.delete(userId);
             gameStore.connectedUsers.delete(userId);
+
+            disconnectUser(userId);
         });
 
         ws.on('error', (err) => {
@@ -47,6 +61,70 @@ exports.chatWebSocketRoute = async function (fastify) {
         });
     });
 }
+
+function disconnectUser(userId) {
+    const match = gameStore.onGoingMatches.find(
+        m => m.userId1 === userId || m.userId2 === userId
+    );
+    if (!match) {
+        return;
+    }
+
+    if (match.userId1 === userId) {
+        match.user1Connected = false;
+    }
+    if (match.userId2 === userId) {
+        match.user2Connected = false;
+    }
+
+    console.log(match.user1Connected, match.user2Connected);
+    // Start a timeout to remove the match if both disconnected
+    // match.disconnectTimeout = setTimeout(() => {
+        if (!match.user1Connected && !match.user2Connected) {
+            gameStore.onGoingMatches = gameStore.onGoingMatches.filter(m => m !== match);
+            console.log(`Both users disconnected. Removing match ${match.userId1} vs ${match.userId2}`);
+        }
+    // }, 10000);
+}
+
+function reconnectUser(data) {
+    const match = gameStore.onGoingMatches.find(
+        m => m.userId1 === data.userId || m.userId2 === data.userId
+    );
+    if (!match) return;
+
+    matchService.connectUserToMatch(data)
+
+    const gameStatePayload = {
+        type: "restoreGame",
+        gameState: match.gameState,
+        gameInfo: match.gameInfo
+    };
+
+    try {
+        data.ws.send(JSON.stringify(gameStatePayload));
+        console.log(`User ${data.userId} reconnected and game state sent`);
+    } catch (err) {
+        console.error("Failed to send game state to reconnecting user:", err);
+    }
+}
+
+setInterval(() => {
+    gameStore.connectedUsers.forEach((data, userId) => {
+        const ws = data.ws;
+
+        if (ws.isAlive === false) {
+            console.log(`❌ User ${userId} is unresponsive, terminating`);
+            ws.terminate();
+            gameStore.queue.delete(userId);
+            gameStore.connectedUsers.delete(userId);
+            return;
+        }
+
+        ws.isAlive = false;
+        ws.ping(); // client will auto-respond with pong
+    });
+}, 30000);
 
 exports.joinQueue = async (req, reply) => {
     const userId = userUtils.getUserIdFromRequest(req);
@@ -74,13 +152,29 @@ exports.waitForTheGame = async (req, reply) => {
 }
 
 exports.startTheGame = async (req, reply) => {
+    const { mode } = req.body;
     const userId = userUtils.getUserIdFromRequest(req);
     if (!userId) {
         return reply.status(400).send({ error: 'UserId required' });
     }
-    gameProcessor.setCountdownFinished(userId);
-    console.log("Game started");
+    gameProcessor.setCountdownFinished(userId, mode);
+    console.log("Game started lod");
     reply.send({ message: "Game started" });
+}
+
+exports.createLocalGame = async (req, reply) => {
+    const { username } = req.body || {};
+    const userId = userUtils.getUserIdFromRequest(req);
+    if (!userId) {
+        return reply.status(400).send({ error: 'UserId required' });
+    }
+
+    const userData = gameStore.connectedUsers.get(userId);
+    // console.log(connectedUsers);
+    matchService.createLocalMatch(userData, username);
+
+    console.log("Local game created");
+    reply.send({ message: "Local game created" });
 }
 
 exports.movePaddle = async (req, reply) => {

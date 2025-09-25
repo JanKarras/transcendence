@@ -11,6 +11,8 @@ import { bodyContainer } from "../constants/constants.js";
 import { validate_email } from "../login/email_validation.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_login_with_delay } from "../utils/render_login_with_delay.js";
+import { LANGUAGE } from "../constants/gloabal.js";
+import { lang, t } from "../constants/language_vars.js";
 export function render_email_validation(params) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!bodyContainer) {
@@ -24,8 +26,8 @@ export function render_email_validation(params) {
         }
         bodyContainer.innerHTML = `
     <div id="emailValidationContainer" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
-      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Email Validation</h2>
-      <p class="mb-4 text-center text-gray-700">Please enter the 6-digit code sent to <span class="font-semibold"></span></p>
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">${t(lang.emailTitle, LANGUAGE)}</h2>
+      <p class="mb-4 text-center text-gray-700">${t(lang.emailInstruction, LANGUAGE)}<span class="font-semibold"></span></p>
       <form id="emailValidationForm" class="flex justify-center space-x-2 mb-6">
         ${Array(6).fill(0).map((_, i) => `
           <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" required
@@ -35,7 +37,7 @@ export function render_email_validation(params) {
       </form>
       <button id="submitCodeBtn"
         class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">
-        Verify Email
+        ${t(lang.emailVerifyBtn, LANGUAGE)}
       </button>
     </div>
   `;

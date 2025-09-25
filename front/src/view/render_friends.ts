@@ -227,7 +227,7 @@ function renderSearchInput(container: HTMLElement, onSearch: (query: string) => 
 
 	const input = document.createElement("input");
 	input.type = "text";
-	input.placeholder = "Freund suchen...";
+	input.placeholder = `${t(lang.searchFriend, LANGUAGE)}`;
 	input.className = "w-full p-2 rounded border border-gray-600 bg-gray-800 text-white";
 
 	input.addEventListener("input", () => {

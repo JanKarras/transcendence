@@ -15,7 +15,6 @@ function mainGameLoop() {
                 checkForBothConnected(match);
                 break;
             case GameState.BOTH_CONNECTED:
-                console.log("BOTH_CONNECTED")
                 sendMessage(match, "startGame");
                 match.gameState = GameState.STARTED;
                 break;
@@ -23,6 +22,7 @@ function mainGameLoop() {
                 isCountdownFinished(match)
                 break;
             case GameState.FINISHED:
+                // console.log("FINISHED");
                 gameEngine.updateGameInfo(match)
                 sendMessage(match, "sendFrames");
                 break;
@@ -33,7 +33,12 @@ function mainGameLoop() {
             case GameState.GAMEOVER:
                 sendMessage(match, "gameOver");
                 saveGameToMatchHistory(match);
-                // removeGameFromStore
+                // gameStore.onGoingMatches.splice(i, 1);
+                match.wsUser1.close(1000, "Closed by user");
+                match.wsUser2.close(1000, "Closed by user");
+                // console.log(gameStore.onGoingMatches.length);
+                // gameStore.onGoingMatches = gameStore.onGoingMatches.filter(m => m !== match);
+                // console.log(gameStore.onGoingMatches.length);
                 break;
             default:
                 break;
@@ -53,12 +58,17 @@ function isCountdownFinished(match) {
     }
 }
 
-function setCountdownFinished(userId) {
-    for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
-        const match = gameStore.onGoingMatches[i];
-        if (match.userId1 === userId) {
+function setCountdownFinished(userId, mode) {
+    const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
+    if (mode === "local" && match) {
+        console.log("mode is local");
+        match.coutndownFinished1 = true;
+        match.coutndownFinished2 = true;
+    }
+    else {
+        if (match?.userId1 === userId) {
             match.coutndownFinished1 = true;
-        } else if (match.userId2 === userId) {
+        } else if (match?.userId2 === userId) {
             match.coutndownFinished2 = true;
         }
     }
