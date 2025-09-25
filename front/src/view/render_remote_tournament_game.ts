@@ -19,6 +19,7 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 
 	render_header();
 
+
 	const html = `<div class="flex flex-col items-center gap-8">
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
 			Welcome to Pong
@@ -76,7 +77,9 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 
 
 
-	connect();
+	await connect();
+
+	connectGame();
 
 	if (!ctx) {
 		// disconnect?
@@ -167,7 +170,7 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 	}
 
 
-	async function connect() {
+	async function connectGame() {
 
 		const token = await getFreshToken();
 		console.log(token)

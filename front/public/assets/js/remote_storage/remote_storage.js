@@ -45,20 +45,17 @@ export async function logInApi(username, password) {
     try {
         const response = await fetch('/api/set/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body,
         });
+        const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            return { success: false, error: errData.error || 'Request failed' };
+            return { success: false, error: data.error || 'Request failed' };
         }
-        const data = await response.json();
-        return { success: true, data };
+        return { success: true, ...data };
     }
     catch (error) {
-        return { success: false, error: error.error };
+        return { success: false, error: error.message || 'Network error' };
     }
 }
 export async function logOutApi() {

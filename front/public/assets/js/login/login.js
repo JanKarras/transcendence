@@ -10,11 +10,19 @@ export async function logIn(event) {
     const password = form.elements.namedItem("password").value;
     const res = await logInApi(username, password);
     if (res.success) {
-        showSuccessMessage(t(lang.loginSuccess, LANGUAGE).replace("{username}", username));
-        const params = new URLSearchParams({ email: username });
-        setTimeout(() => {
-            navigateTo('two_fa', params);
-        }, 3000);
+        if (res.requires2fa) {
+            showSuccessMessage(t(lang.loginSuccess, LANGUAGE));
+            const params = new URLSearchParams({ email: username });
+            setTimeout(() => {
+                navigateTo('two_fa', params);
+            }, 1500);
+        }
+        else {
+            showSuccessMessage(t(lang.loginSuccess, LANGUAGE).replace("{username}", username));
+            setTimeout(() => {
+                navigateTo('dashboard');
+            }, 1500);
+        }
     }
     else {
         console.error('Login failed:', res.error);

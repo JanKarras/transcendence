@@ -2,7 +2,7 @@ const db = require("../db");
 
 function getUserById(userId) {
     return db.prepare(`
-        SELECT username, first_name, last_name, age, path, last_seen
+        SELECT username, first_name, last_name, age, path, last_seen, twofa_active
         FROM users
         WHERE id = ?
     `).get(userId);
@@ -137,6 +137,10 @@ function updateUserImageName(imageName, userId) {
     db.prepare('UPDATE users SET path = ? WHERE id = ?').run(imageName, userId)
 }
 
+function updateUserTwofaActive(twofa_active, userId) {
+    db.prepare('UPDATE users SET twofa_active = ? WHERE id = ?').run(twofa_active, userId)
+}
+
 module.exports = {
     getUserById,
     getFriendsInfoByUserId,
@@ -154,6 +158,7 @@ module.exports = {
     updateUserImageName,
     updateUserFirstName,
     updateUserLastName,
-    getUserIdByUsername
+    getUserIdByUsername,
+	updateUserTwofaActive
 }
 

@@ -1,5 +1,6 @@
 const userUtils = require('../utils/userUtil');
 const requests = require('../repositories/requestRepository');
+const { initMatch, createMatch } = require('../services/game/matchService');
 
 const onGoingTournaments = new Map();
 const onGoingLocalTournaments = new Map();
@@ -60,13 +61,16 @@ module.exports = async function chatWebSocketRoute(fastify) {
 					break;
 				case "ping":
 					ws.send(JSON.stringify({ type: "pong" }));
+					break;
 				case "startTournament":
+					console.log(`🚀 Start tournament requested by host ${userId}`);
 					const tournamentToStart = onGoingTournaments.get(userId);
 					if (tournamentToStart && tournamentToStart.ready) {
 						for (let i = 0; i < tournamentToStart.players.length; i++) {
 							const player = tournamentToStart.players[i];
 							player.ws.send(JSON.stringify({ type: "tournamentStarting", data: { gameId: userId } }));
 						}
+						tournamentToStart.started = true;
 					}
 				default:
 					console.log(`⚠️ Unknown message type received: ${data.type}`);
@@ -199,7 +203,10 @@ function createRemoteTournament(hostId, ws) {
 			{ id: null, username: null, path: null, slot: 4, status: null, ws: null },
 		],
 		messages: [],
-		ready: false
+		ready: false,
+		started : false,
+		round : 0,
+		roundState : { game1: null, game2: null }
 	};
 	onGoingTournaments.set(hostId, tournament);
 	return tournament;
@@ -272,3 +279,22 @@ function broadcastTournamentUpdate(tournament) {
 		}
 	});
 }
+
+setInterval(() => {
+	for (const tournament of onGoingTournaments.values()) {
+		if (tournament.started === true && tournament.ready === true) {
+			if (tournament.round === 0) {
+				if (tournament.roundState.game1 === null && tournament.roundState.game2 === null) {
+					createMatch(tournament.players[0], tournament.players[1]);
+					createMatch(tournament.players[2], tournament.players[3]);
+					tournament.roundState.game1 = "ongoing";
+					tournament.roundState.game2 = "ongoing";
+				} else if (tournament.roundState.game1 === "ongoing" && tournament.roundState.game2 === "ongoing") {
+
+				}
+			} else if (tournament.round === 1) {
+
+			}
+		}
+	}
+}, 60);

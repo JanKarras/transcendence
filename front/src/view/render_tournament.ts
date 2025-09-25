@@ -6,6 +6,7 @@ import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
 import { Friend, UserInfo } from "../constants/structs.js";
 import { showErrorMessage } from "../templates/popup_message.js";
+import { connectTournament, getTournamentSocket } from "../websocket/wsTournamentService.js";
 
 let currentMode: "local" | "remote" = "local";
 
@@ -28,7 +29,7 @@ export async function render_tournament(params: URLSearchParams | null, mode: "r
   <div id="tournamentContent"></div> <!-- <- neuer Container -->
 `;
 bodyContainer.innerHTML = toggleHtml;
-
+	const socket = getTournamentSocket();
 
 	const gameId = params?.get("gameId");
 
@@ -115,7 +116,7 @@ for (let i = 2; i <= 4; i++) {
     // Update UI direkt
     const playerNameSpan = input.parentElement?.querySelector("span.font-bold");
     if (playerNameSpan) playerNameSpan.textContent = alias;
-
+	const socket = getTournamentSocket();
     // Nachricht an Backend senden
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({
@@ -159,13 +160,18 @@ function isOnline(friend: Friend): boolean {
 
 
 
-async function renderRemoteTournament(players: {
-  id: number | null,
-  username: string | null,
-  path: string | null,
-  slot: number,
-  status: string | null
-}[], messages: { text: string, type: "system" | "user" }[]) {
+async function renderRemoteTournament(
+	players: {
+		id: number | null,
+		username: string | null,
+		path: string | null,
+		slot: number,
+		status: string | null
+	}[],
+	messages: {
+		text: string,
+		type: "system" | "user" }[],
+	ready?: boolean) {
 
   	const userData = await getUser();
     if (!userData) {
@@ -255,6 +261,14 @@ async function renderRemoteTournament(players: {
 
 
   renderChat(messages);
+	const socket = getTournamentSocket();
+  const startBtn = document.getElementById("startTournamentBtn") as HTMLButtonElement | null;
+  if (startBtn) {
+    startBtn.disabled = !ready;
+    startBtn.addEventListener("click", () => {
+      socket?.send(JSON.stringify({ type: "startTournament" }));
+    });
+  }
 
   // Modal-Logik für leere Slots
   let currentSlot: number | null = null;
@@ -306,10 +320,6 @@ async function renderRemoteTournament(players: {
 		modal.classList.add("hidden");
 	});
 
-	document.getElementById("startTournamentBtn")?.addEventListener("click", () => {
-		socket?.send(JSON.stringify({ type: "startTournament" }));
-	});
-
 	const chatInput = document.getElementById("chatInput") as HTMLInputElement;
 	const chatSend = document.getElementById("chatSend");
 
@@ -335,6 +345,7 @@ async function renderRemoteTournament(players: {
 
 
 function invitePlayerToTournament(guestId: number, slot: number) {
+	const socket = getTournamentSocket();
   socket?.send(JSON.stringify({
     type: "inviteToTournament",
     data: { guestId, slot }
@@ -356,73 +367,52 @@ function addChatMessage(text: string, type: "system" | "user" = "system") {
 }
 
 
-
-let socket: WebSocket | null = null;
-
 async function connect() {
-	const token = await getFreshToken();
-	const wsUrl = `wss://${location.host}/ws/tournament?token=${token}`;
-	socket = new WebSocket(wsUrl);
-	await new Promise<void>((resolve, reject) => {
-		if (!socket) return reject("Socket not created");
-		socket.onopen = () => {
-			console.log(`✅ WebSocket connected to ${wsUrl}`);
-			resolve();
-		};
-		socket.onerror = (err) => {
-			console.error(`⚠️ WebSocket error:`, err);
-			reject(err);
-		};
-		socket.onmessage = (msg) => {
-			const msgString = msg.data.toString();
-			const message = JSON.parse(msgString);
-			console.log("📩 WS message:", message);
-			switch (message.type) {
-				case "tournamentCreated":
-					renderRemoteTournament(message.data.players, message.data.messages);
-					break;
-				case "remoteTournamentUpdated":
-					renderRemoteTournament(message.data.players, message.data.messages);
-					const startBtn = document.getElementById("startTournamentBtn");
-					if (startBtn instanceof HTMLButtonElement) {
-						console.log("Tournament ready state:", message.data.ready);
-						startBtn.disabled = !message.data.ready;
-					}
-					break;
-				case "endTournament":
-					showErrorMessage(message.data.message || "Tournament ended.");
-					navigateTo('dashboard');
-					break;
-				case "LocalTournamentCreated":
-					renderLocalTournamentFrontend(message.data);
-					break;
-				case "localTournamentUpdated":
-					renderLocalTournamentFrontend(message.data);
-					break;
-				case "pong":
-					console.log("Pong received");
-					break;
-				case "tournamentStarting":
-					const params = new URLSearchParams();
-    				params.set("gameId", message.data.gameId);
-					navigateTo('remote_tournament_game', params);
-					break;
-				default:
-					break;
-			}
-		}
-		socket.onclose = () => {
-			console.log("🔴 WebSocket disconnected");
-			socket = null;
-			navigateTo('dashboard');
-		}
-	});
-	setInterval(() => {
-		if (socket?.readyState === WebSocket.OPEN) {
-			socket.send(JSON.stringify({ type: "ping" }));
-		}
-	}, 30000);
+    const socket = await connectTournament();
 
+    socket.onmessage = (msg) => {
+        const message = JSON.parse(msg.data.toString());
+        console.log("📩 WS message:", message);
+
+        switch (message.type) {
+            case "tournamentCreated":
+                renderRemoteTournament(message.data.players, message.data.messages);
+                break;
+            case "remoteTournamentUpdated":
+                renderRemoteTournament(message.data.players, message.data.messages, message.data.ready);
+                break;
+            case "endTournament":
+                showErrorMessage(message.data.message || "Tournament ended.");
+                navigateTo('dashboard');
+                break;
+            case "LocalTournamentCreated":
+                renderLocalTournamentFrontend(message.data);
+                break;
+            case "localTournamentUpdated":
+                renderLocalTournamentFrontend(message.data);
+                break;
+            case "pong":
+                console.log("Pong received");
+                break;
+            case "tournamentStarting":
+                const params = new URLSearchParams();
+                params.set("gameId", message.data.gameId);
+                console.log("Tournament starting, navigating to game with params:", params.toString());
+                navigateTo('remote_tournament_game', params);
+                break;
+        }
+    };
+
+    socket.onclose = () => {
+        console.log("🔴 Tournament WebSocket disconnected");
+        navigateTo('dashboard');
+    };
+
+    setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: "ping" }));
+        }
+    }, 30000);
 }
 
 function renderChat(messages: { text: string, type: "system" | "user" }[]) {

@@ -147,6 +147,7 @@ exports.updateUser = async function (req, reply) {
     let lastName = null;
     let age = null;
     let imageName = null;
+	let twofaActive = null;
 
     for await (const part of parts) {
         if (part.file) {
@@ -182,10 +183,15 @@ exports.updateUser = async function (req, reply) {
                 return reply.code(400).send({ success: false, error: "Invalid age" });
             }
             age = parseInt(part.value, 10);
-        }
+        } else if (part.fieldname === "twofa_active") {
+			twofaActive = part.value === "1";
+			const active = twofaActive ? 1 : 0;
+			twofaActive = active;
+
+		}
     }
 
-    await userService.updateUser(firstName, lastName, age, imageName, userId);
+    await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive);
     reply.send({ success: true });
 };
 

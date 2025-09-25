@@ -35,8 +35,10 @@ function createMatch(userData1, userData2) {
 
 
 function initMatch(userData1, userData2) {
-    const user1 = userRepository.getUserById(userData1.userId);
-    const user2 = userRepository.getUserById(userData2.userId);
+	console.log("initMatch", userData1, userData2);
+    const user1 = userRepository.getUserById(userData1.userId || userData1.id);
+    const user2 = userRepository.getUserById(userData2.userId || userData2.id);
+	console.log("initMatch users", user1, user2);
     return  {
         wsUser1: null,
         userId1: userData1.userId,
@@ -106,4 +108,5 @@ module.exports = {
     createMatch,
     getMatchByUserId,
     connectUserToMatch,
+	initMatch
 }
