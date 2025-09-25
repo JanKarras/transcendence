@@ -37,7 +37,6 @@ export async function render_profile_settings(params) {
 					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
 					${renderReadonlyField(t(lang.twofaEmail, LANGUAGE), user.twofa_active ? t(lang.active, LANGUAGE) : t(lang.inactive, LANGUAGE))}
 
-
 					<div class="min-h-[40px] mt-4"> </div>
 				</div>
 			</div>
@@ -68,13 +67,12 @@ export async function render_profile_settings(params) {
 							data-active="${user.twofa_active ? 1 : 0}"
 							class="w-full px-4 py-3 border rounded-md transition
 									${user.twofa_active
-										? 'bg-green-500 text-white hover:bg-green-600'
-										: 'bg-red-500 text-white hover:bg-red-600'}">
+        ? 'bg-green-500 text-white hover:bg-green-600'
+        : 'bg-red-500 text-white hover:bg-red-600'}">
 							${user.twofa_active ? t(lang.deactivate, LANGUAGE) : t(lang.activate, LANGUAGE)}
 						</button>
 						<input type="hidden" name="twofa_active" id="twofaInput" value="${user.twofa_active ? 1 : 0}" />
 					<div>
-
 					<div class="flex space-x-4 mt-4">
 						<button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
 							${t(lang.profileSaveBtn, LANGUAGE)}
@@ -135,24 +133,27 @@ export async function render_profile_settings(params) {
             render_profile_settings(null);
         });
     });
-	const toggle2FA = document.getElementById("toggle2FA");
-const twofaInput = document.getElementById("twofaInput");
-
-toggle2FA?.addEventListener("click", () => {
-  const active = toggle2FA.getAttribute("data-active") === "1";
-  if (active) {
-    toggle2FA.setAttribute("data-active", "0");
-    toggle2FA.textContent = "Aktivieren";
-    toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-red-500 text-white hover:bg-red-600";
-    twofaInput.value = "0";
-  } else {
-    toggle2FA.setAttribute("data-active", "1");
-    toggle2FA.textContent = "Deaktivieren";
-    toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-green-500 text-white hover:bg-green-600";
-    twofaInput.value = "1";
-  }
-});
-
+    const toggle2FA = document.getElementById("toggle2FA");
+    const twofaInput = document.getElementById("twofaInput");
+    toggle2FA?.addEventListener("click", () => {
+        const active = toggle2FA.getAttribute("data-active") === "1";
+        if (active) {
+            toggle2FA.setAttribute("data-active", "0");
+            toggle2FA.textContent = "Aktivieren";
+            toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-red-500 text-white hover:bg-red-600";
+            if (twofaInput) {
+                twofaInput.value = "0";
+            }
+        }
+        else {
+            toggle2FA.setAttribute("data-active", "1");
+            toggle2FA.textContent = "Deaktivieren";
+            toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-green-500 text-white hover:bg-green-600";
+            if (twofaInput) {
+                twofaInput.value = "1";
+            }
+        }
+    });
 }
 function renderReadonlyField(field, value) {
     const key = "profileLabel_" + field;
