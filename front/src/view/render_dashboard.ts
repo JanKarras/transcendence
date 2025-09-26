@@ -87,7 +87,11 @@ export async function render_dashboard(params: URLSearchParams | null) {
                 </div>
 				</div>
 				</div>
-				</div>`
+				</div>
+
+				<button id="ToTournaentGameID1">ToTournaentGameID1</button>
+
+				`
 
 
 				bodyContainer.innerHTML = html;
@@ -105,6 +109,15 @@ export async function render_dashboard(params: URLSearchParams | null) {
 	const localBtn = document.getElementById("localBtn")
 
 	const remoteBtn = document.getElementById("remoteBtn")
+
+	const ToTournaentGameID1 = document.getElementById("ToTournaentGameID1");
+
+	ToTournaentGameID1?.addEventListener("click", () => {
+		const params = new URLSearchParams();
+		params.set("gameId", "1");
+		navigateTo("tournament", params);
+	});
+
 
 	playNowBtn?.addEventListener("click", () => {
         mode?.classList.remove("hidden");

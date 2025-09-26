@@ -66,12 +66,38 @@ module.exports = async function chatWebSocketRoute(fastify) {
 					console.log(`🚀 Start tournament requested by host ${userId}`);
 					const tournamentToStart = onGoingTournaments.get(userId);
 					if (tournamentToStart && tournamentToStart.ready) {
+						const data1 = { userId : tournamentToStart.players[0].id, ws : tournamentToStart.players[0].ws }
+						const data2 = { userId : tournamentToStart.players[1].id, ws : tournamentToStart.players[0].ws }
+						const data3 = { userId : tournamentToStart.players[2].id, ws : tournamentToStart.players[0].ws }
+						const data4 = { userId : tournamentToStart.players[3].id, ws : tournamentToStart.players[0].ws }
+						createMatch(data1, data2);
+						createMatch(data3, data4);
 						for (let i = 0; i < tournamentToStart.players.length; i++) {
 							const player = tournamentToStart.players[i];
 							player.ws.send(JSON.stringify({ type: "tournamentStarting", data: { gameId: userId } }));
 						}
 						tournamentToStart.started = true;
 					}
+					break;
+				case "roundStart": {
+					const { playerLeft, playerRight } = data.data;
+					const TournamentRound = findTournamentByUser(userId);
+					TournamentRound.
+					addSystemMessage(TournamentRound, `Second Round is about to start: ${playerLeft?.name || "Player1"} vs ${playerRight?.name || "Player2"}`);
+					broadcastTournamentUpdate(TournamentRound);
+					break;
+				}
+				case "roundWin": {
+					const { winner, loser } = data.data; // Annahme: Server sendet winner & loser
+					const TournamentRound = findTournamentByUser(userId);
+					addSystemMessage(
+						TournamentRound,
+						`Round finished! ${winner?.name || "Player1"} won against ${loser?.name || "Player2"} 🎉`
+					);
+					broadcastTournamentUpdate(TournamentRound);
+					TournamentRound.roundState.game1
+					break;
+				}
 				default:
 					console.log(`⚠️ Unknown message type received: ${data.type}`);
 					break;
@@ -206,6 +232,7 @@ function createRemoteTournament(hostId, ws) {
 		ready: false,
 		started : false,
 		round : 0,
+		roundStartMsgFlag :false,
 		roundState : { game1: null, game2: null }
 	};
 	onGoingTournaments.set(hostId, tournament);
@@ -279,22 +306,3 @@ function broadcastTournamentUpdate(tournament) {
 		}
 	});
 }
-
-setInterval(() => {
-	for (const tournament of onGoingTournaments.values()) {
-		if (tournament.started === true && tournament.ready === true) {
-			if (tournament.round === 0) {
-				if (tournament.roundState.game1 === null && tournament.roundState.game2 === null) {
-					createMatch(tournament.players[0], tournament.players[1]);
-					createMatch(tournament.players[2], tournament.players[3]);
-					tournament.roundState.game1 = "ongoing";
-					tournament.roundState.game2 = "ongoing";
-				} else if (tournament.roundState.game1 === "ongoing" && tournament.roundState.game2 === "ongoing") {
-
-				}
-			} else if (tournament.round === 1) {
-
-			}
-		}
-	}
-}, 60);
