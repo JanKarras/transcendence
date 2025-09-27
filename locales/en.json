@@ -1,0 +1,166 @@
+{
+  "playNowBtn": "Ready for the next match?",
+  "readyTitle": "Ready for the next match?",
+  "readySubtitle": "Play online Ping Pong against friends or compete in a tournament!",
+  "playTitle": "Play",
+  "playDesc": "Start a quick match",
+  "tournamentTitle": "Tournament",
+  "tournamentDesc": "Start a tournament",
+  "tournamentBtn": "Start now!",
+  "onlinePlayers": "Online Players",
+  "activeTournaments": "Active Tournaments",
+  "matchesToday": "Matches Today",
+
+  "emailTitle": "Email Validation",
+  "emailInstruction": "Please enter the 6-digit code sent to",
+  "emailVerifyBtn": "Verify Email",
+  "emailMissingWarning": "Please use the link we sent you! You will be redirected to login in 3 seconds.",
+
+  "loginTitle": "Login",
+  "loginUserField": "Username or Email:",
+  "loginPasswordField": "Password:",
+  "loginBtn": "Login",
+  "loginToRegisterBtn": "Register",
+
+  "dashboard": "Dashboard",
+  "profileDbError": "Database error. You will be logged out.",
+  "profileAgeUnknown": "Not provided",
+  "profileChangePhoto": "Change",
+  "profileSaveBtn": "Save",
+  "profileCancelBtn": "Cancel",
+  "profileLabel_username": "Username",
+  "profileLabel_first_name": "First Name",
+  "profileLabel_last_name": "Last Name",
+  "profileLabel_age": "Age",
+  "profileLabel_last_seen": "Last seen",
+  "registerTitle": "Register",
+  "registerUsername": "Username",
+  "registerEmail": "Email",
+  "registerPassword": "Password",
+  "registerPasswordConfirm": "Confirm Password",
+  "registerBtn": "Register",
+  "backBtn": "Back",
+  "emailTitle2": "Email Validation",
+  "emailInstruction2": "Please enter the 6-digit code sent to",
+  "emailVerifyBtn2": "Verify Email",
+  "showFriendsBtn": "👥 Show Friends",
+  "noFriends": "No friends",
+  "online": "Online",
+  "offline": "Offline",
+  "startChat": "Start chat",
+  "startGame": "Start game",
+
+  "profile": "Profile",
+
+  "dashboard2": "Dashboard",
+  "logout": "Logout",
+  "languageLabel": "🌐 Language:",
+
+  "successDefaultMessage": "Success!",
+  "errorDefaultMessage": "An error occurred.",
+
+  "loginRequired": "You must be logged in to access this page.",
+
+  "friendsOnline": "Friends Online",
+  "allFriends": "All Friends",
+  "addFriends": "Add Friends",
+  "friendRequests": "Requests",
+  "domLoadError": "Error with DOM loading. You will be logged out. Please try again later.",
+  "name": "Name",
+  "age": "Age",
+  "wins": "Wins",
+  "loses": "Loses",
+  "tournamentWins": "Tournament Wins",
+
+  "startMatch": "Start Match",
+  "chatWith": "Chat with",
+  "inviteToGame": "Invite to game",
+  "requestsLater": "Requests will be loaded later...",
+
+  "databaseError": "Database Error. You will be logged out.",
+
+  "invalidCode": "Please enter a valid 6-digit code.",
+  "emailValidated": "You validated your account successfully. You will be redirected to login in 3 seconds.",
+
+  "loginSuccess": "Login successful for user {username}",
+  "loginFailed": "Login failed: {error}",
+
+  "passwordLength": "Password must be at least 8 characters long.",
+  "passwordUppercase": "Password must contain at least one uppercase letter.",
+  "passwordLowercase": "Password must contain at least one lowercase letter.",
+  "passwordNumber": "Password must contain at least one number.",
+  "passwordSpecialChar": "Password must contain at least one special character.",
+  "passwordNoSpaces": "Password cannot contain spaces.",
+  "passwordMismatch": "Passwords do not match!",
+  "unknownError": "Unknown error",
+  "registerSuccess": "Registration was successful. Please remember to validate your email address.",
+  "registerFailed": "Registration failed: {error}",
+
+  "invalid6DigitCode": "Please enter a valid 6-digit code.",
+  "twoFASuccess": "2FA was successful. You will be redirected to the dashboard in 3 seconds.",
+
+  "friends": "Friends",
+
+  "unfriend": "Unfriend",
+  "addFriend": "Add Friend",
+  "searchFriend": "Search friend...",
+  "confirmUnfriend": "Do you really want to remove {username}?",
+  "friendRequestSent": "Friend request sent to {username}.",
+  "friendRequestFailed": "Friend request to {username} failed.",
+  "friendRequestAccepted": "Friend request from {username} accepted.",
+  "friendRequestAcceptFailed": "Failed to accept friend request from {username}.",
+  "friendRequestDeclined": "Friend request from {username} declined.",
+  "friendRequestDeclineFailed": "Failed to decline friend request from {username}.",
+  "friendRemoved": "{username} has been removed from your friends list.",
+  "friendRemoveFailed": "Failed to remove {username} from your friends list.",
+  "status": {
+    "nothandled": "Request pending",
+    "accepted": "Request accepted",
+    "declined": "Request declined",
+    "unknown": "Unknown status"
+  },
+  "requestBox": {
+    "friendRequestRecv": "wants to add you as a friend",
+    "gameInviteRecv": "invites you to a game",
+    "friendRequestSend": "You sent a friend request",
+    "gameInviteSend": "You sent a game invite",
+    "accept": "Accept",
+    "decline": "Decline",
+    "status": {
+      "nothandled": "Pending",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "unknown": "Unknown"
+    }
+  },
+  "general": {
+    "unknownUser": "Unknown"
+  },
+  "renderFriendRequests": {
+    "receivedTitle": "Received requests",
+    "sentTitle": "Sent requests",
+    "noReceived": "No received requests.",
+    "noSent": "No sent requests."
+  },
+  "no_id_msg": "No user ID provided.",
+  "missing_req_dom_elem": "Required DOM element is missing.",
+  "chat": "Chat",
+  "translationObj": "Chat",
+  "unknown": "Unknown",
+  "matchHistoryTitle": "Match history",
+  "matchType1v1Local": "1v1 (Local)",
+  "matchType1v1Remote": "1v1 (Remote)",
+  "matchTypeTournament": "Tournament",
+  "round": "Round",
+  "score": "Score",
+  "backToProfile": "Back to Profile",
+  "trophy": "🏆",
+  "matchHis": "Match history",
+
+  "selectChatPartner": "Select a chat partner",
+
+  "EnterMessage": "Enter massage",
+
+  "send": "send"
+
+}

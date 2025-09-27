@@ -26,7 +26,8 @@ db.prepare(
 	`
 		CREATE TABLE IF NOT EXISTS match_players (
 			match_id INTEGER NOT NULL,
-			user_id INTEGER NOT NULL,
+			user_id INTEGER NULL,
+			username TEXT NULL,
 			score INTEGER DEFAULT 0,
 			rank INTEGER DEFAULT NULL,
 			FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,

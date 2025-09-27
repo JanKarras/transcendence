@@ -32,8 +32,8 @@ export async function render_profile_settings(params) {
 					</label>
 
 					${renderReadonlyField("username", user.username)}
-					${renderReadonlyField("first_name", user.first_name || 'Unknown')}
-					${renderReadonlyField("last_name", user.last_name || 'Unknown')}
+					${renderReadonlyField("first_name", user.first_name || t(lang.unknown, LANGUAGE))}
+					${renderReadonlyField("last_name", user.last_name || t(lang.unknown, LANGUAGE))}
 					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
 
 					<div class="min-h-[40px] mt-4"> </div>
@@ -114,7 +114,8 @@ export async function render_profile_settings(params) {
         }
     });
     matchhis?.addEventListener("click", async () => {
-        const matches = await getMatchHistory(1);
+        const matches = await getMatchHistory(user.id);
+        // const matches = await getMatchHistory(1);
         renderMatchHistorySettings(matches || [], () => {
             render_profile_settings(null);
         });

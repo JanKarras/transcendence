@@ -3,6 +3,7 @@ const MIN_INTERVAL = 60 * 1000;
 const TEN_MINUTES = 10 * 60 * 1000;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const NAME_REGEX = /^[a-zA-ZäöüÄÖÜß0-9 .'-]{1,50}$/;
+
 const GameState = {
     NOT_STARTED: "NOT_STARTED",
     BOTH_CONNECTED: "BOTH_CONNECTED",
@@ -10,6 +11,12 @@ const GameState = {
     FINISHED: "FINISHED",
     ERROR: "ERROR",
     GAMEOVER: "GAMEOVER",
+}
+
+const MatchType = {
+    LOCAL_1V1: "1v1_local",
+    REMOTE_1V1: "1v1_remote",
+    TOURNAMENT: "tournament",
 }
 
 const CANVAS_HEIGHT = 600;
@@ -24,6 +31,7 @@ module.exports = {
     MAX_IMAGE_SIZE,
     NAME_REGEX,
     GameState,
+    MatchType,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     PADDLE_HEIGHT,

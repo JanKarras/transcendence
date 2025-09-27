@@ -2,12 +2,13 @@ const matchRepository = require("../../repositories/matchRepository");
 const matchPlayerRepository = require("../../repositories/matchPlayerRepository");
 const userRepository = require("../../repositories/userRepository");
 const gameStore = require("./gameStore");
-const { GameState, CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_HEIGHT, PADDLE_SPEED, PADDLE_WIDTH } = require("../../constants/constants");
+const { GameState, CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_HEIGHT, PADDLE_SPEED, PADDLE_WIDTH, MatchType } = require("../../constants/constants");
 
 function getMatchesWithPlayersByUserId(userId) {
     const userMatches = matchRepository.getMatchesByUserId(userId);
     return userMatches.map(match => {
-        const players = matchPlayerRepository.getPlayersByMatchId(match.id)
+        const matchId = match.match_id;
+        const players = matchPlayerRepository.getPlayersByMatchId(matchId);
         return {
             ...match,
             players
@@ -49,7 +50,7 @@ function createLocalMatch(userData1, username) {
     match.gameState = GameState.STARTED;
 }
 
-function initMatch(userData1, userData2, gameInfo) {
+function initMatch(userData1, userData2, gameInfo, mode) {
     return  {
         wsUser1: null,
         userId1: userData1.userId,
@@ -61,6 +62,7 @@ function initMatch(userData1, userData2, gameInfo) {
         countdownFinished2: false,
         gameState: GameState.NOT_STARTED,
         gameInfo: gameInfo,
+        mode: mode,
     };
 }
 
@@ -80,7 +82,7 @@ function initRemoteMatch(userData1, userData2) {
         score: 0,
     };
     const gameInfo = initGameInfo(playerLeft, playerRight);
-    return initMatch(userData1, userData2, gameInfo);
+    return initMatch(userData1, userData2, gameInfo, MatchType.REMOTE_1V1);
 }
 
 function initLocalMatch(userData1, username) {
@@ -98,7 +100,7 @@ function initLocalMatch(userData1, username) {
         score: 0,
     };
     const gameInfo = initGameInfo(playerLeft, playerRight);
-    return  initMatch(userData1, null, gameInfo);
+    return initMatch(userData1, null, gameInfo, MatchType.LOCAL_1V1);
 }
 
 function initGameInfo(playerLeft, playerRight) {

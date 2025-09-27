@@ -1,4 +1,5 @@
 const db = require("../db");
+const matchPlayerRepository = require("../repositories/matchPlayerRepository");
 
 function getMatchesByUserId(userId) {
     return db.prepare(`
@@ -17,6 +18,23 @@ function getMatchesByUserId(userId) {
     `).all(userId)
 }
 
+function addMatchAndMatchPlayers(match) {
+    const insertMatch =
+        db.prepare(`INSERT INTO matches (type, tournament_id, round) VALUES (?, ?, ?)`);
+
+    const insertMatchAndMatchPlayers = db.transaction((match) => {
+        const type = match.mode;
+
+        let result = insertMatch.run(type, null, null);
+        let matchId = result.lastInsertRowid;
+
+        matchPlayerRepository.insertMatchPlayers(match, matchId);
+    });
+
+    insertMatchAndMatchPlayers(match);
+}
+
 module.exports = {
-    getMatchesByUserId
+    getMatchesByUserId,
+    addMatchAndMatchPlayers,
 }

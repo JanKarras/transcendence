@@ -1,6 +1,7 @@
 const { GameState } = require("../../constants/constants");
 const gameStore = require("./gameStore");
 const gameEngine = require("./gameEngine");
+const matchRepository = require("../../repositories/matchRepository");
 
 
 const intervalId = setInterval(() => {
@@ -22,7 +23,6 @@ function mainGameLoop() {
                 isCountdownFinished(match)
                 break;
             case GameState.FINISHED:
-                // console.log("FINISHED");
                 gameEngine.updateGameInfo(match)
                 sendMessage(match, "sendFrames");
                 break;
@@ -33,12 +33,8 @@ function mainGameLoop() {
             case GameState.GAMEOVER:
                 sendMessage(match, "gameOver");
                 saveGameToMatchHistory(match);
-                // gameStore.onGoingMatches.splice(i, 1);
                 match.wsUser1.close(1000, "Closed by user");
                 match.wsUser2.close(1000, "Closed by user");
-                // console.log(gameStore.onGoingMatches.length);
-                // gameStore.onGoingMatches = gameStore.onGoingMatches.filter(m => m !== match);
-                // console.log(gameStore.onGoingMatches.length);
                 break;
             default:
                 break;
@@ -93,7 +89,7 @@ function sendWinner(match) {
 }
 
 function saveGameToMatchHistory(match) {
-
+    matchRepository.addMatchAndMatchPlayers(match);
 }
 
 module.exports = {

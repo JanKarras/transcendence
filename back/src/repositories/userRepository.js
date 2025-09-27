@@ -2,7 +2,7 @@ const db = require("../db");
 
 function getUserById(userId) {
     return db.prepare(`
-        SELECT username, first_name, last_name, age, path, last_seen
+        SELECT id, username, first_name, last_name, age, path, last_seen
         FROM users
         WHERE id = ?
     `).get(userId);
