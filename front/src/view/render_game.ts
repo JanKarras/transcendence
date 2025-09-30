@@ -42,7 +42,7 @@ export async function render_game(params: URLSearchParams | null) {
 			<!-- Left Player Info -->
 			<div class="flex flex-col items-center text-white">
 				<span id="playerLeftName" class="text-xl font-bold">Left</span>
-				<span class="text-sm">Controls: W / S</span>
+				<span id="playerLeftControls" class="text-sm">${mode === "local" ? "Controls: W / S" : "Controls: ↑ / ↓"}</span>
 			</div>
 
 			<!-- Game Canvas -->
@@ -51,7 +51,7 @@ export async function render_game(params: URLSearchParams | null) {
 			<!-- Right Player Info -->
 			<div class="flex flex-col items-center text-white">
 				<span id="playerRightName" class="text-xl font-bold">Right</span>
-				<span class="text-sm">Controls: ↑ / ↓</span>
+				<span id="playerLeftControls" class="text-sm">Controls: ↑ / ↓</span>
 			</div>
 		</div>
 
