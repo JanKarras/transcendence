@@ -161,6 +161,13 @@
 
   "EnterMessage": "Enter massage",
 
-  "send": "send"
-
+  "send": "send",
+  "game": {
+    "playAgain": "Do you want to play again?",
+    "yes": "Yes",
+    "no": "No",
+    "secondPlayerUsername": "Enter the username of the second player",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  }
 }
