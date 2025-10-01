@@ -142,5 +142,10 @@
     "matchHis": "Historique des matchs",
     "selectChatPartner": "Sélectionnez un partenaire de discussion",
     "EnterMessage": "Saisir un message",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "game": {
+        "playAgain": "Tu veux rejouer ?",
+        "yes": "Oui",
+        "no": "Non"
+    }
 }
