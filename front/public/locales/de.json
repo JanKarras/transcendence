@@ -142,5 +142,13 @@
     "matchHis": "Spielverlauf",
     "selectChatPartner": "Waehle einen chat partner aus",
     "EnterMessage": "Nachricht schreiben",
-    "send": "verschicken"
+    "send": "verschicken",
+    "game": {
+        "playAgain": "Willst du wieder spielen?",
+        "yes": "Ja",
+        "no": "Nein",
+        "secondPlayerUsername": "Geben Sie den Benutzernamen des zweiten Spielers ein",
+        "submit": "Einreichung",
+        "cancel": "Abbrechen"
+    }
 }
