@@ -25,6 +25,7 @@ export interface UserInfo {
   age: number | null;
   path: string;
   last_seen: string;
+  twofa_active: boolean;
 }
 
 export interface UserResponse {

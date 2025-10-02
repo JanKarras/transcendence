@@ -25,6 +25,8 @@ function getMatchByUserId(userId) {
 
 function createMatch(userData1, userData2) {
     console.log("createMatch");
+	console.log("Userdata1: ", userData1)
+	console.log("Userdata2: ", userData2)
     const matchData = initRemoteMatch(userData1, userData2);
     gameStore.onGoingMatches.push(matchData);
     userData1.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId2 }));

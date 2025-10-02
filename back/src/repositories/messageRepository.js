@@ -37,7 +37,6 @@ function getUnreadDB(userId, friendId) {
     `
         )
         .get(friendId, userId);
-	console.log('Unread messages count:', row.count);
 	return row.count > 0;
 }
 

@@ -1109,9 +1109,41 @@ export const lang = {
 		nig: "Zipu",
 		ua: "Надіслати",
 	},
-
-
-
+		twofaEmail: {
+		ger: "2FA-Code per E-Mail senden",
+		eng: "Send 2FA code via email",
+		nig: "Zipu koodu 2FA site na email",
+		fr: "Envoyer le code 2FA par e-mail",
+		ua: "Надіслати код 2FA електронною поштою"
+	},
+	active: {
+		ger: "Aktiv",
+		eng: "Active",
+		nig: "Na-arụ ọrụ",
+		fr: "Actif",
+		ua: "Активний",
+	},
+	inactive: {
+		ger: "Inaktiv",
+		eng: "Inactive",
+		nig: "Na-adịghị arụ ọrụ",
+		fr: "Inactif",
+		ua: "Неактивний",
+	},
+	activate : {
+		ger: "Aktivieren",
+		eng: "Activate",
+		nig: "Mee ka ọ rụọ ọrụ",
+		fr: "Activer",
+		ua: "Активувати",
+	},
+	deactivate : {
+		ger: "Deaktivieren",
+		eng: "Deactivate",
+		nig: "Gbanyụọ",
+		fr: "Désactiver",
+		ua: "Деактивувати",
+	}
 };
 
 

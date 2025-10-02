@@ -32,6 +32,13 @@ function addFriendRequest(senderId, receiverId) {
 		`).run(senderId, receiverId);
 }
 
+function addTournamentRequest(senderId, receiverId) {
+    return db.prepare(`
+			INSERT INTO requests (sender_id, receiver_id, type)
+			VALUES (?, ?, 'game')
+		`).run(senderId, receiverId);
+}
+
 function getRequestById(id) {
     return db.prepare('SELECT sender_id, receiver_id, status FROM requests WHERE id = ?').get(id);
 }
@@ -55,5 +62,6 @@ module.exports = {
     addFriendRequest,
     getRequestById,
     updateRequestStatusById,
-    deleteRequestBySenderIdAndReceiverId
+    deleteRequestBySenderIdAndReceiverId,
+	addTournamentRequest
 }

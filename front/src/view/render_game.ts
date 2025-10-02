@@ -5,7 +5,7 @@ import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
 import { connect, getSocket } from "../websocket/wsService.js";
-import {initTranslations, t} from "../constants/i18n.js"
+import { initTranslations, t } from "../constants/i18n.js"
 
 let gameInfo : GameInfo;
 let gameState = 0;
@@ -66,7 +66,7 @@ export async function render_game(params: URLSearchParams | null) {
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Username Modal -->
         <div id="usernameModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 ${showUsernameModal ? "" : "hidden"}">
           <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
@@ -159,7 +159,7 @@ export async function render_game(params: URLSearchParams | null) {
             }
 		});
 	}
-	
+
 	function startCountdown(mode: "local" | "remote") {
 		let counter = 5;
 		countdownEl.textContent = counter.toString();
@@ -308,7 +308,7 @@ export async function render_game(params: URLSearchParams | null) {
 
         const data = await response.json();
         console.log(data);
-		
+
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
             switch (data.type) {
@@ -339,7 +339,7 @@ export async function render_game(params: URLSearchParams | null) {
                 default:
 
             }
-		};	
+		};
 		// socket.onclose = (event) => {
 		// console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
 		// };
