@@ -87,7 +87,7 @@ function renderLocalTournamentFrontend(tournament: any) {
                 <span class="font-bold text-xl">${p.username || `Player ${i+1}`}</span>
                 <img src="/api/get/getImage?filename=${encodeURIComponent(p.path || "std_user_img.png")}"
                      class="w-24 h-24 rounded-full object-cover">
-                <input type="text" placeholder="Alias" class="mt-2 px-2 py-1 rounded bg-gray-600 text-white w-24 text-center"
+                <input type="text" placeholder=${t('game.tournament.alias')} class="mt-2 px-2 py-1 rounded bg-gray-600 text-white w-24 text-center"
                        id="player${i+1}Input" value="${p.username && p.username !== `Player ${i+1}` ? p.username : ''}">
                 <span class="text-sm text-gray-400">Player ${i+1}</span>
               </div>`;
@@ -236,7 +236,7 @@ async function renderRemoteTournament(
       <div class="flex gap-2">
         <input id="chatInput"
                class="flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
-               placeholder="Type a message..." />
+               placeholder=${t('typeMessage')} />
         <button id="chatSend"
                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">${t('send')}</button>
       </div>

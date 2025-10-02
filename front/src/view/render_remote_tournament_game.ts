@@ -57,7 +57,7 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 				<div class="text-gray-400 italic">${t('game.tournament.willStartSoon')}</div>
 			</div>
 			<div class="flex gap-2">
-				<input id="gameChatInput" class="flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none" placeholder="Type a message...">
+				<input id="gameChatInput" class="flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none" placeholder=${t('typeMessage')}>
 				<button id="gameChatSend" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">${t('send')}</button>
 			</div>
 		</div>
@@ -264,7 +264,7 @@ function renderGameChat(messages: { text: string, type: "system" | "user" }[]) {
         const chatInput = document.createElement("input");
         chatInput.id = "gameChatInput";
         chatInput.className = "flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none";
-        chatInput.placeholder = "Type a message...";
+        chatInput.placeholder = t('typeMessage');
         chatInputWrapper.appendChild(chatInput);
 
         const chatSend = document.createElement("button");

@@ -161,12 +161,10 @@
   "backToProfile": "Back to Profile",
   "trophy": "🏆",
   "matchHis": "Match history",
-
   "selectChatPartner": "Select a chat partner",
-
   "enterMessage": "Enter massage",
-
   "send": "send",
+  "typeMessage": "Type a message...",
   "game": {
     "playAgain": "Do you want to play again?",
     "yes": "Yes",
@@ -188,7 +186,8 @@
       "create": "Create Tournament",
       "invite": "Invite Player",
       "selectFriend": "Select Friend to Invite",
-      "willStartSoon": "Tournament will start soon"
+      "willStartSoon": "Tournament will start soon",
+      "alias": "Alias"
     }
   }
 }

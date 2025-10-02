@@ -79,7 +79,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 			</div>
 		  </div>
 
-		  <button id="ToTournaentGameID1">ToTournaentGameID1</button>
+<!--		  <button id="ToTournaentGameID1">ToTournaentGameID1</button>-->
 
 		`
 
