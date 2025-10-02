@@ -7,8 +7,6 @@ import { render_email_validation } from "./render_email_validation.js";
 import { render_friends } from "./render_friends.js";
 import { render_profile_settings } from "./render_profile_seetings.js";
 import { render_two_fa } from "./render_two_fa.js";
-import { lang, t } from "../constants/language_vars.js";
-import { LANGUAGE } from "../constants/gloabal.js";
 import { render_chat } from "./render_chat.js";
 import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
@@ -17,6 +15,7 @@ import { render_tournament } from "./render_tournament.js";
 import { render_local_tournament_game } from "./render_local_tournament_game.js";
 import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
 import { getSocket } from "../websocket/wsService.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game' | 'remote_tournament_game';
 
@@ -96,11 +95,12 @@ export function initRouter() {
 
     const state = event.state as { view: View; paramString: string } | null;
 
+    await initTranslations();
     if (state && state.view) {
       if (protectedViews.includes(state.view)) {
         const isLoggedIn = await is_logged_in_api();
         if (!isLoggedIn) {
-          showErrorMessage(t(lang.loginRequired, LANGUAGE));
+          showErrorMessage(t('loginRequired'));
           renderView('login', null);
           history.replaceState({ view: 'login', paramString: '' }, '', `#login`);
           return;
@@ -114,7 +114,7 @@ export function initRouter() {
         if (protectedViews.includes(viewData.view)) {
           const isLoggedIn = await is_logged_in_api();
           if (!isLoggedIn) {
-            showErrorMessage(t(lang.loginRequired, LANGUAGE));
+            showErrorMessage(t('loginRequired'));
             renderView('login', null);
             history.replaceState({ view: 'login', paramString: '' }, '', `#login`);
             return;
@@ -144,17 +144,18 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
             // socket = null;
         }
     }
-  if (protectedViews.includes(view)) {
+    await initTranslations();
+    if (protectedViews.includes(view)) {
     const isLoggedIn = await is_logged_in_api();
     if (!isLoggedIn) {
-	showErrorMessage(t(lang.loginRequired, LANGUAGE));
+    showErrorMessage(t('loginRequired'));
       history.pushState({ view: 'login', paramString: '' }, '', `#login`);
       return;
     }
-  }
+    }
 
-  renderView(view, params);
-  const paramString = params ? `?${params.toString()}` : '';
+    renderView(view, params);
+    const paramString = params ? `?${params.toString()}` : '';
 
-  history.pushState({ view, paramString }, '', `#${view}${paramString}`);
+    history.pushState({ view, paramString }, '', `#${view}${paramString}`);
 }

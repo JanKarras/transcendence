@@ -1,12 +1,11 @@
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { Friend, FriendsViewData, UserInfo, RequestInfo } from "../constants/structs.js";
 import { getAllUser, getUser, handleAcceptRequestApi, handleDeclineRequestApi, logOutApi, removeFriendApi, sendFriendRequestApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { isFriendOnline } from "../utils/isFriendOnline.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { getPos, render_header } from "./render_header.js";
-import { lang, t } from "../constants/language_vars.js";
-import { LANGUAGE } from "../constants/gloabal.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 let data: FriendsViewData | null = null;
 
@@ -50,14 +49,16 @@ async function fetchAndPrepareFriendsData(): Promise<FriendsViewData | null> {
 
 
 export async function render_friends(params: URLSearchParams | null) {
+    await initTranslations();
+
 	if (!bodyContainer || !profileContainer || !friendsBtn || !headernavs || !profile || !profileImg) {
-		showErrorMessage(t(lang.domLoadError, LANGUAGE));
+		showErrorMessage(t('domLoadError'));
 		await logOutApi();
 		render_with_delay("login");
 		return;
 	}
 
-	render_header();
+	await render_header();
 
 	bodyContainer.innerHTML = "";
 
@@ -77,10 +78,10 @@ export async function render_friends(params: URLSearchParams | null) {
 	contentContainer.id = "friends-content";
 
 	const tabs = [
-		{ id: "online", label: t(lang.friendsOnline, LANGUAGE), render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
-		{ id: "all", label: t(lang.allFriends, LANGUAGE), render: () => renderAllFriends(data?.allFriends ?? []) },
-		{ id: "add", label: t(lang.addFriends, LANGUAGE), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? [], data?.recvRequest ?? [], data?.sendRequest ?? []) },
-		{ id: "requests", label: t(lang.friendRequests, LANGUAGE), render: () => renderFriendRequests(data?.recvRequest ?? [], data?.sendRequest ?? []) },
+		{ id: "online", label: t('friendsOnline'), render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
+		{ id: "all", label: t('allFriends'), render: () => renderAllFriends(data?.allFriends ?? []) },
+		{ id: "add", label: t('addFriends'), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? [], data?.recvRequest ?? [], data?.sendRequest ?? []) },
+		{ id: "requests", label: t('friendRequests'), render: () => renderFriendRequests(data?.recvRequest ?? [], data?.sendRequest ?? []) },
 
 	];
 
@@ -149,21 +150,21 @@ function createFriendElement(friend: Friend): HTMLElement {
 	const fullName = (friend.first_name || "") + (friend.last_name ? " " + friend.last_name : "");
 	nameAge.textContent = `Name: ${fullName.trim() || "-"}`;
 	if (friend.age !== null && friend.age !== undefined) {
-		nameAge.textContent = `${t(lang.name, LANGUAGE)}: ${fullName.trim() || "-"}`;
+		nameAge.textContent = `${t('name')}: ${fullName.trim() || "-"}`;
 	}
 
 	const statsDiv = document.createElement("div");
 	statsDiv.innerHTML = `
-		${t(lang.wins, LANGUAGE)}: <strong>${friend.wins || 0}</strong>,
-		${t(lang.loses, LANGUAGE)}: <strong>${friend.loses || 0}</strong>,
-		${t(lang.tournamentWins, LANGUAGE)}: <strong>${friend.tournamentWins || 0}</strong>
+		${t('wins')}: <strong>${friend.wins || 0}</strong>,
+		${t('loses')}: <strong>${friend.loses || 0}</strong>,
+		${t('tournamentWins')}: <strong>${friend.tournamentWins || 0}</strong>
 	`;
 
 	const btnContainer = document.createElement("div");
 	btnContainer.className = "mt-2 flex gap-3";
 
 	const chatBtn = document.createElement("button");
-	chatBtn.textContent = `💬 ${t(lang.startChat, LANGUAGE)}`;
+	chatBtn.textContent = `💬 ${t('startChat')}`;
 	chatBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 	chatBtn.addEventListener("click", e => {
 		e.stopPropagation();
@@ -171,7 +172,7 @@ function createFriendElement(friend: Friend): HTMLElement {
 	});
 
 	const gameBtn = document.createElement("button");
-	gameBtn.textContent = `🎮 ${t(lang.startMatch, LANGUAGE)}`;
+	gameBtn.textContent = `🎮 ${t('startMatch')}`;
 	gameBtn.className = "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
 	gameBtn.addEventListener("click", e => {
 		e.stopPropagation();
@@ -179,7 +180,7 @@ function createFriendElement(friend: Friend): HTMLElement {
 	});
 
 	const removeBtn = document.createElement("button");
-	removeBtn.textContent = `🗑 ${t(lang.unfriend, LANGUAGE)}`;
+	removeBtn.textContent = `🗑 ${t('unfriend')}`;
 	removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
 	removeBtn.addEventListener("click", async e => {
 		e.stopPropagation();
@@ -210,12 +211,12 @@ async function removeFriend(friend: Friend) {
 	const res = await removeFriendApi(friend);
 	if (res.success) {
 		showSuccessMessage(
-			t(lang.friendRemoved, LANGUAGE).replace("{username}", friend.username)
+			t('friendRemoved').replace("{username}", friend.username)
 		);
 	} else {
 		const errorText = res.error ?? "Unknown Error";
 		showErrorMessage(
-			t(lang.friendRemoveFailed, LANGUAGE).replace("{error}", errorText)
+			t('friendRemoveFailed').replace("{error}", errorText)
 		);
 	}
 }
@@ -227,7 +228,7 @@ function renderSearchInput(container: HTMLElement, onSearch: (query: string) => 
 
 	const input = document.createElement("input");
 	input.type = "text";
-	input.placeholder = `${t(lang.searchFriend, LANGUAGE)}`;
+	input.placeholder = `${t('searchFriend')}`;
 	input.className = "w-full p-2 rounded border border-gray-600 bg-gray-800 text-white";
 
 	input.addEventListener("input", () => {
@@ -372,13 +373,13 @@ function createAddFriendElement(
 	function mapStatusToText(status: string | undefined): string {
 		switch (status) {
 			case "nothandled":
-				return t(lang.status.nothandled, LANGUAGE);
+				return t('status.nothandled');
 			case "accepted":
-				return t(lang.status.accepted, LANGUAGE);
+				return t('status.accepted');
 			case "declined":
-				return t(lang.status.declined, LANGUAGE);
+				return t('status.declined');
 			default:
-				return t(lang.status.unknown, LANGUAGE);
+				return t('status.unknown');
 		}
 	}
 
@@ -416,7 +417,7 @@ function createAddFriendElement(
 		userDiv.appendChild(leftDiv);
 	} else {
 		const addBtn = document.createElement("button");
-	addBtn.textContent = `➕ ${t(lang.addFriend, LANGUAGE)}`;
+	addBtn.textContent = `➕ ${t('addFriend')}`;
 	addBtn.className =
 		"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity";
 
@@ -439,12 +440,12 @@ async function sendFriendRequest(user: UserInfo) {
 
 	if (res.success) {
 		showSuccessMessage(
-			t(lang.friendRequestSent, LANGUAGE).replace("{username}", user.username)
+			t('friendRequestSent').replace("{username}", user.username)
 		);
 	} else {
 		const errorText = res.error ?? "Unknown Error";
 		showErrorMessage(
-			t(lang.friendRequestFailed, LANGUAGE).replace("{error}", errorText)
+			t('friendRequestFailed').replace("{error}", errorText)
 		);
 	}
 }
@@ -465,11 +466,11 @@ function renderFriendRequests(
 
 	const recvSection = document.createElement("div");
 	recvSection.className = "flex-1";
-	recvSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.receivedTitle, LANGUAGE)}</h3>`;
+	recvSection.innerHTML = `<h3 class="font-semibold mb-2">${t('renderFriendRequests.receivedTitle')}</h3>`;
 
 	if (recvRequests.length === 0) {
 		const noRecv = document.createElement("p");
-		noRecv.textContent = t(lang.renderFriendRequests.noReceived, LANGUAGE);
+		noRecv.textContent = t('renderFriendRequests.noReceived');
 		recvSection.appendChild(noRecv);
 	} else {
 		recvRequests.forEach(request => {
@@ -480,11 +481,11 @@ function renderFriendRequests(
 
 	const sendSection = document.createElement("div");
 	sendSection.className = "flex-1";
-	sendSection.innerHTML = `<h3 class="font-semibold mb-2">${t(lang.renderFriendRequests.sentTitle, LANGUAGE)}</h3>`;
+	sendSection.innerHTML = `<h3 class="font-semibold mb-2">${t('renderFriendRequests.sentTitle')}</h3>`;
 
 	if (sendRequests.length === 0) {
 		const noSend = document.createElement("p");
-		noSend.textContent = t(lang.renderFriendRequests.noSent, LANGUAGE);
+		noSend.textContent = t('renderFriendRequests.noSent');
 		sendSection.appendChild(noSend);
 	} else {
 		sendRequests.forEach(request => {
@@ -513,18 +514,18 @@ function createRequestBox(
 	let text = "";
 
 	if (direction === "recv") {
-		username = request.sender_username || t(lang.general.unknownUser, LANGUAGE);
+		username = request.sender_username || t('general.unknownUser');
 		if (request.type === "friend") {
-			text = t(lang.requestBox.friendRequestRecv, LANGUAGE);
+			text = t('requestBox.friendRequestRecv');
 		} else {
-			text = t(lang.requestBox.gameInviteRecv, LANGUAGE);
+			text = t('requestBox.gameInviteRecv');
 		}
 	} else if (direction === "send") {
-		username = request.receiver_username || t(lang.general.unknownUser, LANGUAGE);
+		username = request.receiver_username || t('general.unknownUser');
 		if (request.type === "friend") {
-			text = t(lang.requestBox.friendRequestSend, LANGUAGE);
+			text = t('requestBox.friendRequestSend');
 		} else {
-			text = t(lang.requestBox.gameInviteSend, LANGUAGE);
+			text = t('requestBox.gameInviteSend');
 		}
 	}
 
@@ -538,13 +539,13 @@ function createRequestBox(
 	function mapStatusToText(status: string | undefined): string {
 		switch (status) {
 			case "nothandled":
-				return t(lang.status.nothandled, LANGUAGE);
+				return t('status.nothandled');
 			case "accepted":
-				return t(lang.status.accepted, LANGUAGE);
+				return t('status.accepted');
 			case "declined":
-				return t(lang.status.declined, LANGUAGE);
+				return t('status.declined');
 			default:
-				return t(lang.status.unknown, LANGUAGE);
+				return t('status.unknown');
 		}
 	}
 
@@ -563,14 +564,14 @@ function createRequestBox(
 			btns.className = "flex gap-2";
 
 			const acceptBtn = document.createElement("button");
-			acceptBtn.textContent = t(lang.requestBox.accept, LANGUAGE);
+			acceptBtn.textContent = t('requestBox.accept');
 			acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
 			acceptBtn.addEventListener("click", () => {
 				handleAcceptRequest(request);
 			});
 
 			const declineBtn = document.createElement("button");
-			declineBtn.textContent = t(lang.requestBox.decline, LANGUAGE);
+			declineBtn.textContent = t('requestBox.decline');
 			declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
 			declineBtn.addEventListener("click", () => {
 				handleDeclineRequest(request);
@@ -602,12 +603,12 @@ async function handleAcceptRequest(req: RequestInfo) {
 
 	if (res.success) {
 		showSuccessMessage(
-			t(lang.friendRequestAccepted, LANGUAGE).replace("{username}", req.sender_username || "User")
+			t('friendRequestAccepted').replace("{username}", req.sender_username || "User")
 		);
 	} else {
 		const errorText = res.error ?? "Unknown Error";
 		showErrorMessage(
-			t(lang.friendRequestAcceptFailed, LANGUAGE).replace("{error}", errorText)
+			t('friendRequestAcceptFailed').replace("{error}", errorText)
 		);
 	}
 }
@@ -617,12 +618,12 @@ async function handleDeclineRequest(req: RequestInfo) {
 
 	if (res.success) {
 		showSuccessMessage(
-			t(lang.friendRequestDeclined, LANGUAGE).replace("{username}", req.sender_username || "User")
+			t('friendRequestDeclined').replace("{username}", req.sender_username || "User")
 		);
 	} else {
 		const errorText = res.error ?? "Unknown Error";
 		showErrorMessage(
-			t(lang.friendRequestDeclineFailed, LANGUAGE).replace("{error}", errorText)
+			t('friendRequestDeclineFailed').replace("{error}", errorText)
 		);
 	}
 }

@@ -2,16 +2,15 @@ import { bodyContainer } from "../constants/constants.js";
 import { two_fa } from "../login/two_fa.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { LANGUAGE } from "../constants/gloabal.js";
-import { lang, t } from "../constants/language_vars.js";
 import { render_header } from "./render_header.js";
+import { t } from "../constants/i18n.js"
 
-export async function render_two_fa(params: URLSearchParams | null, currentLang = "eng") {
+export async function render_two_fa(params: URLSearchParams | null) {
 	if (!bodyContainer) {
 		return;
 	}
 
-	render_header()
+	await render_header()
 
 	const email = params?.get('email') || null;
 
@@ -23,9 +22,9 @@ export async function render_two_fa(params: URLSearchParams | null, currentLang 
 
 	bodyContainer.innerHTML = `
     <div id="emailValidationContainer" class="max-w-md p-6 bg-white rounded-lg shadow-lg">
-      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">${t(lang.emailTitle2, currentLang)}</h2>
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">${t('emailTitle2')}</h2>
       <p class="mb-4 text-center text-gray-700">
-        ${t(lang.emailInstruction2, currentLang)} <span class="font-semibold">${email}</span>
+        ${t('emailInstruction2')} <span class="font-semibold">${email}</span>
       </p>
       <form id="emailValidationForm" class="flex justify-center space-x-2 mb-6">
         ${Array(6).fill(0).map((_, i) => `
@@ -36,7 +35,7 @@ export async function render_two_fa(params: URLSearchParams | null, currentLang 
       </form>
       <button id="submitCodeBtn"
         class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">
-        ${t(lang.emailVerifyBtn2, currentLang)}
+        ${t('emailVerifyBtn2')}
       </button>
     </div>
   `;

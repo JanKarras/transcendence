@@ -14,9 +14,10 @@ import { buildMenuItems, getMenuEntries, showMenu } from '../templates/menu.js';
 import { showErrorMessage } from '../templates/popup_message.js';
 import { removeEventListenerByClone } from '../utils/remove_eventlistener.js';
 import { render_with_delay } from '../utils/render_with_delay.js';
-import { lang, t } from '../constants/language_vars.js';
-import { LANGUAGE } from '../constants/gloabal.js';
+// import { lang, t } from '../constants/language_vars.js';
+// import { LANGUAGE } from '../constants/gloabal.js';
 import { navigateTo } from './history_views.js';
+import { initTranslations, t } from "../constants/i18n.js"
 
 export function getPos() {
     const windowHash = window.location.hash.replace(/^#/, '');
@@ -57,8 +58,9 @@ let profileMenuListenerAttached = false;
 export async function render_header() {
     const pos = getPos();
     const friendsCotnainer = document.getElementById('FriendsContainer');
-
 	const headerTitle = document.getElementById("headline");
+
+    await initTranslations();
 
     if (
         !friendsCotnainer ||
@@ -69,12 +71,12 @@ export async function render_header() {
         !friendsNumber ||
         !friendsBtn
     ) {
-        showErrorMessage(t(lang.databaseError, LANGUAGE));
+        showErrorMessage(t('databaseError'));
         logOutApi();
         render_with_delay('login');
         return;
     }
-    friendsCotnainer.innerHTML = t(lang.friends, LANGUAGE);
+    friendsCotnainer.innerHTML = t('friends');
     console.log(pos);
     if (
         pos !== 'login' &&
@@ -102,7 +104,7 @@ export async function render_header() {
 	}
 
     if (!userData) {
-        showErrorMessage(t(lang.databaseError, LANGUAGE));
+        showErrorMessage(t('databaseError'));
         logOutApi();
         render_with_delay('login');
         return;

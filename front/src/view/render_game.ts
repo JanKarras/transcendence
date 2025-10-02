@@ -1,11 +1,11 @@
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { renderFrame } from "../game/Renderer.js";
 import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
 import { connect, getSocket } from "../websocket/wsService.js";
-import { initTranslations, t } from "../constants/i18n.js"
+import { t } from "../constants/i18n.js"
 
 let gameInfo : GameInfo;
 let gameState = 0;
@@ -20,8 +20,6 @@ export async function render_game(params: URLSearchParams | null) {
 		console.error("bodyContainer Container missing")
 		return;
 	}
-
-    await initTranslations();
 
     const mode = params?.get("mode");
     username = params?.get("username");
@@ -41,7 +39,7 @@ export async function render_game(params: URLSearchParams | null) {
 		<div class="flex items-center gap-8 relative">
 			<!-- Left Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerLeftName" class="text-xl font-bold">Left</span>
+				<span id="playerLeftName" class="text-xl font-bold">${t('game.left')}</span>
 				<span id="playerLeftControls" class="text-sm">${mode === "local" ? "Controls: W / S" : "Controls: ↑ / ↓"}</span>
 			</div>
 
@@ -50,7 +48,7 @@ export async function render_game(params: URLSearchParams | null) {
 
 			<!-- Right Player Info -->
 			<div class="flex flex-col items-center text-white">
-				<span id="playerRightName" class="text-xl font-bold">Right</span>
+				<span id="playerRightName" class="text-xl font-bold">${t('game.right')}</span>
 				<span id="playerLeftControls" class="text-sm">Controls: ↑ / ↓</span>
 			</div>
 		</div>
@@ -172,7 +170,6 @@ export async function render_game(params: URLSearchParams | null) {
             } else {
                 clearInterval(interval);
                 countdownEl.classList.add('hidden');
-                // socket?.send("countdownFinished")
                 const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
                     method: "POST",
                     headers: {
@@ -200,7 +197,7 @@ export async function render_game(params: URLSearchParams | null) {
 		renderFrame(ctx, gameInfo);
 		if (gameOver) {
 			showWinner();
-			return; // stop the loop
+			return;
 		}
 		requestAnimationFrame(gameLoop);
 	}
@@ -213,7 +210,7 @@ export async function render_game(params: URLSearchParams | null) {
 
 		// Determine winner
 		const winnerName = gameInfo.playerLeft.score > gameInfo.playerRight.score ? gameInfo.playerLeft.name : gameInfo.playerRight.name;
-		winnerText.textContent = `${winnerName} wins! 🎉`;
+		winnerText.textContent = t('game.wins').replace("{username}", winnerName);
 
 		winnerModal.classList.remove('hidden');
 
@@ -252,7 +249,6 @@ export async function render_game(params: URLSearchParams | null) {
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            // console.log("data", data);
             switch (data.type) {
                 case 'startGame':
                     gameState = data.gameState;

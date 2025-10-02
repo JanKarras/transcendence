@@ -1,15 +1,13 @@
 import {
-	bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber,
-	headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg
+	bodyContainer, friendsBtn, friendsNumber,
+	headernavs, profile, profileContainer, profileImg
 } from "../constants/constants.js";
-import { Friend, UserInfo } from "../constants/structs.js";
+import { UserInfo } from "../constants/structs.js";
 import { getMatchHistory, getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-
-import { LANGUAGE } from "../constants/gloabal.js";
-import { lang, t } from "../constants/language_vars.js";
 import { render_header } from "./render_header.js";
+import { t } from "../constants/i18n.js"
 
 export async function render_profile_settings(params: URLSearchParams | null) {
 	if (!bodyContainer || !profile || !headernavs || !profileContainer || !profileImg || !friendsBtn || !friendsNumber) {
@@ -17,13 +15,13 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		return;
 	}
 
-	render_header();
+	await render_header();
 
 	const userData = await getUser();
 	console.log(userData)
 
 	if (!userData) {
-		showErrorMessage(t(lang.profileDbError, LANGUAGE));
+		showErrorMessage(t('profileDbError'));
 		await logOutApi();
 		render_with_delay("login");
 		return;
@@ -43,17 +41,17 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 					</label>
 
 					${renderReadonlyField("username", user.username)}
-					${renderReadonlyField("first_name", user.first_name || t(lang.unknown, LANGUAGE))}
-					${renderReadonlyField("last_name", user.last_name || t(lang.unknown, LANGUAGE))}
-					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
-					${renderReadonlyField(t(lang.twofaEmail, LANGUAGE), user.twofa_active ? t(lang.active, LANGUAGE) : t(lang.inactive, LANGUAGE))}
+					${renderReadonlyField("firstName", user.first_name || t('unknown'))}
+					${renderReadonlyField("lastName", user.last_name || t('unknown'))}
+					${renderReadonlyField("age", user.age !== null ? user.age : t('profileAgeUnknown'))}
+					${renderReadonlyField(t('twoFA'), user.twofa_active ? t('active') : t('inactive'))}
 
 					<div class="min-h-[40px] mt-4"> </div>
 				</div>
 			</div>
 			<div class="flex space-x-4 mt-4" id="matchHistoryContainer">
 				<button id="matchhis" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
-					${t(lang.matchHis, LANGUAGE)}
+					${t('matchHis')}
 				</button>
 			</div>
 			<div id="profileEdit" class="hidden">
@@ -61,17 +59,17 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 					<label for="fileInput" class="cursor-pointer relative group">
 						<img id="profileImagePreview" src="${safePath}" class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200">
 						<div class="absolute inset-0 rounded-full bg-black bg-opacity-40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-							${t(lang.profileChangePhoto, LANGUAGE)}
+							${t('profileChangePhoto')}
 						</div>
 					</label>
 					<input type="file" name="profileImage" id="fileInput" accept="image/*" class="hidden">
 
 					${renderEditableField("username", user.username)}
-					${renderEditableField("first_name", user.first_name || "")}
-					${renderEditableField("last_name", user.last_name || "")}
+					${renderEditableField("firstName", user.first_name || "")}
+					${renderEditableField("lastName", user.last_name || "")}
 					${renderEditableField("age", user.age || "", "number")}
 					<div class="w-full">
-					<label class="block text-sm font-medium text-gray-600 mb-1">${t(lang.twofaEmail, LANGUAGE)}</label>
+					<label class="block text-sm font-medium text-gray-600 mb-1">${t('twofaEmail')}</label>
 						<button
 							type="button"
 							id="toggle2FA"
@@ -80,16 +78,16 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 									${user.twofa_active
 										? 'bg-green-500 text-white hover:bg-green-600'
 										: 'bg-red-500 text-white hover:bg-red-600'}">
-							${user.twofa_active ? t(lang.deactivate, LANGUAGE) : t(lang.activate, LANGUAGE)}
+							${user.twofa_active ? t('deactivate') : t('activate')}
 						</button>
 						<input type="hidden" name="twofa_active" id="twofaInput" value="${user.twofa_active ? 1 : 0}" />
 					<div>
 					<div class="flex space-x-4 mt-4">
 						<button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-							${t(lang.profileSaveBtn, LANGUAGE)}
+							${t('profileSaveBtn')}
 						</button>
 						<button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
-							${t(lang.profileCancelBtn, LANGUAGE)}
+							${t('profileCancelBtn')}
 						</button>
 					</div>
 				</form>
@@ -111,7 +109,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 	editBtn?.addEventListener("click", () => {
 		view?.classList.add("hidden");
 		edit?.classList.remove("hidden");
-		editBtn.classList.add("hidden");
+		editBtn?.classList.add("hidden");
 
 		matchContainer?.classList.add("hidden");
 	});
@@ -148,7 +146,6 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 
 	matchhis?.addEventListener("click", async () => {
 		const matches = await getMatchHistory(user.id);
-		// const matches = await getMatchHistory(1);
 		renderMatchHistorySettings(matches || [], () => {
 			render_profile_settings(null);
 		});
@@ -157,16 +154,16 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 	const twofaInput = document.getElementById("twofaInput") as HTMLInputElement | null;
 
 	toggle2FA?.addEventListener("click", () => {
-		const active = toggle2FA.getAttribute("data-active") === "1";
+		const active = toggle2FA?.getAttribute("data-active") === "1";
 			if (active) {
-				toggle2FA.setAttribute("data-active", "0");
+				toggle2FA?.setAttribute("data-active", "0");
 				toggle2FA.textContent = "Aktivieren";
 				toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-red-500 text-white hover:bg-red-600";
 				if (twofaInput) {
 					twofaInput.value = "0";
 				}
 			} else {
-				toggle2FA.setAttribute("data-active", "1");
+				toggle2FA?.setAttribute("data-active", "1");
 				toggle2FA.textContent = "Deaktivieren";
 				toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-green-500 text-white hover:bg-green-600";
 				if (twofaInput) {
@@ -177,9 +174,9 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 }
 
 function renderReadonlyField(field: string, value: string | number) {
-  const key = "profileLabel_" + field;
-  const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
-  const label = translationObj ? t(translationObj, LANGUAGE) : field;
+  const key = "profileLabel." + field;
+  // const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
+  const label = t(key) !== key ? t(key) : field;
 
   return `
 	<div class="w-full">
@@ -187,6 +184,8 @@ function renderReadonlyField(field: string, value: string | number) {
 	  <input value="${value}" disabled
 		class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700" />
 	</div>`;
+
+    // const key = "profileLabel." + field;
 }
 
 type Trans = {
@@ -199,9 +198,9 @@ type Trans = {
 
 
 function renderEditableField(field: string, value: string | number, type = "text") {
-  const key = "profileLabel_" + field;
-  const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
-  const label = translationObj ? t(translationObj, LANGUAGE) : field;
+    const key = "profileLabel." + field;
+    // const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
+    const label = t(key) !== '' ? t(key) : field;
 
   return `
 	<div class="w-full">
@@ -216,27 +215,27 @@ function renderMatchHistorySettings(matches: any[], backToProfile: () => void) {
 
 	const formatMatchType = (type: string) => {
 		switch(type) {
-			case "1v1_local": return t(lang.matchType1v1Local, LANGUAGE);
-			case "1v1_remote": return t(lang.matchType1v1Remote, LANGUAGE);
-			case "tournament": return t(lang.matchTypeTournament, LANGUAGE);
+			case "1v1_local": return t('matchType1v1Local');
+			case "1v1_remote": return t('matchType1v1Remote');
+			case "tournament": return t('matchTypeTournament');
 			default: return type;
 		}
 	};
 
 	bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
-			<h2 class="text-xl font-semibold mb-4">${t(lang.matchHistoryTitle, LANGUAGE)}</h2>
+			<h2 class="text-xl font-semibold mb-4">${t('matchHistoryTitle')}</h2>
 			<div class="space-y-4 overflow-y-auto max-h-[600px]">
 				${matches.map(match => `
 					<div class="border p-3 rounded bg-gray-50">
 						<p class="font-medium">
 							<strong>${formatMatchType(match.match_type)}</strong>
-							${match.tournament_name ? `- ${match.tournament_name} (${t(lang.round, LANGUAGE)} ${match.round})` : ''}
+							${match.tournament_name ? `- ${match.tournament_name} (${t('round')} ${match.round})` : ''}
 						</p>
 						<p class="text-sm text-gray-600 mb-2">${match.match_date}</p>
 						<ul class="pl-4 list-disc">
 							${match.players.map((p: any) => `
-								<li>${p.username} - ${t(lang.score, LANGUAGE)}: ${p.score} ${p.rank === 1 ? t(lang.trophy, LANGUAGE) : ''}</li>
+								<li>${p.username} - ${t('score')}: ${p.score} ${p.rank === 1 ? t('trophy') : ''}</li>
 							`).join('')}
 						</ul>
 					</div>
@@ -244,7 +243,7 @@ function renderMatchHistorySettings(matches: any[], backToProfile: () => void) {
 			</div>
 			<div class="mt-4">
 				<button id="backToProfileBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-					${t(lang.backToProfile, LANGUAGE)}
+					${t('backToProfile')}
 				</button>
 			</div>
 		</div>

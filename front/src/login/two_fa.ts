@@ -1,8 +1,7 @@
 import { two_fa_api } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
-import { lang, t } from "../constants/language_vars.js";
-import { LANGUAGE } from "../constants/gloabal.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 export async function two_fa(email: string) {
   const inputs = Array.from(document.querySelectorAll<HTMLInputElement>("#emailValidationForm input"));
@@ -11,14 +10,15 @@ export async function two_fa(email: string) {
 
   const isValidCode = /^[0-9]{6}$/.test(code);
 
+  await initTranslations();
   if (!isValidCode) {
-	showErrorMessage(t(lang.invalid6DigitCode, LANGUAGE));
+	showErrorMessage(t('invalid6DigitCode'));
 	return;
   }
 
 	const res = await two_fa_api(email, code);
   	if (res.success) {
-			showSuccessMessage(t(lang.twoFASuccess, LANGUAGE));
+			showSuccessMessage(t('twoFASuccess'));
 			render_with_delay('dashboard')
   	} else {
 		showErrorMessage(res.error)

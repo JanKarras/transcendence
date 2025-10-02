@@ -1,27 +1,25 @@
 import { bodyContainer } from "../constants/constants.js";
-import { LANGUAGE } from "../constants/gloabal.js";
-import { lang, t } from "../constants/language_vars.js";
 import { UserInfo } from "../constants/structs.js";
-import { getMatchHistory, getUserForProfile, logOutApi } from "../remote_storage/remote_storage.js";
-import { showErrorMessage } from "../templates/popup_message.js";
-import { render_with_delay } from "../utils/render_with_delay.js";
-import { connectWebSocket } from "../websocket/ws.js";
+import { getMatchHistory, getUserForProfile } from "../remote_storage/remote_storage.js";
 import { render_header } from "./render_header.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 async function renderProfile(user: UserInfo, id: number) {
 	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
+
+    await initTranslations();
 
 	const profileHTML = `
 		<div id="profileView" class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
 			<div id="profileInner" class="flex flex-col items-center space-y-4">
 				<img src="${safePath}" class="h-32 w-32 rounded-full object-cover shadow-md border border-gray-200">
 				${renderReadonlyField("username", user.username)}
-				${renderReadonlyField("first_name", user.first_name || t(lang.unknown, LANGUAGE))}
-				${renderReadonlyField("last_name", user.last_name || t(lang.unknown, LANGUAGE))}
-				${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
-				${renderReadonlyField("last_seen", user.last_seen || t(lang.profileAgeUnknown, LANGUAGE))}
+				${renderReadonlyField("firstName", user.first_name || t('unknown'))}
+				${renderReadonlyField("lastName", user.last_name || t('unknown'))}
+				${renderReadonlyField("age", user.age !== null ? user.age : t('profileAgeUnknown'))}
+				${renderReadonlyField("lastSeen", user.last_seen || t('profileAgeUnknown'))}
 				<div class="flex space-x-4 mt-4">
-					<button id="showHistoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">${t(lang.matchHis, LANGUAGE)}</button>
+					<button id="showHistoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">${t('matchHis')}</button>
 				</div>
 			</div>
 		</div>
@@ -45,27 +43,27 @@ function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeig
 
 	const formatMatchType = (type: string) => {
 		switch(type) {
-			case "1v1_local": return t(lang.matchType1v1Local, LANGUAGE);
-			case "1v1_remote": return t(lang.matchType1v1Remote, LANGUAGE);
-			case "tournament": return t(lang.matchTypeTournament, LANGUAGE);
+			case "1v1_local": return t('matchType1v1Local');
+			case "1v1_remote": return t('matchType1v1Remote');
+			case "tournament": return t('matchTypeTournament');
 			default: return type;
 		}
 	};
 
 	bodyContainer.innerHTML = `
 		<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
-			<h2 class="text-xl font-semibold mb-4">${t(lang.matchHis, LANGUAGE)}</h2>
+			<h2 class="text-xl font-semibold mb-4">${t('matchHis')}</h2>
 			<div class="space-y-4 overflow-y-auto" style="min-height: ${fixedHeight - 28 - 40 - 16 - 16}px; max-height: ${fixedHeight - 28 - 40 - 16 - 16}px;">
 				${matches.map(match => {
 					const maxRank = Math.min(...match.players.map((p: any) => p.rank)); 
 					return `
 						<div class="border p-3 rounded bg-gray-50">
-							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (${t(lang.round, LANGUAGE)} ${match.round})` : ''}</p>
+							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (${t('round')} ${match.round})` : ''}</p>
 							<p class="text-sm text-gray-600 mb-2">${match.match_date}</p>
 							<ul class="pl-4 list-disc">
 								${match.players.map((p: any) => `
 									<li>
-										${p.username} - ${t(lang.score, LANGUAGE)}: ${p.score} ${p.rank === 1 ? t(lang.trophy, LANGUAGE) : ''}
+										${p.username} - ${t('score')}: ${p.score} ${p.rank === 1 ? t('trophy') : ''}
 									</li>`).join('')}
 							</ul>
 						</div>
@@ -74,7 +72,7 @@ function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeig
 			</div>
 			<div class="mt-4">
 				<button id="backToProfileBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-					${t(lang.backToProfile, LANGUAGE)}
+					${t('backToProfile')}
 				</button>
 			</div>
 		</div>
@@ -89,7 +87,7 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 	const id = params?.get("id");
 	if (!id) return;
 
-	render_header();
+	await render_header();
 
 	const user = await getUserForProfile(id);
 	if ('error' in user) return;
@@ -98,14 +96,12 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 }
 
 function renderReadonlyField(field: string, value: string | number) {
-	const key = "profileLabel_" + field;
-	const translationObj = lang[key as keyof typeof lang] as any;
-	const label = translationObj ? t(translationObj, LANGUAGE) : field;
+    const key = "profileLabel." + field;
 
-	return `
-		<div class="w-full">
-			<label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
-			<input value="${value}" disabled
-				class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700" />
-		</div>`;
+    return `
+        <div class="w-full">
+            <label class="block text-sm font-medium text-gray-600 mb-1">${t(key)}</label>
+            <input value="${value}" disabled
+                class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700" />
+        </div>`;
 }

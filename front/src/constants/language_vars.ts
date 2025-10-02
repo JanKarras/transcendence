@@ -1091,10 +1091,10 @@ export const lang = {
 		eng: "Select a chat partner",
 		nig: "Sélectionnez un partenaire de discussion",
 		fr: "Họrọ onye ị ga-akparịta ụka na ya",
-		ua:"Виберіть співрозмовника",
+		ua: "Виберіть співрозмовника",
 	},
 
-	EnterMessage: {
+	enterMessage: {
 		ger: "Nachricht schreiben",
 		eng: "Enter massage",
 		fr: "Saisir un message",
@@ -1109,7 +1109,7 @@ export const lang = {
 		nig: "Zipu",
 		ua: "Надіслати",
 	},
-		twofaEmail: {
+    twofaEmail: {
 		ger: "2FA-Code per E-Mail senden",
 		eng: "Send 2FA code via email",
 		nig: "Zipu koodu 2FA site na email",
@@ -1143,9 +1143,58 @@ export const lang = {
 		nig: "Gbanyụọ",
 		fr: "Désactiver",
 		ua: "Деактивувати",
-	}
+	},
+    game: {
+        playAgain: {
+            ger: "Willst du wieder spielen?",
+            eng: "Do you want to play again?",
+            fr: "Tu veux rejouer?",
+            nig: "",
+            ua: "",
+            bel: ""
+        },
+        yes: {
+            ger: "Ja",
+            eng: "Yes",
+            fr: "Oui",
+            nig: "",
+            ua: "",
+            bel: ""
+        },
+        no: {
+            ger: "Nein",
+            eng: "No",
+            fr: "Non",
+            nig: "",
+            ua: "",
+            bel: ""
+        },
+        secondPlayerUsername: {
+            ger: "Geben Sie den Benutzernamen des zweiten Spielers ein",
+            eng: "Enter the username of the second player",
+            fr: "",
+            nig: "",
+            ua: "",
+            bel: ""
+        },
+        submit: {
+            ger: "Einreichung",
+            eng: "Submit",
+            fr: "",
+            nig: "",
+            ua: "",
+            bel: ""
+        },
+        cancel: {
+            ger: "Abbrechen",
+            eng: "Cancel",
+            fr: "",
+            nig: "",
+            ua: "",
+            bel: ""
+        }
+    }
 };
-
 
 
 export function t(obj: trans, langCode: string): string {

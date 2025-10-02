@@ -1,8 +1,9 @@
-import { bodyContainer, FRIENDS_CONTAINER_ID, friendsBtn, friendsNumber, headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../constants/constants.js";
+import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { connect } from "../websocket/wsService.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 let socket: WebSocket | null = null;
 
@@ -11,6 +12,8 @@ export async function render_matchmaking(params: URLSearchParams | null) {
 		console.error("bodyContainer Container missing")
 		return;
 	}
+
+    await initTranslations();
 
 	const html = `	<style>
 					@keyframes dots {
@@ -41,10 +44,10 @@ export async function render_matchmaking(params: URLSearchParams | null) {
 							</a>
 						<div class="p-5 flex items-center justify-center flex-col">
 							<a>
-								<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Waiting for match<span class="waiting-dots"></span></h5>
+								<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t('game.waitingForMatch')}<span class="waiting-dots"></span></h5>
 							</a>
 							<a href="#" id="cancelBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
-								Cancel
+								${t('game.cancel')}
 							</a>
 						</div>
 					</div>`

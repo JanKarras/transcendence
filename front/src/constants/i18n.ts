@@ -18,16 +18,6 @@ export async function initTranslations() {
 
 // const translations: Record<string, any> = { eng, fr, de, ua, bel, nig };
 
-// export function t(key: string): string {
-//     const keys = key.split(".");
-//     let value: any = translations[currentLang];
-//     for (const k of keys) {
-//         value = value[k];
-//         if (!value) return key; // fallback
-//     }
-//     return value;
-// }
-
 export function t(keyOrObj: any): string {
     // If someone still passes the old { eng: "...", fr: "..." } object
     if (typeof keyOrObj === "object") {
@@ -40,17 +30,17 @@ export function t(keyOrObj: any): string {
         const dict = translations[LANGUAGE] || translations["eng"];
         const keys = keyOrObj.split(".");
 
-        console.log(translations);
-        console.log(dict);
+        // console.log(translations);
+        // console.log(dict);
         let value: any = dict;
         for (const k of keys) {
-            console.log(value);
+            // console.log(value);
             value = value?.[k];
-            console.log(value);
+            // console.log(value);
             if (!value) break;
         }
 
-        return value || keyOrObj; // fallback: return the key itself
+        return value || keyOrObj;
     }
 
     return String(keyOrObj);

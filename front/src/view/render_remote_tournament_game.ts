@@ -6,6 +6,7 @@ import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
 import { connect, getSocket } from "../websocket/wsService.js";
 import { getTournamentSocket } from "../websocket/wsTournamentService.js";
+import { t } from "../constants/i18n.js"
 import { render_chat } from "./render_chat.js";
 
 let gameInfo: GameInfo;
@@ -26,7 +27,7 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 		return;
 	}
 
-	render_header();
+	await render_header();
 
 	const html = `<div class="flex flex-col items-center gap-8">
 		<h1 class="text-5xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent">
@@ -53,21 +54,21 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 		<!-- Chat unter der Spiel-Zeile -->
 		<div id="gameChatContainer" class="w-full max-w-3xl bg-gray-900 rounded-lg mt-6 p-4 flex flex-col h-64">
 			<div id="gameChatMessages" class="flex-1 overflow-y-auto text-sm text-white space-y-2 mb-2">
-				<div class="text-gray-400 italic">Tournament will starting Soon</div>
+				<div class="text-gray-400 italic">${t('game.tournament.willStartSoon')}</div>
 			</div>
 			<div class="flex gap-2">
 				<input id="gameChatInput" class="flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none" placeholder="Type a message...">
-				<button id="gameChatSend" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">Send</button>
+				<button id="gameChatSend" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">${t('send')}</button>
 			</div>
 		</div>
 
 		<div id="winnerModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
 			<div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
 				<h2 id="winnerText" class="text-3xl font-bold text-white"></h2>
-				<p class="text-white">Do you want to play again?</p>
+				<p class="text-white">${t('game.playAgain')}</p>
 				<div class="flex gap-4 mt-4">
-					<button id="playAgainBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Yes</button>
-					<button id="exitBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">No</button>
+					<button id="playAgainBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">${t('game.yes')}</button>
+					<button id="exitBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">${t('game.no')}</button>
 				</div>
 			</div>
 		</div>

@@ -1,10 +1,11 @@
 import { MENU_CONTAINER_ID } from "../constants/constants.js";
 import { LANGUAGE, setLanguage } from "../constants/gloabal.js";
-import { AVAILABLE_LANGUAGES, lang, t } from "../constants/language_vars.js";
+import { AVAILABLE_LANGUAGES} from "../constants/language_vars.js";
 import { logOutApi } from "../remote_storage/remote_storage.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { navigateTo, reRenderCurrentView } from "../view/history_views.js";
 import { hideFriendsDropdown } from "./freinds_menu.js";
+import { initTranslations, t } from "../constants/i18n.js"
 
 export function getMenuEntries(currentPos: string): { label: string, onClick: () => void }[] {
 	const entries = [];
@@ -12,26 +13,26 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 	const basePos = currentPos.split('?')[0];
 
 	if (basePos === "dashboard") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
-		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
+		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "profile") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
-		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
+		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
 	}
 	if (basePos === "friends") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
-		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
+		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "chat") {
-		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "friend_profile") {
-		entries.push({ label: `💬 ${t(lang.chat, LANGUAGE)}`, onClick: () => navigateTo("chat") });
-		entries.push({ label: `🏠 ${t(lang.dashboard2, LANGUAGE)}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 ${t(lang.profile, LANGUAGE)}`, onClick: () => navigateTo("profile") });
+		entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
+		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
+		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 	}
 	return entries;
 }
@@ -40,14 +41,14 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 
 export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 	const langEntry: MenuItem = {
-		label: `${t(lang.languageLabel, LANGUAGE)} ${LANGUAGE.toUpperCase()}`,
+		label: `${t('languageLabel')} ${LANGUAGE.toUpperCase()}`,
 		onClick: () => {
 
 		}
 	};
 
 	const logoutEntry: MenuItem = {
-		label: `🚪 ${t(lang.logout, LANGUAGE)}`,
+		label: `🚪 ${t('logout')}`,
 		onClick: () => {
 			logOutApi()
 			render_with_delay("login");

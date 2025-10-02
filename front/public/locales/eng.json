@@ -28,11 +28,16 @@
   "profileChangePhoto": "Change",
   "profileSaveBtn": "Save",
   "profileCancelBtn": "Cancel",
-  "profileLabel_username": "Username",
-  "profileLabel_first_name": "First Name",
-  "profileLabel_last_name": "Last Name",
-  "profileLabel_age": "Age",
-  "profileLabel_last_seen": "Last seen",
+  "profileLabel": {
+    "username": "Username",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "age": "Age",
+    "lastSeen": "Last seen",
+    "twoFA": "Two Factor Authentication"
+  },
+  "active": "Active",
+  "inactive": "Inactive",
   "registerTitle": "Register",
   "registerUsername": "Username",
   "registerEmail": "Email",
@@ -159,7 +164,7 @@
 
   "selectChatPartner": "Select a chat partner",
 
-  "EnterMessage": "Enter massage",
+  "enterMessage": "Enter massage",
 
   "send": "send",
   "game": {
@@ -168,6 +173,22 @@
     "no": "No",
     "secondPlayerUsername": "Enter the username of the second player",
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "waitingForMatch": "Waiting for match",
+    "chooseMode": "Please, choose the game mode",
+    "local": "Local",
+    "remote": "Remote",
+    "left": "Left",
+    "right": "Right",
+    "wins": "{username} wins! 🎉",
+    "tournament": {
+      "local": "Local Tournament",
+      "enterAliases": "Enter aliases for up to 3 local players. You are Player 1.",
+      "start": "Start Tournament",
+      "create": "Create Tournament",
+      "invite": "Invite Player",
+      "selectFriend": "Select Friend to Invite",
+      "willStartSoon": "Tournament will start soon"
+    }
   }
 }

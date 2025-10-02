@@ -9,14 +9,14 @@ import { render_with_delay } from '../utils/render_with_delay.js';
 import { navigateTo } from '../view/history_views.js';
 import { hideMenu } from './menu.js';
 import { showErrorMessage } from './popup_message.js';
-import { LANGUAGE } from '../constants/gloabal.js';
-import { lang, t } from '../constants/language_vars.js';
 import { render_chat } from '../view/render_chat.js';
+import { initTranslations, t } from "../constants/i18n.js"
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 
 export async function showFriendsDropdown() {
     hideMenu();
+    await initTranslations();
 
     const existing = document.getElementById(FRIENDS_CONTAINER_ID);
     if (existing) {
@@ -28,7 +28,7 @@ export async function showFriendsDropdown() {
     container.className =
         'fixed top-16 right-6 z-50 bg-[#0e0e25] shadow-lg rounded w-[266px] max-h-[400px] opacity-100 translate-y-0 pointer-events-auto transition-all duration-300 flex flex-col';
     const friendsBtn = document.createElement('button');
-    friendsBtn.textContent = t(lang.showFriendsBtn, LANGUAGE);
+    friendsBtn.textContent = t('showFriendsBtn');
     friendsBtn.className =
         'bg-[#1c1c3a] text-white font-semibold py-2 px-4 rounded-t cursor-pointer hover:bg-[#343465] transition';
     friendsBtn.addEventListener('click', () => {
@@ -62,10 +62,7 @@ export async function showFriendsDropdown() {
     const listContainer = document.createElement('div');
     listContainer.className = 'overflow-y-auto max-h-[360px] flex-1';
     if (friends.length === 0) {
-        listContainer.innerHTML = `<p class="text-white px-4 py-2">${t(
-            lang.noFriends,
-            LANGUAGE
-        )}</p>`;
+        listContainer.innerHTML = `<p class="text-white px-4 py-2">${t('noFriends')}</p>`;
     } else {
         [...onlineFriends, ...offlineFriends].forEach(async (friend) => {
             const hasUnread = await checkUnread(friend.id);
@@ -117,8 +114,8 @@ function renderFriendItem(
     name.className = 'font-medium text-sm';
     const status = document.createElement('span');
     status.textContent = isOnline
-        ? t(lang.online, LANGUAGE)
-        : t(lang.offline, LANGUAGE);
+        ? t('online')
+        : t('offline');
     status.className = `text-xs ${
         isOnline ? 'text-green-400' : 'text-gray-400'
     }`;
@@ -143,11 +140,11 @@ function renderFriendItem(
 	}
 });
     chatBtn.className = 'hover:scale-110 transition transform';
-    chatBtn.title = t(lang.startChat, LANGUAGE);
+    chatBtn.title = t('startChat');
     const playBtn = document.createElement('button');
     playBtn.innerHTML = '🎮';
     playBtn.className = 'hover:scale-110 transition transform';
-    playBtn.title = t(lang.startGame, LANGUAGE);
+    playBtn.title = t('startGame');
     right.appendChild(chatBtn);
     right.appendChild(playBtn);
     item.appendChild(left);

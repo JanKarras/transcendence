@@ -1,5 +1,4 @@
-import { LANGUAGE } from "../constants/gloabal.js";
-import { lang, t } from "../constants/language_vars.js";
+import { initTranslations, t } from "../constants/i18n.js"
 import { emailValidationApi } from "../remote_storage/remote_storage.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
@@ -11,14 +10,15 @@ export async function validate_email(email: string) {
 
   const isValidCode = /^[0-9]{6}$/.test(code);
 
+  await initTranslations();
   if (!isValidCode) {
-    showErrorMessage(t(lang.invalidCode, LANGUAGE));
+    showErrorMessage(t('invalidCode'));
     return;
   }
 
   const res = await emailValidationApi(email, code);
   if (res.success) {
-	showSuccessMessage(t(lang.emailValidated, LANGUAGE));
+	showSuccessMessage(t('emailValidated'));
 	render_with_delay("login");
   } else {
 	console.log(res.error);

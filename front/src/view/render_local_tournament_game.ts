@@ -16,7 +16,7 @@ const gameData = {
 export async function render_local_tournament_game(params: URLSearchParams | null) {
 	if (!bodyContainer) return;
 
-	render_header();
+	await render_header();
 
 	// HTML Layout: Canvas in der Mitte, Spielerinfos links & rechts, Chat darunter
 	const html = `

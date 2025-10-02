@@ -7,24 +7,25 @@ import { GameInfo } from "../game/GameInfo.js"
 import { Friend, UserInfo } from "../constants/structs.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { connectTournament, getTournamentSocket } from "../websocket/wsTournamentService.js";
+import { t } from "../constants/i18n.js"
 
 let currentMode: "local" | "remote" = "local";
 
 export async function render_tournament(params: URLSearchParams | null, mode: "remote" | "local" = "local") {
     if (!bodyContainer) return;
 
-    render_header();
+    await render_header();
     await connect();
 
     currentMode = mode;
 
     const toggleHtml = `
   <div id="toggleBtn" class="absolute top-24 right-4 flex items-center gap-2">
-    <span class="text-sm text-gray-400">Remote</span>
+    <span class="text-sm text-gray-400">${t('game.remote')}</span>
     <button id="modeToggle" class="w-14 h-8 bg-gray-700 rounded-full relative transition">
       <div id="modeThumb" class="w-6 h-6 bg-white rounded-full shadow absolute top-1 ${mode === "local" ? "left-7" : "left-1"} transition"></div>
     </button>
-    <span class="text-sm text-gray-400">Local</span>
+    <span class="text-sm text-gray-400">${t('game.local')}</span>
   </div>
   <div id="tournamentContent"></div> <!-- <- neuer Container -->
 `;
@@ -66,9 +67,9 @@ function renderLocalTournamentFrontend(tournament: any) {
   const html = `
     <div class="flex flex-col items-center gap-8 p-8">
       <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-blue-500 mb-6">
-        Local Tournament
+        ${t('game.tournament.local')}
       </h1>
-      <p class="text-gray-300 mb-4">Enter aliases for up to 3 local players. You are Player 1.</p>
+      <p class="text-gray-300 mb-4">${t('game.tournament.enterAliases')}</p>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-5xl">
         ${tournament.players.map((p: any, i: number) => {
@@ -95,7 +96,7 @@ function renderLocalTournamentFrontend(tournament: any) {
       </div>
 
       <button id="startLocalTournamentBtn" disabled class="mt-8 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
-        Start Tournament
+        ${t('game.tournament.start')}
       </button>
     </div>
   `;
@@ -185,7 +186,7 @@ async function renderRemoteTournament(
   const html = `
     <div class="flex flex-col items-center gap-8 p-8">
       <h1 class="text-5xl font-bold bg-gradient-to-br from-purple-600 to-blue-500 bg-clip-text text-transparent mb-6">
-        Create Tournament
+        ${t('game.tournament.create')}
       </h1>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-5xl">
@@ -208,7 +209,7 @@ async function renderRemoteTournament(
     // Slot leer → Einladung möglich oder Spieler hat verlassen
     return `
       <div class="bg-gray-800 rounded-lg p-4 flex flex-col items-center gap-2 text-white hover:bg-gray-700 cursor-pointer" id="player${player.slot}Card">
-        <span class="font-bold text-xl">Invite Player</span>
+        <span class="font-bold text-xl">${t('game.tournament.invite')}</span>
         <div class="w-24 h-24 bg-gray-700 rounded-full flex justify-center items-center text-gray-400">+</div>
         <span class="text-sm text-gray-400">Player ${player.slot}</span>
       </div>
@@ -226,7 +227,7 @@ async function renderRemoteTournament(
          disabled:bg-gray-400 disabled:text-gray-200
          disabled:cursor-not-allowed disabled:hover:bg-gray-400"
 >
-  Start Tournament
+  ${t('game.tournament.start')}
 </button>
 
 
@@ -237,7 +238,7 @@ async function renderRemoteTournament(
                class="flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
                placeholder="Type a message..." />
         <button id="chatSend"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">Send</button>
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold">${t('send')}</button>
       </div>
     </div>
     </div>
@@ -245,10 +246,10 @@ async function renderRemoteTournament(
     <!-- Modal -->
     <div id="inviteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
       <div class="bg-gray-800 rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-        <h2 class="text-xl font-bold mb-4 text-white">Select Friend to Invite</h2>
+        <h2 class="text-xl font-bold mb-4 text-white">${t('game.tournament.selectFriend')}</h2>
         <div id="friendList" class="flex flex-col gap-2 mb-4"></div>
         <div class="flex justify-end">
-          <button id="cancelInvite" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded">Cancel</button>
+          <button id="cancelInvite" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded">${t('game.cancel')}</button>
         </div>
       </div>
     </div>
