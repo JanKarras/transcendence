@@ -146,6 +146,35 @@
     "game": {
         "playAgain": "Tu veux rejouer ?",
         "yes": "Oui",
-        "no": "Non"
-    }
+        "no": "Non",
+        "secondPlayerUsername": "Entrez le nom d'utilisateur du deuxième joueur",
+        "submit": "Soumettre",
+        "cancel": "Annuler",
+        "waitingForMatch": "Attendre le match",
+        "chooseMode": "Veuillez choisir le mode de jeu",
+        "local": "Local",
+        "remote": "Télécommande",
+        "left": "Gauche",
+        "right": "D'accord",
+        "wins": "{username} gagne! 🎉",
+        "tournament": {
+            "local": "Tournois local",
+            "enterAliases": "Entrez des alias pour jusqu'à 3 joueurs locaux. Vous êtes le joueur 1.",
+            "start": "Début du tournoi",
+            "create": "Créer un tournoi",
+            "invite": "Inviter un joueur",
+            "selectFriend": "Sélectionnez un ami à inviter",
+            "willStartSoon": "Le tournoi commencera bientôt"
+        }
+    },
+    "profileLabel": {
+        "username": "Nom d'utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "age": "Âge",
+        "lastSeen": "Dernière vue",
+        "twoFA": "Authentification de deux facteurs"
+    },
+    "active": "Actif",
+    "inactive": "Inactif"
 }
