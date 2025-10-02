@@ -49,26 +49,25 @@ export async function sendFriendRequestApi(user: UserInfo): Promise<{ success: b
 
 export async function logInApi(username: string, password: string) {
 	const body = JSON.stringify({ username, password })
-  try {
-	const response = await fetch('/api/set/login', {
-	  method: 'POST',
-	  headers: {
-		'Content-Type': 'application/json',
-	  },
-	  body,
-	});
+	try {
+		const response = await fetch('/api/set/login', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body,
+		});
 
-	if (!response.ok) {
-	  const errData = await response.json().catch(() => ({}));
-	  return { success: false, error: errData.error || 'Request failed' };
+		const data = await response.json().catch(() => ({}));
+
+		if (!response.ok) {
+			return { success: false, error: data.error || 'Request failed' };
+		}
+
+		return { success: true, ...data };
+	} catch (error: any) {
+		return { success: false, error: error.message || 'Network error' };
 	}
-
-	const data = await response.json();
-	return { success: true, data };
-  } catch (error: any) {
-	return { success: false, error: error.error };
-  }
 }
+
 
 export async function logOutApi() {
   try {
@@ -310,52 +309,52 @@ export async function getUserForProfile(id: string): Promise<UserInfo | { error:
 }
 
 export async function getFriends() {
-    try {
-        const response = await fetch('/api/get/friends', {
-            credentials: 'include',
-        });
-        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching friends:', error);
-        return [];
-    }
+	try {
+		const response = await fetch('/api/get/friends', {
+			credentials: 'include',
+		});
+		if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching friends:', error);
+		return [];
+	}
 }
 
 export async function getMessages(friendId: number) {
-    try {
-        const response = await fetch(`/api/get/messages/${friendId}`, {
-            credentials: 'include',
-        });
-        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-        return [];
-    }
+	try {
+		const response = await fetch(`/api/get/messages/${friendId}`, {
+			credentials: 'include',
+		});
+		if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching messages:', error);
+		return [];
+	}
 }
 
 export async function getBlocked(friendId: number) {
-    const res = await fetch(`/api/get/blocked/${friendId}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { Accept: 'application/json' },
-    });
-    if (!res.ok) throw Error(`Failed to check block status: ${res.status}`);
-    const data = (await res.json()) as { blocked: number };
-    return data.blocked;
+	const res = await fetch(`/api/get/blocked/${friendId}`, {
+		method: 'GET',
+		credentials: 'include',
+		headers: { Accept: 'application/json' },
+	});
+	if (!res.ok) throw Error(`Failed to check block status: ${res.status}`);
+	const data = (await res.json()) as { blocked: number };
+	return data.blocked;
 }
 
 export async function getStatus(friendId: number): Promise<number> {
-    const res = await fetch(`/api/get/status/${friendId}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { Accept: 'application/json' },
-    });
-    if (!res.ok) throw new Error(`Failed to check user status: ${res.status}`);
+	const res = await fetch(`/api/get/status/${friendId}`, {
+		method: 'GET',
+		credentials: 'include',
+		headers: { Accept: 'application/json' },
+	});
+	if (!res.ok) throw new Error(`Failed to check user status: ${res.status}`);
 
-    const data: { status: number | string | boolean } = await res.json();
-    return Number(data.status) ? 1 : 0;
+	const data: { status: number | string | boolean } = await res.json();
+	return Number(data.status) ? 1 : 0;
 }
 
 export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry[] | undefined> {
@@ -382,34 +381,34 @@ export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry
 }
 
 export async function checkUnread(friendId: number): Promise<number> {
-    try {
-        const res = await fetch(`/api/get/unread/${friendId}`, {
-            credentials: 'include',
-        });
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-        const data = await res.json();
-        return data.has_unread ? 1 : 0;
-    } catch (e) {
-        console.error('Ошибка при получении has_unread:', e);
-        return 0;
-    }
+	try {
+		const res = await fetch(`/api/get/unread/${friendId}`, {
+			credentials: 'include',
+		});
+		if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+		const data = await res.json();
+		return data.has_unread ? 1 : 0;
+	} catch (e) {
+		console.error('Ошибка при получении has_unread:', e);
+		return 0;
+	}
 }
 export async function getFreshToken(): Promise<string | null> {
-    try {
-        const res = await fetch('/api/get/token', { credentials: 'include' });
-        if (!res.ok) {
-            throw new Error('Не удалось получить токен');
-        }
-        const data = await res.json();
-        if (data?.token) {
-            localStorage.setItem('auth_token', data.token); // ← сохраняем!
-            return data.token;
-        }
-        return null;
-    } catch (err) {
-        console.error('Ошибка обновления токена:', err);
-        return null;
-    }
+	try {
+		const res = await fetch('/api/get/token', { credentials: 'include' });
+		if (!res.ok) {
+			throw new Error('Не удалось получить токен');
+		}
+		const data = await res.json();
+		if (data?.token) {
+			localStorage.setItem('auth_token', data.token); // ← сохраняем!
+			return data.token;
+		}
+		return null;
+	} catch (err) {
+		console.error('Ошибка обновления токена:', err);
+		return null;
+	}
 }
 
 

@@ -16,7 +16,8 @@ db.prepare(`
 	last_name TEXT DEFAULT NULL,
 	age INTEGER DEFAULT NULL,
 	path TEXT DEFAULT NULL,
-	last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+	last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+	twofa_active BOOLEAN DEFAULT 0
   );
 `).run();
 

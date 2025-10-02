@@ -46,6 +46,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 					${renderReadonlyField("first_name", user.first_name || t(lang.unknown, LANGUAGE))}
 					${renderReadonlyField("last_name", user.last_name || t(lang.unknown, LANGUAGE))}
 					${renderReadonlyField("age", user.age !== null ? user.age : t(lang.profileAgeUnknown, LANGUAGE))}
+					${renderReadonlyField(t(lang.twofaEmail, LANGUAGE), user.twofa_active ? t(lang.active, LANGUAGE) : t(lang.inactive, LANGUAGE))}
 
 					<div class="min-h-[40px] mt-4"> </div>
 				</div>
@@ -69,7 +70,20 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 					${renderEditableField("first_name", user.first_name || "")}
 					${renderEditableField("last_name", user.last_name || "")}
 					${renderEditableField("age", user.age || "", "number")}
-
+					<div class="w-full">
+					<label class="block text-sm font-medium text-gray-600 mb-1">${t(lang.twofaEmail, LANGUAGE)}</label>
+						<button
+							type="button"
+							id="toggle2FA"
+							data-active="${user.twofa_active ? 1 : 0}"
+							class="w-full px-4 py-3 border rounded-md transition
+									${user.twofa_active
+										? 'bg-green-500 text-white hover:bg-green-600'
+										: 'bg-red-500 text-white hover:bg-red-600'}">
+							${user.twofa_active ? t(lang.deactivate, LANGUAGE) : t(lang.activate, LANGUAGE)}
+						</button>
+						<input type="hidden" name="twofa_active" id="twofaInput" value="${user.twofa_active ? 1 : 0}" />
+					<div>
 					<div class="flex space-x-4 mt-4">
 						<button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
 							${t(lang.profileSaveBtn, LANGUAGE)}
@@ -139,6 +153,27 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 			render_profile_settings(null);
 		});
 	});
+	const toggle2FA = document.getElementById("toggle2FA");
+	const twofaInput = document.getElementById("twofaInput") as HTMLInputElement | null;
+
+	toggle2FA?.addEventListener("click", () => {
+		const active = toggle2FA.getAttribute("data-active") === "1";
+			if (active) {
+				toggle2FA.setAttribute("data-active", "0");
+				toggle2FA.textContent = "Aktivieren";
+				toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-red-500 text-white hover:bg-red-600";
+				if (twofaInput) {
+					twofaInput.value = "0";
+				}
+			} else {
+				toggle2FA.setAttribute("data-active", "1");
+				toggle2FA.textContent = "Deaktivieren";
+				toggle2FA.className = "w-full px-4 py-3 border rounded-md transition bg-green-500 text-white hover:bg-green-600";
+				if (twofaInput) {
+					twofaInput.value = "1";
+				}
+			}
+		});
 }
 
 function renderReadonlyField(field: string, value: string | number) {

@@ -16,6 +16,7 @@ import { removeEventListenerByClone } from '../utils/remove_eventlistener.js';
 import { render_with_delay } from '../utils/render_with_delay.js';
 import { lang, t } from '../constants/language_vars.js';
 import { LANGUAGE } from '../constants/gloabal.js';
+import { navigateTo } from './history_views.js';
 
 export function getPos() {
     const windowHash = window.location.hash.replace(/^#/, '');
@@ -55,8 +56,9 @@ let profileMenuListenerAttached = false;
 
 export async function render_header() {
     const pos = getPos();
-
     const friendsCotnainer = document.getElementById('FriendsContainer');
+
+	const headerTitle = document.getElementById("headline");
 
     if (
         !friendsCotnainer ||
@@ -89,6 +91,11 @@ export async function render_header() {
     const userData = await getUser();
 	if (pos !== "login" && pos !== "register" && pos !== "email_validation" && pos !== "two_fa" && pos !== "matchmaking") {
 		headernavs.classList.remove('hidden');
+		if (headerTitle) {
+			headerTitle.onclick = () => {
+				navigateTo('dashboard')
+			}
+		}
 	} else {
 		headernavs.classList.add('hidden');
 		return;
@@ -135,7 +142,8 @@ export async function render_header() {
 let intervalId: ReturnType<typeof setInterval>;
 
 intervalId = setInterval(async () => {
-    const pos = getPos();
+
+	const pos = getPos();
 
     if (
         pos == 'login' ||

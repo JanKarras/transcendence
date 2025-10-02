@@ -94,7 +94,7 @@ export async function render_friends(params: URLSearchParams | null) {
 			Array.from(tabNav.children).forEach(child => child.classList.remove("border-blue-500", "font-semibold"));
 			btn.classList.add("border-blue-500", "font-semibold");
 			contentContainer.innerHTML = "";
-			contentContainer.setAttribute("data-active-tab", tab.id); 
+			contentContainer.setAttribute("data-active-tab", tab.id);
 			tab.render();
 		});
 

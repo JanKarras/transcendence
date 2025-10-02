@@ -5,9 +5,15 @@ import { LANGUAGE } from "../constants/gloabal.js";
 import { lang, t } from "../constants/language_vars.js";
 import { render_header } from "./render_header.js";
 
-export function render_login(params: URLSearchParams | null) {
+async function setHash() {
+	window.location.hash = "#login";
+}
+
+export async function render_login(params: URLSearchParams | null) {
 	if (!bodyContainer || !headernavs) return;
 
+
+	await setHash()
 	render_header()
 
 	bodyContainer.innerHTML = `

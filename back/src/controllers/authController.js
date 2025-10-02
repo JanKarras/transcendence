@@ -52,19 +52,39 @@ exports.login = async (request, reply) => {
         if (!isValid) {
             return reply.code(401).send({ error: 'Invalid username or email.' });
         }
+		if (user.twofa_active) {
+			const lastCode = await verificationCodeRepository.getLastVerificationCodeByUserId(user.id);
+			if (lastCode) {
+				const lastSent = new Date(lastCode.created_at).getTime();
+				const now = Date.now();
+				if (now - lastSent < MIN_INTERVAL) {
+					return reply.code(429).send({ error: 'Please wait before requesting another 2FA code.' });
+				}
+			}
 
-        const lastCode = await verificationCodeRepository.getLastVerificationCodeByUserId(user.id);
-        if (lastCode) {
-            const lastSent = new Date(lastCode.created_at).getTime();
-            const now = Date.now();
-            if (now - lastSent < MIN_INTERVAL) {
-                return reply.code(429).send({ error: 'Please wait before requesting another 2FA code.' });
-            }
-        }
+			await mailService.sendTwoFAMail(user.id, user.email);
 
-        await mailService.sendTwoFAMail(user.id, user.email);
+			return reply.code(200).send({
+				success: true,
+				requires2fa: true,
+				message: '2FA code sent to your email.'
+			});
+		} else {
+			const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
-        return reply.code(200).send({ message: '2FA code sent to your email.' });
+			reply.setCookie('auth_token', token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === 'production',
+				path: '/',
+				maxAge: 3600
+			});
+
+			return reply.code(200).send({
+				success: true,
+				requires2fa: false,
+				message: 'Login successful'
+			});
+		}
     } catch (err) {
         request.log.error(err);
         return reply.code(500).send({ error: 'Database error' });
