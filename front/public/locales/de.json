@@ -164,7 +164,8 @@
             "create": "Tournamen erstellen",
             "invite": "Eingeladener Spieler",
             "selectFriend": "Wählen Sie Freunde zu Einladung",
-            "willStartSoon": "Turnier wird bald beginnen"
+            "willStartSoon": "Turnier wird bald beginnen",
+            "alias": "Alias"
         }
     },
     "profileLabel": {
@@ -176,5 +177,6 @@
         "twoFA": "Zwei Faktor Authentication"
     },
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "typeMessage": "Geben Sie eine Nachricht ein..."
 }
