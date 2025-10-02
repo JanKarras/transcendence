@@ -149,6 +149,32 @@
         "no": "Nein",
         "secondPlayerUsername": "Geben Sie den Benutzernamen des zweiten Spielers ein",
         "submit": "Einreichung",
-        "cancel": "Abbrechen"
-    }
+        "cancel": "Abbrechen",
+        "waitingForMatch": "Warten auf Spiel",
+        "chooseMode": "Bitte wählen Sie den Spielmodus",
+        "local": "Ort",
+        "remote": "Fernbedienung",
+        "left": "Links",
+        "right": "Rechts",
+        "wins": "{username} gewinnt! 🎉",
+        "tournament": {
+            "local": "Lokales Turnier",
+            "enterAliases": "Geben Sie Alias für bis zu 3 lokale Spieler ein. Sie sind Spieler 1.",
+            "start": "Start Turnier",
+            "create": "Tournamen erstellen",
+            "invite": "Eingeladener Spieler",
+            "selectFriend": "Wählen Sie Freunde zu Einladung",
+            "willStartSoon": "Turnier wird bald beginnen"
+        }
+    },
+    "profileLabel": {
+        "username": "Benutzername",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "age": "Alter",
+        "lastSeen": "Letzter Beitrag",
+        "twoFA": "Zwei Faktor Authentication"
+    },
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
 }
