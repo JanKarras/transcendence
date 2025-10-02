@@ -159,7 +159,8 @@
             "create": "Créer un tournoi",
             "invite": "Inviter un joueur",
             "selectFriend": "Sélectionnez un ami à inviter",
-            "willStartSoon": "Le tournoi commencera bientôt"
+            "willStartSoon": "Le tournoi commencera bientôt",
+            "alias": "Alias"
         }
     },
     "profileLabel": {
@@ -171,5 +172,6 @@
         "twoFA": "Authentification de deux facteurs"
     },
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "typeMessage": "Tapez un message..."
 }
