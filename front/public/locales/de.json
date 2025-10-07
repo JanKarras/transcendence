@@ -144,14 +144,14 @@
     "enterMessage": "Nachricht schreiben",
     "send": "verschicken",
     "game": {
-        "playAgain": "Willst du wieder spielen?",
+        "playAgain": "Willst du nocheinmal spielen?",
         "yes": "Ja",
         "no": "Nein",
-        "secondPlayerUsername": "Geben Sie den Benutzernamen des zweiten Spielers ein",
-        "submit": "Einreichung",
+        "secondPlayerUsername": "Gib den Benutzernamen des zweiten Spielers ein",
+        "submit": "Bestätigen",
         "cancel": "Abbrechen",
         "waitingForMatch": "Warten auf Spiel",
-        "chooseMode": "Bitte wählen Sie den Spielmodus",
+        "chooseMode": "Bitte wähle den Spielmodus",
         "local": "local",
         "remote": "remote",
         "left": "Links",
@@ -159,11 +159,11 @@
         "wins": "{username} gewinnt! 🎉",
         "tournament": {
             "local": "Lokales Turnier",
-            "enterAliases": "Geben Sie Alias für bis zu 3 lokale Spieler ein. Sie sind Spieler 1.",
+            "enterAliases": "Gib einen Alias für bis zu 3 lokale Spieler ein. Du bist Spieler 1.",
             "start": "Start Turnier",
-            "create": "Tournamen erstellen",
+            "create": "Tournier erstellen",
             "invite": "Eingeladener Spieler",
-            "selectFriend": "Wählen Sie Freunde zu Einladung",
+            "selectFriend": "Lade Freunde ein",
             "willStartSoon": "Turnier wird bald beginnen",
             "alias": "Alias"
         }
