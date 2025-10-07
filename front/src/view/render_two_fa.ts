@@ -61,4 +61,6 @@ export async function render_two_fa(params: URLSearchParams | null) {
     	two_fa(email);
   	});
 	}
+
+  document.getElementById("codeDigit0")?.focus();
 }
