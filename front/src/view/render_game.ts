@@ -72,7 +72,7 @@ export async function render_game(params: URLSearchParams | null) {
             <input id="usernameInput" 
                    type="text" 
                    placeholder="username" 
-                   class="px-4 py-2 rounded bg-gray-600 text-white text-center w-64">
+                   class="px-4 py-2 rounded bg-gray-600 text-white text-center w-64" autofocus>
             <div class="flex gap-6 mt-4">
               <button id="submitUsernameBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded">${t('game.submit')}</button>
               <button id="cancelUsernameBtn" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
