@@ -1,6 +1,6 @@
 {
     "playNowBtn": "Jetzt spielen!",
-    "readyTitle": "Bereit für das nächste Match?\"",
+    "readyTitle": "Bereit für das nächste Match?",
     "readySubtitle": "Spiele online Ping Pong gegen Freunde oder im Turnier!",
     "playTitle": "Spielen",
     "playDesc": "Starte ein schnelles Spiel",
@@ -152,8 +152,8 @@
         "cancel": "Abbrechen",
         "waitingForMatch": "Warten auf Spiel",
         "chooseMode": "Bitte wählen Sie den Spielmodus",
-        "local": "Ort",
-        "remote": "Fernbedienung",
+        "local": "local",
+        "remote": "remote",
         "left": "Links",
         "right": "Rechts",
         "wins": "{username} gewinnt! 🎉",
@@ -174,7 +174,7 @@
         "lastName": "Nachname",
         "age": "Alter",
         "lastSeen": "Letzter Beitrag",
-        "twoFA": "Zwei Faktor Authentication"
+        "twoFA": "Zwei Faktor Authentifizierung"
     },
     "active": "Aktiv",
     "inactive": "Inaktiv",
