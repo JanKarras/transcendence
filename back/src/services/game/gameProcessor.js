@@ -29,17 +29,24 @@ function mainGameLoop() {
             case GameState.ERROR:
                 sendWinner(match)
                 saveGameToMatchHistory(match)
+                eraseMatchFromOngoingMatches(i);
                 break;
             case GameState.GAMEOVER:
                 sendMessage(match, "gameOver");
                 saveGameToMatchHistory(match);
                 match.wsUser1.close(1000, "Closed by user");
                 match.wsUser2.close(1000, "Closed by user");
+                eraseMatchFromOngoingMatches(i);             
                 break;
             default:
                 break;
         }
     }
+}
+
+function eraseMatchFromOngoingMatches(i) {
+    gameStore.onGoingMatches.splice(i, 1);
+    i--;
 }
 
 function checkForBothConnected(match) {
