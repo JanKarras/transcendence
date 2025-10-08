@@ -75,3 +75,10 @@ export interface MatchHistoryEntry {
     rank?: number | null;
   }[];
 }
+
+export interface Stats { 
+  user_id: number;
+  wins: number; 
+  loses: number;
+  tournamentWins: number ;
+}
