@@ -104,13 +104,24 @@ export async function render_game(params: URLSearchParams | null) {
 	const ctx = canvas.getContext('2d')!;
     usernameInput?.focus();
     
-    submitUsernameBtn?.addEventListener("click", async () => {
+    // Function to handle submission
+    const handleUsernameSubmit = async () => {
         if (usernameInput && usernameInput.value.trim() !== "") {
             usernameModal?.classList.add("hidden");
             username = usernameInput.value.trim();
             await startLocalGame();
         } else {
             alert("Please enter a username!");
+        }
+    };
+
+    // Button click
+    submitUsernameBtn?.addEventListener("click", handleUsernameSubmit);
+
+    // Enter key press
+    usernameInput?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            handleUsernameSubmit();
         }
     });
 
