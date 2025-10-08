@@ -1,88 +1,14 @@
 import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
-import { getMatchHistory, getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
+import { getMatchHistory, getUser, logOutApi, getStats, saveProfileChanges } from "../remote_storage/remote_storage.js";
 import { initTranslations, t } from "../constants/i18n.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { UserInfo } from "../constants/structs.js";
 import { connectWebSocket, friendChat, refreshFriendsList, connectDialog } from "../websocket/ws.js";
-
-// Helper: renders the match history HTML
-function renderMatchHistory(matches: any[]) {
-	const formatMatchType = (type: string) => {
-		switch(type) {
-			case "1v1_local": return t('matchType1v1Local');
-			case "1v1_remote": return t('matchType1v1Remote');
-			case "tournament": return t('matchTypeTournament');
-			default: return type;
-		}
-	};
-
-	return `
-	<div class="text-white p-4 bg-[#2c2c58] rounded-lg shadow-md">
-		<h2 class="text-xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent mb-4">${t('matchHistoryTitle')}</h2>
-		<div class="space-y-4">
-			${matches.slice().reverse().map(match => `
-				<div class="p-3 rounded bg-gradient-to-r from-[#8e00a8] to-[#7c0bac] border border-gray-200 rounded-lg shadow-[0_0_10px_#174de1] dark:border-gray-700">
-					<p class="font-medium">
-						<strong>${formatMatchType(match.match_type)}</strong>
-						${match.tournament_name ? `- ${match.tournament_name} (${t('round')} ${match.round})` : ''}
-					</p>
-					<p class="text-sm text-gray-300 mb-2">${match.match_date}</p>
-					<ul class="pl-4 list-disc">
-						${match.players.map((p: any) => `
-							<li>${p.username} - ${t('score')}: ${p.score} ${p.rank === 1 ? t('trophy') : ''}</li>
-						`).join('')}
-					</ul>
-				</div>
-			`).join('')}
-		</div>
-	</div>
-	`;
-}
-
-export function renderChatSidebar(selectedFriend: string | null, friends: any[] = []) {
-    return `
-		<div class="flex flex-col h-full gap-3 p-4 bg-[#2c2c58] rounded-lg shadow-md ">
-			<!-- Top spacing -->
-			<div class="mb-2"></div>
-
-			<!-- Selected Friend -->
-			<div id="chatHeader" class="text-xl font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent p-2 rounded mb-2">
-				${selectedFriend || t('selectChatPartner')}
-			</div>
-
-			<!-- Chat Messages -->
-			<div id="chatMessages" class="overflow-y-auto p-3 bg-gradient-to-r from-[#8e00a8] to-[#7c0bac] rounded-lg shadow-[0_0_10px_#174de1] mb-2 min-h-[10rem] max-h-[300px]">
-				<!-- Messages will be injected here -->
-			</div>
-
-			<!-- Input -->
-			<div class="flex gap-2 mb-2">
-				<textarea id="chatInput" 
-					placeholder="${t('enterMessage')}" 
-					class="flex-1 p-2 rounded-lg border border-gray-200 bg-[#2c2c58] text-white focus:outline-none focus:ring-2 focus:ring-[#174de1] resize-none overflow-y-auto"
-					rows="1" 
-					${!selectedFriend ? 'disabled' : ''}
-				></textarea>
-				<button id="sendBtn" 
-					class="px-3 py-2 rounded-lg bg-[#5656aa] text-white hover:bg-[#7878cc] transition flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-					${!selectedFriend ? 'disabled' : ''}>
-					<img class="h-6 w-6" src="./assets/img/send-32.png" alt="Send" />
-				</button>
-			</div>
-
-			<!-- Friends List -->
-			<div class="overflow-y-auto max-h-[200px]">
-				<h3 class="text-white font-bold text-lg mb-2">${t('friends')}</h3>
-				<ul id="friendsList" class="list-none p-0 space-y-1">
-					${friends.map(f => `<li class="p-1 text-white cursor-pointer hover:bg-[#3a3a7a] rounded">${f.username}</li>`).join('')}
-				</ul>
-			</div>
-		</div>
-    `;
-}
+import { renderMatchHistory } from "../templates/match_history_sidebar.js";
+import { renderChatSidebar } from "../templates/chat_sidebar.js";
 
 export async function render_dashboard(params: URLSearchParams | null, matches: any[] = []) {
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
@@ -101,7 +27,8 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 	}
 	const user: UserInfo = userData.user;
 	const matchesFromHistory = await getMatchHistory(user.id);
-
+	const stats = await getStats(user.id);
+	console.log(stats);
 	bodyContainer.innerHTML = `
 	<div class="flex h-screen w-full">
 		<!-- Left sidebar: Match History -->
@@ -160,16 +87,16 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 				<!-- Stats boxes (centered, closer together) -->
 				<div class="grid grid-cols-3 gap-6 mt-4 max-w-lg mx-auto">
 					<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 id="online" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
-						<p class="font-normal text-gray-700 dark:text-gray-400">${t('onlinePlayers')}</p>
+						<h5 id="online" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${stats?.wins}</h5>
+						<p class="font-normal text-gray-700 dark:text-gray-400">${t('wonGames')}</p>
 					</a>
 					<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 id="tourn" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
-						<p class="font-normal text-gray-700 dark:text-gray-400">${t('activeTournaments')}</p>
+						<h5 id="tourn" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${stats?.loses}</h5>
+						<p class="font-normal text-gray-700 dark:text-gray-400">${t('lostGames')}</p>
 					</a>
 					<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
-						<h5 id="matches" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">1,247</h5>
-						<p class="font-normal text-gray-700 dark:text-gray-400">${t('matchesToday')}</p>
+						<h5 id="matches" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${stats?.tournamentWins}</h5>
+						<p class="font-normal text-gray-700 dark:text-gray-400">${t('wonTournaments')}</p>
 					</a>
 				</div>
 			</div>
