@@ -5,6 +5,7 @@ const matchController = require('../../controllers/matchController');
 const authController = require('../../controllers/authController');
 const userController = require('../../controllers/userController');
 const gameController = require('../../controllers/gameController');
+const statisticsController = require('../../controllers/statisticsController');
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {
@@ -20,6 +21,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/token',{ preHandler: authMiddleware },authController.getToken);
 	fastify.get('/getMatchHistory',{ preHandler: authMiddleware },matchController.getMatchHistory);
 	fastify.get('/unread/:friendId',{ preHandler: authMiddleware }, messageController.getUnread);
+	fastify.get('/getStats', { preHandler: authMiddleware }, statisticsController.getStats);
 };
 
 
