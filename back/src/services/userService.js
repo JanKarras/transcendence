@@ -8,7 +8,7 @@ function getUserByEmailOrUsername(username) {
     return user;
 }
 
-function updateUser(firstName, lastName, age, imageName, userId, twofa_active) {
+function updateUser(firstName, lastName, age, imageName, userId, twofa_active, twofa_method) {
     if (firstName) {
         userRepository.updateUserFirstName(firstName, userId);
     }
@@ -23,6 +23,9 @@ function updateUser(firstName, lastName, age, imageName, userId, twofa_active) {
     }
 	if (twofa_active !== undefined) {
 		userRepository.updateUserTwofaActive(twofa_active, userId);
+	}
+	if (twofa_method) {
+		userRepository.updateUserTwoFaMethod(twofa_method, userId);
 	}
 }
 

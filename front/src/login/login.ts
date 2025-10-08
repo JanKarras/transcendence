@@ -15,11 +15,19 @@ export async function logIn(event: Event) {
   await initTranslations();
   if (res.success) {
     if (res.requires2fa) {
-      showSuccessMessage(t('loginSuccess'));
-      const params = new URLSearchParams({ email: username });
-      setTimeout(() => {
-        navigateTo('two_fa', params);
-      }, 1500);
+		if (res.method === 'email') {
+			showSuccessMessage(t('loginSuccess'));
+			const params = new URLSearchParams({ email: username, method: 'email' });
+			setTimeout(() => {
+			    navigateTo('two_fa', params);
+			}, 1500);
+		} else if (res.method === 'authapp') {
+    		showSuccessMessage(t('loginSuccess'));
+    		const params = new URLSearchParams({ email: username, method: 'authapp' });
+    		setTimeout(() => {
+    		    navigateTo('two_fa', params);
+    		}, 1500);
+		}
     } else {
       showSuccessMessage(t('loginSuccess').replace("{username}", username));
       setTimeout(() => {

@@ -4,6 +4,7 @@ const mailService = require("../services/mailService");
 const userRepository = require("../repositories/userRepository");
 const statsRepository = require("../repositories/statsRepository");
 const requestRepository = require("../repositories/requestRepository");
+const twoFaService = require("../services/appAuthService");
 const validatorUtil = require("../utils/validator");
 const validator = require("validator");
 const {MAX_IMAGE_SIZE, NAME_REGEX} = require("../constants/constants");
@@ -148,6 +149,7 @@ exports.updateUser = async function (req, reply) {
     let age = null;
     let imageName = null;
 	let twofaActive = null;
+	let twofa_method = null;
 
     for await (const part of parts) {
         if (part.file) {
@@ -188,11 +190,12 @@ exports.updateUser = async function (req, reply) {
 			const active = twofaActive ? 1 : 0;
 			console.log(active)
 			twofaActive = active;
-
+		} else if (part.fieldname === "twofa_method") {
+			twofa_method = part.value;
 		}
     }
 
-    await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive);
+    await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
     reply.send({ success: true });
 };
 
@@ -232,5 +235,19 @@ exports.removeFriend = async function (req, reply) {
     } catch (err) {
         console.error(err);
         return reply.code(500).send({ error: "Database error" });
+    }
+};
+
+exports.twoFaSetUp = async function (req, reply) {
+    try {
+        const userId = userUtil.getUserIdFromRequest(req);
+        if (!userId) return reply.code(401).send({ error: "Unauthorized" });
+
+        const { qrCodeDataUrl } = await twoFaService.generateTwoFaSecret(userId);
+
+        return reply.send({ qrCodeDataUrl });
+    } catch (err) {
+        console.error(err);
+        return reply.code(500).send({ error: "Failed to setup 2FA" });
     }
 };
