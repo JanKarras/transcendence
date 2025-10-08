@@ -20,8 +20,8 @@ export async function render_login(params: URLSearchParams | null) {
 			<form id="loginForm" class="space-y-4">
 				<label class="block">
 					<span class="text-gray-700">${t('loginUserField')}</span>
-					<input type="text" name="user" required
-						class="text-gray-900 mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none" />
+					<input id="usernameInput" type="text" name="user" required
+						class="text-gray-900 mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none" autofocus/>
 				</label>
 				<label class="block">
 					<span class="text-gray-700">${t('loginPasswordField')}</span>
@@ -52,4 +52,6 @@ export async function render_login(params: URLSearchParams | null) {
 			logIn(event);
 		});
 	}
+
+	document.getElementById("usernameInput")?.focus();
 }

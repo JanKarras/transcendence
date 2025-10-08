@@ -1,6 +1,6 @@
 {
     "playNowBtn": "Jetzt spielen!",
-    "readyTitle": "Bereit für das nächste Match?\"",
+    "readyTitle": "Bereit für das nächste Match?",
     "readySubtitle": "Spiele online Ping Pong gegen Freunde oder im Turnier!",
     "playTitle": "Spielen",
     "playDesc": "Starte ein schnelles Spiel",
@@ -144,26 +144,26 @@
     "enterMessage": "Nachricht schreiben",
     "send": "verschicken",
     "game": {
-        "playAgain": "Willst du wieder spielen?",
+        "playAgain": "Willst du nocheinmal spielen?",
         "yes": "Ja",
         "no": "Nein",
-        "secondPlayerUsername": "Geben Sie den Benutzernamen des zweiten Spielers ein",
-        "submit": "Einreichung",
+        "secondPlayerUsername": "Gib den Benutzernamen des zweiten Spielers ein",
+        "submit": "Bestätigen",
         "cancel": "Abbrechen",
         "waitingForMatch": "Warten auf Spiel",
-        "chooseMode": "Bitte wählen Sie den Spielmodus",
-        "local": "Ort",
-        "remote": "Fernbedienung",
+        "chooseMode": "Bitte wähle den Spielmodus",
+        "local": "local",
+        "remote": "remote",
         "left": "Links",
         "right": "Rechts",
         "wins": "{username} gewinnt! 🎉",
         "tournament": {
             "local": "Lokales Turnier",
-            "enterAliases": "Geben Sie Alias für bis zu 3 lokale Spieler ein. Sie sind Spieler 1.",
+            "enterAliases": "Gib einen Alias für bis zu 3 lokale Spieler ein. Du bist Spieler 1.",
             "start": "Start Turnier",
-            "create": "Tournamen erstellen",
+            "create": "Tournier erstellen",
             "invite": "Eingeladener Spieler",
-            "selectFriend": "Wählen Sie Freunde zu Einladung",
+            "selectFriend": "Lade Freunde ein",
             "willStartSoon": "Turnier wird bald beginnen",
             "alias": "Alias"
         }
@@ -174,7 +174,7 @@
         "lastName": "Nachname",
         "age": "Alter",
         "lastSeen": "Letzter Beitrag",
-        "twoFA": "Zwei Faktor Authentication"
+        "twoFA": "Zwei Faktor Authentifizierung"
     },
     "active": "Aktiv",
     "inactive": "Inaktiv",

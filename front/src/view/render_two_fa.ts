@@ -79,4 +79,6 @@ export async function render_two_fa(params: URLSearchParams | null) {
 		const submit = document.getElementById("submitAuthAppBtn");
 		submit?.addEventListener("click", () => two_fa(email, method));
 	}
+
+  document.getElementById("codeDigit0")?.focus();
 }
