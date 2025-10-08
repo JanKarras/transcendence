@@ -178,5 +178,15 @@
     },
     "active": "Aktiv",
     "inactive": "Inaktiv",
-    "typeMessage": "Geben Sie eine Nachricht ein..."
+    "typeMessage": "Geben Sie eine Nachricht ein...",
+	"twofaSettings" : "Zwei-Faktor-Einstellungen",
+	"twofaEnable" : "Zwei-Faktor-Authentifizierung aktivieren/deaktivieren",
+	"twofaTitle" : "Zwei-Faktor-Authentifizierung",
+	"twofaSelectMethod" : "Authentifizierungsmethode wählen",
+	"twofaEmail" : "E-Mail",
+	"twofaAuthApp" : "Authentifizierungs-App",
+	"twofaScanQR" : "QR-Code scannen",
+	"save" : "Speichern",
+	"cancel" : "Abbrechen"
+
 }

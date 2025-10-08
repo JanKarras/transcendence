@@ -145,6 +145,7 @@ exports.waitForTheGame = async (req, reply) => {
     if (!userId) {
         return reply.status(400).send({ error: 'UserId required' });
     }
+	console.log("Gamestore connected Users", gameStore.connectedUsers);
     const data = gameStore.connectedUsers.get(userId);
     matchService.connectUserToMatch(data);
     console.log(`Waiting for the game to start by ${userId}`);

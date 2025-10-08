@@ -166,7 +166,9 @@ function startCountdown() {
 
 function gameLoop() {
 	renderFrame(ctx, gameInfo);
-	if (gameState >= 4 || gameOver) {
+	console.log(gameOver)
+	if (gameOver) {
+		console.log("showWinnerCalled")
 		showWinner();
 		return;
 	}
@@ -185,16 +187,14 @@ function showWinner() {
 		playerLeft : gameInfo.playerLeft,
 		playerRight : gameInfo.playerRight
 	};
-
+	console.log("round win sended")
 	tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
 }
 
-
-async function connectGame() {
-	const token = await getFreshToken();
+async function GameSocketEventListeners() {
 	const socket = getSocket();
-	const tournamentSocket = getTournamentSocket()
 	if (!socket) throw new Error("WebSocket is not connected");
+	const tournamentSocket = getTournamentSocket()
 	if (!tournamentSocket) throw new Error("WebSocket is not connected");
 	await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
 		method: "POST",
@@ -221,23 +221,46 @@ async function connectGame() {
 				gameInfo = data.gameInfo;
 				gameState = data.gameState;
 				break;
+			case 'gameOver':
+				gameOver = true;
+				break;
 			default:
 				break;
 		}
 	};
-	tournamentSocket.onmessage = (event) => {
+	socket.onclose = () => {
+		console.log("Game Socket Closed");
+	}
+}
+
+async function startSecondRound() {
+	await connect();
+	GameSocketEventListeners();
+}
+
+async function connectGame() {
+	const token = await getFreshToken();
+	const tournamentSocket = getTournamentSocket()
+	if (!tournamentSocket) throw new Error("WebSocket is not connected");
+
+	GameSocketEventListeners();
+
+ 	tournamentSocket.onmessage = (event) => {
 	const data = JSON.parse(event.data);
 	console.log("msg from server tournament", data)
 	switch (data.type) {
 		case 'remoteTournamentUpdated':
 			renderGameChat(data.data.messages);
 			break;
-
+		case 'startSecondRound':
+			startSecondRound()
+			break;
 		default:
 			break;
 	}
 }
 }
+
 
 function displayNames() {
 	(document.getElementById("playerLeftName") as HTMLElement).textContent = gameInfo.playerLeft.name;

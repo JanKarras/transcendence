@@ -66,7 +66,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 					<p class="font-normal text-gray-700 dark:text-gray-400">${t('matchesToday')}</p>
 				</a>
 			</div>
-			
+
             <!--  Mode modal  -->
 			<div id="modeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
               <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
@@ -79,7 +79,7 @@ export async function render_dashboard(params: URLSearchParams | null) {
 			</div>
 		  </div>
 
-<!--		  <button id="ToTournaentGameID1">ToTournaentGameID1</button>-->
+		  <button id="ToTournaentGameID1">ToTournaentGameID1</button>
 
 		`
 

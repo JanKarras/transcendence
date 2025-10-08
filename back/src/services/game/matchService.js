@@ -132,7 +132,8 @@ function initGameInfo(playerLeft, playerRight) {
 }
 
 function connectUserToMatch(data) {
-    console.log(gameStore.onGoingMatches);
+	console.log("Data: ", data)
+    console.log("Ongoing matches", gameStore.onGoingMatches);
     const userId = data.userId;
     const ws = data.ws;
     const match = gameStore.onGoingMatches.find(
