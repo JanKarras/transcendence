@@ -44,7 +44,7 @@ exports.login = async (request, reply) => {
             return reply.code(401).send({ error: 'Invalid username or email.' });
         }
 
-        if (user.validated === false) {
+        if (!user.validated) {
             return reply.code(403).send({ error: 'Account is not validated. Please confirm your email address.' });
         }
 

@@ -17,17 +17,13 @@ function getMatchesWithPlayersByUserId(userId) {
 }
 
 function getMatchByUserId(userId) {
-    console.log(gameStore.onGoingMatches);
     return gameStore.onGoingMatches.find(
         m => m.userId1 === userId || m.userId2 === userId
     );
 }
 
-function createMatch(userData1, userData2) {
-    console.log("createMatch");
-	console.log("Userdata1: ", userData1)
-	console.log("Userdata2: ", userData2)
-    const matchData = initRemoteMatch(userData1, userData2);
+async function createMatch(userData1, userData2) {
+    const matchData = await initRemoteMatch(userData1, userData2);
     gameStore.onGoingMatches.push(matchData);
     userData1.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId2 }));
     userData2.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId1 }));
@@ -68,7 +64,7 @@ function initMatch(userData1, userData2, gameInfo, mode) {
     };
 }
 
-function initRemoteMatch(userData1, userData2) {
+async function initRemoteMatch(userData1, userData2) {
     const user1 = userRepository.getUserById(userData1.userId);
     const user2 = userRepository.getUserById(userData2.userId);
     const playerLeft = {
@@ -83,7 +79,7 @@ function initRemoteMatch(userData1, userData2) {
         path: user2.path || "std_user_img.png",
         score: 0,
     };
-    const gameInfo = initGameInfo(playerLeft, playerRight);
+    const gameInfo = await initGameInfo(playerLeft, playerRight);
     return initMatch(userData1, userData2, gameInfo, MatchType.REMOTE_1V1);
 }
 
@@ -132,14 +128,17 @@ function initGameInfo(playerLeft, playerRight) {
 }
 
 function connectUserToMatch(data) {
-	console.log("Data: ", data)
-    console.log("Ongoing matches", gameStore.onGoingMatches);
+	console.log("Data for connection", data)
+	console.log("Ongoing Matches", gameStore.onGoingMatches)
     const userId = data.userId;
     const ws = data.ws;
     const match = gameStore.onGoingMatches.find(
         m => m.userId1 === userId || m.userId2 === userId
     );
-    if (!match) return;
+    if (!match) {
+		console.log("Could not find match for cennection.")
+		return;
+	}
 
     if (match.disconnectTimeout) {
         clearTimeout(match.disconnectTimeout);
@@ -170,6 +169,12 @@ function connectUserToMatch(data) {
     //         break;
     //     }
     // }
+	// console.log("Match After Connected")
+	// console.log("userId1", match.userId1);
+	// console.log("userId2", match.userId2);
+	// console.log("user1Connected:", match.user1Connected)
+	// console.log("user2Connected:", match.user2Connected)
+	// console.log("Game State", match.gameState);
 }
 
 module.exports = {

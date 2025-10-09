@@ -86,95 +86,9 @@ module.exports = async function chatWebSocketRoute(fastify) {
 					broadcastTournamentUpdate(TournamentRound);
 					break;
 				}
-				case "roundWin": {
-					const { playerLeft, playerRight } = data.data;
-					const tournament = findTournamentByUser(userId);
-
-					if (userId === playerRight.userId) {
-						return;
-					}
-
-					const winner = playerLeft.score > playerRight.score ? playerLeft : playerRight;
-					const loser = playerLeft.score > playerRight.score ? playerRight : playerLeft;
-
-					const currentMatch = tournament.matches.find(
-						m => (m.playerLeft.id === playerLeft.userId && m.playerRight.userId === playerRight.id)
-					);
-
-					if (currentMatch) {
-						currentMatch.winner = winner;
-						currentMatch.loser = loser;
-						addSystemMessage(tournament, `Round finished! ${winner.name || "Player"} won against ${loser.name || "Player"} 🎉`);
-					}
-
-					tournament.gamesFinishedCoutner++;
-
-					if (tournament.gamesFinishedCoutner === 2) {
-						tournament.round++;
-						tournament.roundStartMsgCounter = 0;
-						tournament.gamesFinishedCoutner = 0;
-
-						const winners = tournament.matches
-							.filter(m => m.round === 0)
-							.map(m => m.winner)
-							.filter(Boolean);
-						const losers = tournament.matches
-							.filter(m => m.round === 0)
-							.map(m => m.loser)
-							.filter(Boolean);
-
-						if (winners.length >= 2) {
-							const player1 = tournament.players.find(p => p.id === winners[0].userId);
-							const player2 = tournament.players.find(p => p.id === winners[1].userId);
-
-							const matchWinners = {
-								id: 3,
-								round: 1,
-								playerLeft: winners[0],
-								playerRight: winners[1],
-								winner: null,
-								loser: null,
-							};
-							console.log("[ROUND WIN] Next winners match:", matchWinners);
-
-							tournament.matches.push(matchWinners);
-
-							createMatch(
-								{ userId: winners[0].userId, ws: player1?.ws },
-								{ userId: winners[1].userId, ws: player2?.ws }
-							);
-
-							addSystemMessage(tournament, `Next match: ${winners[0].name} vs ${winners[1].name}`);
-							player1.ws.send(JSON.stringify( { type : "startSecondRound" } ));
-							player2.ws.send(JSON.stringify( { type : "startSecondRound" } ));
-						}
-						if (losers.length >= 2) {
-							const player1 = tournament.players.find(p => p.id === losers[0].userId);
-							const player2 = tournament.players.find(p => p.id === losers[1].userId);
-							const matchLosers = {
-								id: 4,
-								round: 1,
-								playerLeft: losers[0],
-								playerRight: losers[1],
-								winner: null,
-								loser: null,
-							};
-							console.log("[ROUND WIN] Next losers match:", matchLosers);
-							tournament.matches.push(matchLosers);
-							createMatch(
-								{ userId: losers[0].userId, ws: player1?.ws },
-								{ userId: losers[1].userId, ws: player2?.ws }
-							);
-
-							addSystemMessage(tournament, `Consolation match: ${losers[0].name} vs ${losers[1].name}`);
-							player1.ws.send(JSON.stringify( { type : "startSecondRound" } ));
-							player2.ws.send(JSON.stringify( { type : "startSecondRound" } ));
-						}
-					}
-					broadcastTournamentUpdate(tournament);
-
+				case "roundWin":
+					handleRoundWin(userId, data, ws)
 					break;
-				}
 				default:
 					console.log(`⚠️ Unknown message type received: ${data.type}`);
 					break;
@@ -223,6 +137,185 @@ module.exports = async function chatWebSocketRoute(fastify) {
 		});
 	});
 };
+
+
+
+async function handleRoundWin(userId, data, ws) {
+	console.log("──────────────────────────────────────────────");
+	console.log("🎮 handleRoundWin triggered");
+	console.log("UserId:", userId);
+	console.log("Incoming Data:", JSON.stringify(data, null, 2));
+
+	const { playerLeft, playerRight } = data.data;
+	const tournament = findTournamentByUser(userId);
+	if (!tournament) {
+		console.log("❌ Tournament not found for user:", userId);
+		console.log("──────────────────────────────────────────────");
+		return;
+	}
+
+	// Doppelte Aufrufe vermeiden
+	if (userId === playerRight.userId) {
+		console.log("⚠️ Duplicate event detected (same user as right player). Ignoring.");
+		console.log("──────────────────────────────────────────────");
+		return;
+	}
+
+	console.log(`🏁 Current round: ${tournament.round}`);
+	console.log(`🎯 Games finished so far: ${tournament.gamesFinishedCoutner}`);
+
+	// Gewinner/Verlierer bestimmen
+	const winner = playerLeft.score > playerRight.score ? playerLeft : playerRight;
+	const loser = playerLeft.score > playerRight.score ? playerRight : playerLeft;
+
+	console.log(`✅ Match finished between ${playerLeft.name} and ${playerRight.name}`);
+	console.log(`🏆 Winner: ${winner.name} (${winner.score})`);
+	console.log(`💀 Loser: ${loser.name} (${loser.score})`);
+	// Match finden & aktualisieren
+	const currentMatch = tournament.matches.find(m => {
+		const leftId = m.playerLeft.userId || m.playerLeft.id;
+		const rightId = m.playerRight.userId || m.playerRight.id;
+		return leftId === playerLeft.userId && rightId === playerRight.userId;
+	});
+
+	if (currentMatch) {
+		currentMatch.winner = winner;
+		currentMatch.loser = loser;
+		addSystemMessage(tournament, `Round finished! ${winner.name} won against ${loser.name} 🎉`);
+		console.log("📝 Match updated:", currentMatch);
+	} else {
+		console.log("⚠️ No matching match found in tournament.matches for these players!");
+	}
+
+	tournament.gamesFinishedCoutner++;
+	console.log(`📈 Updated gamesFinishedCoutner: ${tournament.gamesFinishedCoutner}`);
+	console.log(`🔄 Current tournament state: round=${tournament.round}`);
+
+	// ─────────────────────────────
+	// Runde 0 → Halbfinale / Trostrunde
+	// ─────────────────────────────
+	if (tournament.round === 0 && tournament.gamesFinishedCoutner === 2) {
+		console.log("🎯 All first round matches finished — proceeding to Round 1 (Semifinals).");
+
+		tournament.round = 1;
+		tournament.roundStartMsgCounter = 0;
+		tournament.gamesFinishedCoutner = 0;
+
+		const winners = tournament.matches
+			.filter(m => m.round === 0)
+			.map(m => m.winner)
+			.filter(Boolean);
+
+		const losers = tournament.matches
+			.filter(m => m.round === 0)
+			.map(m => m.loser)
+			.filter(Boolean);
+
+		console.log("✅ Winners advancing:", winners.map(w => w.name));
+		console.log("💀 Losers advancing to consolation:", losers.map(l => l.name));
+
+		// Gewinner-Match
+		if (winners.length >= 2) {
+			console.log("⚔️ Creating winners match...");
+			const player1 = tournament.players.find(p => p.id === winners[0].userId);
+			const player2 = tournament.players.find(p => p.id === winners[1].userId);
+			const matchWinners = {
+				id: 3,
+				round: 1,
+				playerLeft: winners[0],
+				playerRight: winners[1],
+				winner: null,
+				loser: null,
+				isConsolation: false
+			};
+			tournament.matches.push(matchWinners);
+			console.log("🆕 Added winners match:", matchWinners);
+			await createMatch({ userId: player1.id, ws: player1.ws }, { userId: player2.id, ws: player2.ws });
+			addSystemMessage(tournament, `Next match: ${winners[0].name} vs ${winners[1].name}`);
+			player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
+			player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
+		}
+
+		// Trostrunden-Match
+		if (losers.length >= 2) {
+			console.log("⚔️ Creating consolation match...");
+			const player1 = tournament.players.find(p => p.id === losers[0].userId);
+			const player2 = tournament.players.find(p => p.id === losers[1].userId);
+			const matchLosers = {
+				id: 4,
+				round: 1,
+				playerLeft: losers[0],
+				playerRight: losers[1],
+				winner: null,
+				loser: null,
+				isConsolation: true
+			};
+			tournament.matches.push(matchLosers);
+			console.log("🆕 Added losers match:", matchLosers);
+			await createMatch({ userId: player1.id, ws: player1.ws }, { userId: player2.id, ws: player2.ws });
+			addSystemMessage(tournament, `Consolation match: ${losers[0].name} vs ${losers[1].name}`);
+			player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
+			player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
+		}
+
+		console.log("🏁 Round 1 setup complete.");
+	}
+
+	// ─────────────────────────────
+	// Runde 1 → Turnierabschluss
+	// ─────────────────────────────
+	else if (tournament.round === 1 && tournament.gamesFinishedCoutner === 2) {
+		console.log("🎯 All second round matches finished — proceeding to Tournament Final!");
+		tournament.round = 2;
+		addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
+
+		const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
+		const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
+
+		const first = finalMatch?.winner;
+		const second = finalMatch?.loser;
+		const third = consolationMatch?.winner;
+		const fourth = consolationMatch?.loser;
+
+		addSystemMessage(tournament, `🥇 1st Place: ${first?.name || "Player"}`);
+		addSystemMessage(tournament, `🥈 2nd Place: ${second?.name || "Player"}`);
+		addSystemMessage(tournament, `🥉 3rd Place: ${third?.name || "Player"}`);
+		if (fourth) addSystemMessage(tournament, `4th Place: ${fourth.name}`);
+
+		console.log("🏁 Final standings calculated:");
+		console.table([
+			{ Place: 1, Player: first?.name },
+			{ Place: 2, Player: second?.name },
+			{ Place: 3, Player: third?.name },
+			{ Place: 4, Player: fourth?.name }
+		]);
+
+		// Ergebnisse an alle Spieler senden
+		tournament.players.forEach(p => {
+			if (p.ws) {
+				p.ws.send(JSON.stringify({
+					type: "tournamentFinished",
+					data: {
+						results: [
+							{ place: 1, player: first },
+							{ place: 2, player: second },
+							{ place: 3, player: third },
+							{ place: 4, player: fourth }
+						].filter(Boolean)
+					}
+				}));
+			}
+		});
+
+		console.log("📢 Tournament results broadcasted to all players.");
+	}
+
+	console.log("📡 Broadcasting tournament update...");
+	broadcastTournamentUpdate(tournament);
+	console.log("✅ handleRoundWin completed for user:", userId);
+	console.log("──────────────────────────────────────────────");
+}
+
 
 function deleteRemoteTournament(userId) {
 	const tournamentRemote = onGoingTournaments.get(userId);

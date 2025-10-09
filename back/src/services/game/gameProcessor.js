@@ -29,12 +29,16 @@ function mainGameLoop() {
             case GameState.ERROR:
                 sendWinner(match)
                 saveGameToMatchHistory(match)
+				gameStore.onGoingMatches.splice(i, 1);
+				i--;
                 break;
             case GameState.GAMEOVER:
                 sendMessage(match, "gameOver");
                 saveGameToMatchHistory(match);
                 match.wsUser1.close(1000, "Closed by user");
                 match.wsUser2.close(1000, "Closed by user");
+				gameStore.onGoingMatches.splice(i, 1);
+				i--;
                 break;
             default:
                 break;
@@ -43,6 +47,7 @@ function mainGameLoop() {
 }
 
 function checkForBothConnected(match) {
+	console.log(match)
     if (match.user1Connected && match.user2Connected) {
         match.gameState = GameState.BOTH_CONNECTED;
     }

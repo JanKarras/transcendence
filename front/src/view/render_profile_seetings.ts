@@ -28,7 +28,7 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 	}
 
 	const user: UserInfo = userData.user;
-	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
+	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : '/api/get/getImage?filename=${encodeURIComponent("std_user_img.png")}';
 
 	bodyContainer.innerHTML = `
 	<div class="text-black relative max-w-xl w-full mx-auto p-4 bg-white rounded-lg shadow-md">
@@ -306,17 +306,26 @@ type Trans = {
 
 
 function renderEditableField(field: string, value: string | number, type = "text") {
-	const key = "profileLabel." + field;
-	// const translationObj = lang[key as keyof typeof lang] as Trans | undefined;
-	const label = t(key) !== '' ? t(key) : field;
+	// Mapping von Frontend-Feld zu Backend-Feld
+	const backendFieldMap: Record<string, string> = {
+		username: "username",
+		firstName: "first_name",
+		lastName: "last_name",
+		age: "age"
+	};
 
-  return `
+	const backendName = backendFieldMap[field] || field;
+
+	const label = t("profileLabel." + field) || field;
+
+	return `
 	<div class="w-full">
 	  <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
-	  <input name="${field}" placeholder="${label}" value="${value}" type="${type}"
+	  <input name="${backendName}" placeholder="${label}" value="${value}" type="${type}"
 		class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700 transition hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
 	</div>`;
 }
+
 
 function renderMatchHistorySettings(matches: any[], backToProfile: () => void) {
 	if (!bodyContainer) return;

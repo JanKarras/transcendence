@@ -12,6 +12,7 @@ import { render_chat } from "./render_chat.js";
 let gameInfo: GameInfo;
 let gameState = 0;
 let gameOver = false;
+let matchfound = false
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -145,7 +146,7 @@ function startCountdown() {
 		} else {
 			clearInterval(interval);
 			countdownEl.classList.add('hidden');
-
+			console.log("route game start called")
 			const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
                     method: "POST",
                     headers: {
@@ -157,7 +158,7 @@ function startCountdown() {
                     }),
                     credentials: "include"
                 });
-
+			console.log(response)
 			enablePaddles();
 			gameLoop();
 		}
@@ -166,9 +167,8 @@ function startCountdown() {
 
 function gameLoop() {
 	renderFrame(ctx, gameInfo);
-	console.log(gameOver)
 	if (gameOver) {
-		console.log("showWinnerCalled")
+		console.log(gameInfo, gameOver)
 		showWinner();
 		return;
 	}
@@ -188,10 +188,12 @@ function showWinner() {
 		playerRight : gameInfo.playerRight
 	};
 	console.log("round win sended")
+	matchfound = false;
 	tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
 }
 
 async function GameSocketEventListeners() {
+	console.log("GameSocketEventListenersCalled")
 	const socket = getSocket();
 	if (!socket) throw new Error("WebSocket is not connected");
 	const tournamentSocket = getTournamentSocket()
@@ -234,8 +236,14 @@ async function GameSocketEventListeners() {
 }
 
 async function startSecondRound() {
-	await connect();
-	GameSocketEventListeners();
+	const interValId = setInterval(async () => {
+		if (matchfound) {
+			clearInterval(interValId);
+			await connect();
+			GameSocketEventListeners();
+			gameOver = false;
+		}
+	}, 10)
 }
 
 async function connectGame() {
@@ -253,8 +261,12 @@ async function connectGame() {
 			renderGameChat(data.data.messages);
 			break;
 		case 'startSecondRound':
+			console.log("startSecondRound")
 			startSecondRound()
 			break;
+		case 'matchFound' :
+			console.log("Match found was send")
+			matchfound = true;
 		default:
 			break;
 	}

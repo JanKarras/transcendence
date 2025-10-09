@@ -152,48 +152,61 @@ exports.updateUser = async function (req, reply) {
 	let twofa_method = null;
 
     for await (const part of parts) {
-        if (part.file) {
-            const buffer = await part.toBuffer();
+    console.log("Part: ", part.fieldname, part.type, part.value);
 
-            if (buffer.length > MAX_IMAGE_SIZE) {
-                return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
-            }
+    if (part.type === "file") {
+        const buffer = await part.toBuffer();
 
-            if (part.filename) {
-                const uploadsDir = path.join(__dirname, '../../../profile_images');
-                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+        if (buffer.length > MAX_IMAGE_SIZE) {
+            return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
+        }
 
-                const extension = path.extname(part.filename);
-                const uniqueFilename = `${Date.now()}${extension}`;
-                const fullPath = path.join(uploadsDir, uniqueFilename);
+        const uploadsDir = path.join(__dirname, '../../profile_images');
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-                fs.writeFileSync(fullPath, buffer);
-                imageName = uniqueFilename;
-            }
-        } else if (part.fieldname === "first_name") {
-            if (!NAME_REGEX.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid first name" });
-            }
-            firstName = part.value.trim();
-        } else if (part.fieldname === "last_name") {
-            if (!NAME_REGEX.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid last name" });
-            }
-            lastName = part.value.trim();
-        } else if (part.fieldname === "age") {
-            if (!/^\d+$/.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid age" });
-            }
-            age = parseInt(part.value, 10);
-        } else if (part.fieldname === "twofa_active") {
-			twofaActive = part.value === "1";
-			const active = twofaActive ? 1 : 0;
-			console.log(active)
-			twofaActive = active;
-		} else if (part.fieldname === "twofa_method") {
-			twofa_method = part.value;
-		}
+        const extension = path.extname(part.filename);
+        const uniqueFilename = `${Date.now()}${extension}`;
+        const fullPath = path.join(uploadsDir, uniqueFilename);
+
+        fs.writeFileSync(fullPath, buffer);
+        imageName = uniqueFilename;
+
+        console.log("✅ Image saved:", fullPath);
     }
+    else if (part.type === "field") {
+        switch (part.fieldname) {
+            case "first_name":
+                if (!NAME_REGEX.test(part.value)) {
+                    return reply.code(400).send({ success: false, error: "Invalid first name" });
+                }
+                firstName = part.value.trim();
+                break;
+
+            case "last_name":
+                if (!NAME_REGEX.test(part.value)) {
+                    return reply.code(400).send({ success: false, error: "Invalid last name" });
+                }
+                lastName = part.value.trim();
+                break;
+
+            case "age":
+                if (!/^\d+$/.test(part.value)) {
+                    return reply.code(400).send({ success: false, error: "Invalid age" });
+                }
+                age = parseInt(part.value, 10);
+                break;
+
+            case "twofa_active":
+                twofaActive = part.value === "1" ? 1 : 0;
+                break;
+
+            case "twofa_method":
+                twofa_method = part.value;
+                break;
+        }
+    }
+}
+	console.log("Change dada", firstName, lastName, age, imageName, userId, twofaActive, twofa_method)
 
     await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
     reply.send({ success: true });

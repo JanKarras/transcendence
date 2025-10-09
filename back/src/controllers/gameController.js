@@ -38,6 +38,7 @@ exports.chatWebSocketRoute = async function (fastify) {
         //     reconnectUser(data);
         // }
         gameStore.connectedUsers.set(userId, data);
+		console.log("Connected Users", gameStore.connectedUsers)
         // console.log(gameStore.connectedUsers.get(userId));
 
         ws.on('message', (msg) => {
@@ -53,7 +54,7 @@ exports.chatWebSocketRoute = async function (fastify) {
             gameStore.queue.delete(userId);
             gameStore.connectedUsers.delete(userId);
 
-            disconnectUser(userId);
+            //disconnectUser(userId);
         });
 
         ws.on('error', (err) => {
@@ -145,7 +146,6 @@ exports.waitForTheGame = async (req, reply) => {
     if (!userId) {
         return reply.status(400).send({ error: 'UserId required' });
     }
-	console.log("Gamestore connected Users", gameStore.connectedUsers);
     const data = gameStore.connectedUsers.get(userId);
     matchService.connectUserToMatch(data);
     console.log(`Waiting for the game to start by ${userId}`);
