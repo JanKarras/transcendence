@@ -60,7 +60,8 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 								<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t('playTitle')}</h5>
 							</a>
 							<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${t('playDesc')}</p>
-							<button id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+							<button id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white
+								bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
 								${t('playNowBtn')}
 							</button>
 						</div>
@@ -76,7 +77,8 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 								<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${t('tournamentTitle')}</h5>
 							</a>
 							<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${t('tournamentDesc')}</p>
-							<button id="startTournamentBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+							<button id="startTournamentBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white 
+								bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
 								${t('tournamentBtn')}
 							</button>
 
@@ -105,8 +107,10 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
               <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
                 <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4>
                 <div class="flex gap-12 mt-4">
-                  <button id="localBtn" class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded">${t('game.local')}</button>
-                  <button id="remoteBtn" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.remote')}</button>
+                  <button id="localBtn" class="w-[40%] px-6 py-3 bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white 
+         						flex items-center justify-center">${t('game.local')}</button>
+                  <button id="remoteBtn" class="w-[40%] px-6 py-3 bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white 
+         						flex items-center justify-center">${t('game.remote')}</button>
                 </div>
 			  </div>
 			</div>
