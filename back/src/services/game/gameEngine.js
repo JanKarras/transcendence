@@ -19,14 +19,20 @@ function moveBall(ball) {
 }
 
 function bounceBall(ball, canvasHeight) {
-    if (ball.position.y - ball.radius < 0 || ball.position.y + ball.radius > canvasHeight) {
-        ball.velocity.y *= -1;
+    const MIN_DY = 2;
 
-        // Ensure dy is not too small after wall bounce
-        const MIN_DY = 2;
-        if (Math.abs(ball.velocity.y) < MIN_DY) {
-            ball.velocity.y = (ball.velocity.y < 0 ? -MIN_DY : MIN_DY);
-        }
+    if (ball.position.y - ball.radius < 0) {
+        ball.position.y = ball.radius; // <-- correct position
+        ball.velocity.y *= -1;
+    } 
+    else if (ball.position.y + ball.radius > canvasHeight) {
+        ball.position.y = canvasHeight - ball.radius; // <-- correct position
+        ball.velocity.y *= -1;
+    }
+
+    // Ensure dy is not too small after wall bounce
+    if (Math.abs(ball.velocity.y) < MIN_DY) {
+        ball.velocity.y = (ball.velocity.y < 0 ? -MIN_DY : MIN_DY);
     }
 }
 
@@ -139,6 +145,8 @@ function updateVelocity(userId, dir, side) {
     console.log(gameStore.onGoingMatches);
     const match = matchService.getMatchByUserId(userId);
     console.log (dir);
+    if (!match)
+        return;
     const state = match.gameInfo;
     const paddle = match.gameInfo.playerLeft.userId === userId
         || (side === "left" && match.gameInfo.playerLeft.userId === null)
@@ -162,4 +170,5 @@ function updateVelocity(userId, dir, side) {
 module.exports = {
     updateVelocity,
     updateGameInfo,
+    resetBall,
 }

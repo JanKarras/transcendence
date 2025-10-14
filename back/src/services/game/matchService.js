@@ -110,8 +110,8 @@ function initGameInfo(playerLeft, playerRight) {
         ball: {
             position: { x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2 },
             radius: 10,
-            velocity: { x: 5, y: 4 },
-            speed: 5,
+            velocity: { x: 0, y: 0 },
+            speed: 0,
         },
         paddleLeft: {
             position: { x: 20, y: (CANVAS_HEIGHT - PADDLE_HEIGHT) / 2},

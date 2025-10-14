@@ -17,6 +17,7 @@ function mainGameLoop() {
                 break;
             case GameState.BOTH_CONNECTED:
                 sendMessage(match, "startGame");
+                console.log(match.gameInfo);
                 match.gameState = GameState.STARTED;
                 break;
             case GameState.STARTED:
@@ -57,6 +58,7 @@ function checkForBothConnected(match) {
 
 function isCountdownFinished(match) {
     if (match.coutndownFinished1 && match.coutndownFinished2) {
+        gameEngine.resetBall(match.gameInfo.ball);
         match.gameState = GameState.FINISHED;
     }
 }
