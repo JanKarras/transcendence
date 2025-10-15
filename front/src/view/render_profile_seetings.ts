@@ -126,16 +126,34 @@ export async function render_profile_settings(params: URLSearchParams | null) {
 		}
 	});
 
-	form?.addEventListener("submit", async (e) => {
-		e.preventDefault();
-		const formData = new FormData(form);
-		const res = await saveProfileChanges(formData);
-		if (res.success) {
-			render_profile_settings(null);
-		} else {
-			showErrorMessage(res.error);
-		}
+	form?.addEventListener("submit", async (e: Event) => {
+	e.preventDefault();
+
+	if (!form) return;
+
+	const formData = new FormData();
+
+	// Alle normalen Inputs, außer File
+	const inputs = form.querySelectorAll<HTMLInputElement>('input[name]');
+	inputs.forEach(input => {
+		if (input.type === 'file') return; // File später behandeln
+		formData.append(input.name, input.value);
 	});
+
+	// Profilbild nur hinzufügen, wenn ausgewählt
+	const file: File | undefined = fileInput?.files?.[0];
+	if (file) {
+		formData.append("profileImage", file);
+	}
+
+	const res = await saveProfileChanges(formData);
+	if (res.success) {
+		render_profile_settings(null);
+	} else {
+		showErrorMessage(res.error);
+	}
+});
+
 
 	matchhis?.addEventListener("click", async () => {
 		const matches = await getMatchHistory(user.id);

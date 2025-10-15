@@ -54,7 +54,7 @@ exports.chatWebSocketRoute = async function (fastify) {
             gameStore.queue.delete(userId);
             gameStore.connectedUsers.delete(userId);
 
-            //disconnectUser(userId);
+            disconnectUser(userId);
         });
 
         ws.on('error', (err) => {

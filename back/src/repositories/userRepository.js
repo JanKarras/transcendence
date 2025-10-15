@@ -149,6 +149,11 @@ function saveTwoFaSecret(userId, secret) {
 	db.prepare('UPDATE users SET twofa_secret = ? WHERE id = ?').run(secret, userId)
 }
 
+function getTwoFaSecret(userId) {
+    const row = db.prepare('SELECT twofa_secret FROM users WHERE id = ?').get(userId);
+    return row ? row.twofa_secret : null;
+}
+
 module.exports = {
     getUserById,
     getFriendsInfoByUserId,
@@ -169,6 +174,7 @@ module.exports = {
     getUserIdByUsername,
 	updateUserTwofaActive,
 	updateUserTwoFaMethod,
-	saveTwoFaSecret
+	saveTwoFaSecret,
+	getTwoFaSecret
 }
 

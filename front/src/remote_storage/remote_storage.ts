@@ -206,10 +206,22 @@ export async function saveProfileChanges(updateData: FormData) {
 			body: updateData,
 			credentials: 'include',
 		});
-		console.log(response);
+
 		if (!response.ok) {
-			const errData = await response.json().catch(() => ({}));
-			return { success: false, error: errData.error || 'Request failed' };
+			let errorMsg: string | undefined;
+
+			try {
+				const errData = await response.json();
+				errorMsg = errData.error || errData.message;
+			} catch {
+				errorMsg = response.statusText;
+			}
+
+			return {
+				success: false,
+				status: response.status,
+				error: errorMsg || 'Request failed'
+			};
 		}
 
 		return { success: true };
@@ -217,6 +229,7 @@ export async function saveProfileChanges(updateData: FormData) {
 		return { success: false, error: error.message || 'Network error' };
 	}
 }
+
 
 export async function handleAcceptRequestApi(request: RequestInfo): Promise<{ success: boolean; error?: string }> {
 	const body = JSON.stringify(request);

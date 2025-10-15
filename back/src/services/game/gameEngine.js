@@ -114,7 +114,7 @@ function jitter(ball) {
     if (Math.abs(ball.velocity.y) < MIN_DY) {
         let jitter = (Math.random() - 0.5) * 2;
         ball.velocity.y = (ball.velocity.y < 0 ? -MIN_DY : MIN_DY) + jitter;
-    } 
+    }
 }
 
 function resetBall(ball) {
@@ -139,6 +139,7 @@ function updateVelocity(userId, dir, side) {
     console.log(gameStore.onGoingMatches);
     const match = matchService.getMatchByUserId(userId);
     console.log (dir);
+	if (!match) return;
     const state = match.gameInfo;
     const paddle = match.gameInfo.playerLeft.userId === userId
         || (side === "left" && match.gameInfo.playerLeft.userId === null)
