@@ -30,29 +30,24 @@ exports.chatWebSocketRoute = async function (fastify) {
             userId: userId,
             ws: ws,
             remoteAddress: remoteAddress
-        }
+        };
 
-        console.log(gameStore.onGoingMatches);
-        // If user reconnects, handle it
-        // if (gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId)) {
-        //     reconnectUser(data);
-        // }
+        // ✅ Сохраняем подключение
         gameStore.connectedUsers.set(userId, data);
-        // console.log(gameStore.connectedUsers.get(userId));
+
+        // ✅ Подключаем пользователя к матчу
+        const matchService = require("../services/game/matchService");
+        matchService.connectUserToMatch(data);
 
         ws.on('message', (msg) => {
             webSocketService.handleMessage(msg, userId, ws, remoteAddress);
         });
 
         ws.on('close', () => {
-            fastify.log.info(
-                `User ${userId} disconnected`
-            );
+            fastify.log.info(`User ${userId} disconnected`);
             request.socket = null;
-            // sicherstellen dass er nicht mehr in der Queue hängt
             gameStore.queue.delete(userId);
             gameStore.connectedUsers.delete(userId);
-
             disconnectUser(userId);
         });
 

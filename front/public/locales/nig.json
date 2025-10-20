@@ -142,5 +142,32 @@
     "matchHis": "Akụkọ egwuregwu",
     "selectChatPartner": "Sélectionnez un partenaire de discussion",
     "enterMessage": "Tinye ozi",
-    "send": "Zipu"
+    "send": "Zipu",
+    "cht":{
+        "block": "Wòlé",
+        "unblock": "Fọ̀",
+        "invite_sent": "Ìpé sí eré ti rán",
+        "blocked_you": " ti dì ẹ́ lọ́wọ́ ❌ ",
+        "retryBlock": "Tun ṣe ìdènà lẹ́ẹ̀kansi!",
+        "retryUnblock": "Tun ṣe ìtúbọ̀ lẹ́ẹ̀kansi!",
+        "reconnecting": "Ìmúlẹ̀ pọ̀n dáradára...",
+        "userSwitched": "O ti yí olùfihàn padà tàbí kò yan ènìyàn",
+        "blocked": "🚫Dì",
+        "unblocked": "🔓Túbọ̀",
+        "deliveryFail": "❌ A kọ̀ fi ìfiranṣẹ́ ranṣẹ́.",
+        "chatWith": "Bá ... sọ̀rọ̀",
+        "selectChatPartner": "Yan ẹni tí o fẹ bá sọrọ",
+        "leftChat": "O fi iwiregbe sílẹ̀!",
+        "noToken": "❌ A kò fi ìfiranṣẹ́ ranṣẹ́: aṣìṣe asopọ.",
+        "blockedYou": "❌ Wọn ti dì ẹ́!",
+        "you": "Ìwọ",
+        "userBlocked": "❌ Olùfihàn ti dì!",
+        "retryInvite": "Tun rán ìpé lẹ́ẹ̀kansi!",
+        "inviteSent": "Ìpé sí eré ti rán",
+        "waitInviteResponse": "Dúró de ìdáhùn tàbí fagilé ìpé náà!",
+        "acceptCancelInvite": "Gba tàbí fagilé ìpé náà!",
+        "inviteCancelled": "Ìpé ti fagilé",
+        "inviteDeclined": "Ìpé kọ",
+        "inviteToGame": "Pe ìpé sí eré"
+    }
 }

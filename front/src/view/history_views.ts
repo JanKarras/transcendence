@@ -31,7 +31,7 @@ const renderers: Record<View, ViewRenderFunction> = {
   two_fa : render_two_fa,
   profile : render_profile_settings,
   friends : render_friends,
-  chat : render_chat,
+  chat : render_dashboard,
   friend_profile : render_friend_profile,
   matchmaking : render_matchmaking,
   game : render_game,

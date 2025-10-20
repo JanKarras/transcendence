@@ -32,3 +32,35 @@ export async function connect() {
 
     return socket!;
 }
+
+export async function connectWithHandler(
+  onMessage: (event: MessageEvent) => void
+): Promise<WebSocket> {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.onmessage = onMessage;
+    return socket;
+  }
+
+  const token = await getFreshToken();
+  if (!token) {
+    throw new Error("No auth token found");
+  }
+
+  const wsUrl = `wss://${location.host}/ws/game?token=${token}`;
+  socket = new WebSocket(wsUrl);
+
+  await new Promise<void>((resolve, reject) => {
+    socket!.onopen = () => {
+      console.log(`✅ WebSocket connected to ${wsUrl}`);
+      resolve();
+    };
+    socket!.onerror = (err) => {
+      console.error("❌ WebSocket error", err);
+      reject(err);
+    };
+  });
+
+  socket.onmessage = onMessage;
+
+  return socket!;
+}

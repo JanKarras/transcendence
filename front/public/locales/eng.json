@@ -189,5 +189,32 @@
       "willStartSoon": "Tournament will start soon",
       "alias": "Alias"
     }
+  },
+  "cht":{
+    "block": "Block",
+    "unblock": "Unblock",
+    "invite_sent": "An invitation to the game has been sent",
+    "blocked_you": " has blocked you ❌ ",
+    "retryBlock": "Retry blocking!",
+    "retryUnblock": "Retry unblocking!",
+    "reconnecting": "Reconnecting...",
+    "userSwitched": "You have switched or not selected a user",
+    "blocked": "🚫Blocked",
+    "unblocked": "🔓Unblocked",
+    "deliveryFail": "❌ Failed to deliver message.",
+    "chatWith": "Chat with",
+    "selectChatPartner": "Select a chat partner",
+    "leftChat": "You left the chat!",
+    "noToken": "❌ Message not sent: connection error.",
+    "blockedYou": "❌ You have been blocked!",
+    "you": "You",
+    "userBlocked": "❌ User is blocked!",
+    "retryInvite": "Retry sending invite!",
+    "inviteSent": "An invitation to the game has been sent",
+    "waitInviteResponse": "Wait for a response or cancel the invite!",
+    "acceptCancelInvite": "Accept or cancel the invite!",
+    "inviteCancelled": "Invite is cancel",
+    "inviteDeclined": "Invite is decline",
+    "inviteToGame": "Invite to game"
   }
 }
