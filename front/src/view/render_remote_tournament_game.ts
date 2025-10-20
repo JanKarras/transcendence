@@ -12,6 +12,7 @@ import { render_chat } from "./render_chat.js";
 let gameInfo: GameInfo;
 let gameState = 0;
 let gameOver = false;
+let matchfound = false
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -86,7 +87,8 @@ export async function render_remote_tournament_game(params: URLSearchParams | nu
 	winnerText = document.getElementById('winnerText')!;
 	playAgainBtn = document.getElementById('playAgainBtn')!;
 	exitBtn = document.getElementById('exitBtn')!;
-
+	gameOver = false;
+	matchfound = false
 	canvas.width = 800;
 	canvas.height = 600;
 
@@ -145,7 +147,7 @@ function startCountdown() {
 		} else {
 			clearInterval(interval);
 			countdownEl.classList.add('hidden');
-
+			console.log("route game start called")
 			const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
                     method: "POST",
                     headers: {
@@ -157,7 +159,7 @@ function startCountdown() {
                     }),
                     credentials: "include"
                 });
-
+			console.log(response)
 			enablePaddles();
 			gameLoop();
 		}
@@ -166,7 +168,8 @@ function startCountdown() {
 
 function gameLoop() {
 	renderFrame(ctx, gameInfo);
-	if (gameState >= 4 || gameOver) {
+	if (gameOver) {
+		console.log(gameInfo, gameOver)
 		showWinner();
 		return;
 	}
@@ -182,19 +185,43 @@ function showWinner() {
 	}
 
 	const payload = {
-		playerLeft : gameInfo.playerLeft,
-		playerRight : gameInfo.playerRight
+		playerLeft: gameInfo.playerLeft,
+		playerRight: gameInfo.playerRight,
 	};
 
-	tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+	console.log("round win pending...");
+
+	const socket = getSocket();
+
+	matchfound = false;
+
+	if (!socket) {
+		console.warn("No game socket, sending immediately");
+		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+		return;
+	}
+
+	if (socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
+		console.log("Socket already closed or closing, sending roundWin immediately");
+		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+		return;
+	}
+
+	socket.addEventListener("close", () => {
+		console.log("Socket successfully closed, sending roundWin");
+		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+	});
+
+	socket.close();
 }
 
 
-async function connectGame() {
-	const token = await getFreshToken();
+async function GameSocketEventListeners() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	console.log("GameSocketEventListenersCalled")
 	const socket = getSocket();
-	const tournamentSocket = getTournamentSocket()
 	if (!socket) throw new Error("WebSocket is not connected");
+	const tournamentSocket = getTournamentSocket()
 	if (!tournamentSocket) throw new Error("WebSocket is not connected");
 	await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
 		method: "POST",
@@ -221,23 +248,184 @@ async function connectGame() {
 				gameInfo = data.gameInfo;
 				gameState = data.gameState;
 				break;
+			case 'gameOver':
+				gameOver = true;
+				break;
 			default:
 				break;
 		}
 	};
-	tournamentSocket.onmessage = (event) => {
-	const data = JSON.parse(event.data);
-	console.log("msg from server tournament", data)
-	switch (data.type) {
-		case 'remoteTournamentUpdated':
-			renderGameChat(data.data.messages);
-			break;
-
-		default:
-			break;
+	socket.onclose = () => {
+		console.log("Game Socket Closed");
 	}
 }
+
+async function startSecondRound() {
+	const interValId = setInterval(async () => {
+		if (matchfound) {
+			clearInterval(interValId);
+			await connect();
+			GameSocketEventListeners();
+			gameOver = false;
+		}
+	}, 10)
 }
+
+async function connectGame() {
+	const token = await getFreshToken();
+	const tournamentSocket = getTournamentSocket()
+	if (!tournamentSocket) throw new Error("WebSocket is not connected");
+
+	GameSocketEventListeners();
+
+ 	tournamentSocket.onmessage = (event) => {
+		const data = JSON.parse(event.data);
+		console.log("msg from server tournament", data)
+		switch (data.type) {
+			case 'remoteTournamentUpdated':
+				renderGameChat(data.data.messages);
+				break;
+			case 'startSecondRound':
+				console.log("startSecondRound")
+				startSecondRound()
+				break;
+			case 'matchFound' :
+				console.log("Match found was send")
+				matchfound = true;
+				break
+			case 'tournamentFinished':
+				console.log("Tournament Finished", data.data)
+				showPodium(data.data.results);
+				break
+			default:
+				break;
+		}
+	}
+}
+
+let leaveButtonRect = { x: 0, y: 0, width: 200, height: 50 }; // globale Variable für Klickprüfung
+
+function showPodium(results: { player: { name: string }, place: number }[]) {
+	const w = canvas.width;
+	const h = canvas.height;
+
+	if (!results || !Array.isArray(results)) {
+		console.error("Invalid results:", results);
+		return;
+	}
+
+	results.sort((a, b) => a.place - b.place);
+
+	const colors = ["#FFD700", "#C0C0C0", "#CD7F32"];
+	const podiumHeights = [200, 150, 120];
+	const baseY = h - 100;
+	const boxWidth = 120;
+	const spacing = 180;
+
+	const centerX = w / 2;
+	const positions = [
+		{ place: 1, x: centerX - boxWidth / 2 },
+		{ place: 2, x: centerX - spacing - boxWidth / 2 },
+		{ place: 3, x: centerX + spacing - boxWidth / 2 }
+	];
+
+	ctx.clearRect(0, 0, w, h);
+
+	// Podium zeichnen
+	results.slice(0, 3).forEach((res) => {
+		const posIndex = res.place - 1;
+		const pos = positions.find(p => p.place === res.place);
+		if (!pos) return;
+
+		const height = podiumHeights[posIndex];
+		const y = baseY - height;
+
+		// Podium Block
+		ctx.fillStyle = colors[posIndex];
+		ctx.fillRect(pos.x, y, boxWidth, height);
+
+		// Name
+		ctx.fillStyle = "#fff";
+		ctx.font = "20px Arial";
+		ctx.textAlign = "center";
+		ctx.fillText(res.player.name, pos.x + boxWidth / 2, y - 20);
+
+		// Medaille / Emoji
+		ctx.font = "28px Arial";
+		const emoji = pos.place === 1 ? "🥇" : pos.place === 2 ? "🥈" : "🥉";
+		ctx.fillText(emoji, pos.x + boxWidth / 2, y - 50);
+	});
+
+	// Leave Button im Canvas
+	const btnWidth = 200;
+	const btnHeight = 50;
+	const btnX = w / 2 - btnWidth / 2;
+	const btnY = baseY + 20; // unter dem Podium
+	leaveButtonRect = { x: btnX, y: btnY, width: btnWidth, height: btnHeight };
+
+	// Button Hintergrund
+	ctx.fillStyle = "#e53935";
+	ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
+
+	// Button Text
+	ctx.fillStyle = "#fff";
+	ctx.font = "22px Arial";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillText("🏁 Spiel verlassen", btnX + btnWidth / 2, btnY + btnHeight / 2);
+
+	// Klick-Event
+	canvas.addEventListener("click", handleCanvasClick);
+
+	// Hover-Effekt für Cursor
+	canvas.addEventListener("mousemove", handleCanvasHover);
+}
+
+// Klick-Funktion
+function handleCanvasClick(event: MouseEvent) {
+	const rect = canvas.getBoundingClientRect();
+	const x = event.clientX - rect.left;
+	const y = event.clientY - rect.top;
+
+	if (
+		x >= leaveButtonRect.x &&
+		x <= leaveButtonRect.x + leaveButtonRect.width &&
+		y >= leaveButtonRect.y &&
+		y <= leaveButtonRect.y + leaveButtonRect.height
+	) {
+		// Button geklickt
+		try { getSocket()?.close(); } catch {}
+		try { getTournamentSocket()?.close(); } catch {}
+		navigateTo('dashboard');
+
+		// Eventlistener entfernen
+		canvas.removeEventListener("click", handleCanvasClick);
+		canvas.removeEventListener("mousemove", handleCanvasHover);
+	}
+}
+
+// Hover-Funktion
+function handleCanvasHover(event: MouseEvent) {
+	const rect = canvas.getBoundingClientRect();
+	const x = event.clientX - rect.left;
+	const y = event.clientY - rect.top;
+
+	if (
+		x >= leaveButtonRect.x &&
+		x <= leaveButtonRect.x + leaveButtonRect.width &&
+		y >= leaveButtonRect.y &&
+		y <= leaveButtonRect.y + leaveButtonRect.height
+	) {
+		canvas.style.cursor = "pointer";
+	} else {
+		canvas.style.cursor = "default";
+	}
+}
+
+
+
+
+
 
 function displayNames() {
 	(document.getElementById("playerLeftName") as HTMLElement).textContent = gameInfo.playerLeft.name;

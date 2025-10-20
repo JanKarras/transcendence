@@ -4,6 +4,7 @@ const mailService = require("../services/mailService");
 const userRepository = require("../repositories/userRepository");
 const statsRepository = require("../repositories/statsRepository");
 const requestRepository = require("../repositories/requestRepository");
+const twoFaService = require("../services/appAuthService");
 const validatorUtil = require("../utils/validator");
 const validator = require("validator");
 const {MAX_IMAGE_SIZE, NAME_REGEX} = require("../constants/constants");
@@ -11,6 +12,9 @@ const userService = require("../services/userService");
 const logger = require('../logger/logger');
 const fs = require('fs');
 const path = require('path');
+const FileType = require('file-type');
+const sharp = require('sharp');
+
 require('dotenv').config();
 
 exports.getUser = async (req, reply) => {
@@ -136,64 +140,95 @@ exports.createUser = async (request, reply) => {
     }
 };
 
+const rawAllowed = (process.env.ALLOWED_IMAGE_TYPES || '').trim();
+const ALLOWED_IMAGE_MIME = rawAllowed
+  ? rawAllowed.split(',').map(s => s.trim().toLowerCase())
+  : ['image/png', 'image/jpeg', 'image/webp']; // default fallback
+
 exports.updateUser = async function (req, reply) {
-    const userId = await userUtil.getUserIdFromRequest(req);
-    if (!userId) {
-        return reply.code(401).send({ success: false, error: "Not authenticated" });
+  const userId = await userUtil.getUserIdFromRequest(req);
+  if (!userId) {
+    return reply.code(401).send({ success: false, error: "Not authenticated" });
+  }
+
+  const parts = req.parts();
+  let firstName = null;
+  let lastName = null;
+  let age = null;
+  let imageName = null;
+  let twofaActive = null;
+  let twofa_method = null;
+
+  for await (const part of parts) {
+    console.log("Part:", part.fieldname, part.type, part.value);
+
+    if (part.type === "file") {
+      const buffer = await part.toBuffer();
+
+      if (buffer.length > MAX_IMAGE_SIZE) {
+        return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
+      }
+
+      const type = await FileType.fileTypeFromBuffer(buffer);
+      if (!type || !ALLOWED_IMAGE_MIME.includes(type.mime)) {
+        return reply.code(400).send({ success: false, error: "Invalid image type" });
+      }
+
+      try {
+        await sharp(buffer).metadata();
+      } catch (err) {
+        return reply.code(400).send({ success: false, error: "File is not a valid image" });
+      }
+
+      const uploadsDir = path.join(__dirname, '../../profile_images');
+      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+      const uniqueFilename = `${Date.now()}.${type.ext}`;
+      const fullPath = path.join(uploadsDir, uniqueFilename);
+
+      fs.writeFileSync(fullPath, buffer);
+      imageName = uniqueFilename;
+
+      console.log("✅ Image saved:", fullPath);
+
+    } else if (part.type === "field") {
+      switch (part.fieldname) {
+        case "first_name":
+          if (!NAME_REGEX.test(part.value)) {
+            return reply.code(400).send({ success: false, error: "Invalid first name" });
+          }
+          firstName = part.value.trim();
+          break;
+
+        case "last_name":
+          if (!NAME_REGEX.test(part.value)) {
+            return reply.code(400).send({ success: false, error: "Invalid last name" });
+          }
+          lastName = part.value.trim();
+          break;
+
+        case "age":
+          if (!/^\d+$/.test(part.value)) {
+            return reply.code(400).send({ success: false, error: "Invalid age" });
+          }
+          age = parseInt(part.value, 10);
+          break;
+
+        case "twofa_active":
+          twofaActive = part.value === "1" ? 1 : 0;
+          break;
+
+        case "twofa_method":
+          twofa_method = part.value;
+          break;
+      }
     }
+  }
 
-    const parts = req.parts();
-    let firstName = null;
-    let lastName = null;
-    let age = null;
-    let imageName = null;
-	let twofaActive = null;
+  console.log("Change data:", firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
 
-    for await (const part of parts) {
-        if (part.file) {
-            const buffer = await part.toBuffer();
-
-            if (buffer.length > MAX_IMAGE_SIZE) {
-                return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
-            }
-
-            if (part.filename) {
-                const uploadsDir = path.join(__dirname, '../../../profile_images');
-                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-                const extension = path.extname(part.filename);
-                const uniqueFilename = `${Date.now()}${extension}`;
-                const fullPath = path.join(uploadsDir, uniqueFilename);
-
-                fs.writeFileSync(fullPath, buffer);
-                imageName = uniqueFilename;
-            }
-        } else if (part.fieldname === "first_name") {
-            if (!NAME_REGEX.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid first name" });
-            }
-            firstName = part.value.trim();
-        } else if (part.fieldname === "last_name") {
-            if (!NAME_REGEX.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid last name" });
-            }
-            lastName = part.value.trim();
-        } else if (part.fieldname === "age") {
-            if (!/^\d+$/.test(part.value)) {
-                return reply.code(400).send({ success: false, error: "Invalid age" });
-            }
-            age = parseInt(part.value, 10);
-        } else if (part.fieldname === "twofa_active") {
-			twofaActive = part.value === "1";
-			const active = twofaActive ? 1 : 0;
-			console.log(active)
-			twofaActive = active;
-
-		}
-    }
-
-    await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive);
-    reply.send({ success: true });
+  await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+  reply.send({ success: true });
 };
 
 exports.removeFriend = async function (req, reply) {
@@ -232,5 +267,19 @@ exports.removeFriend = async function (req, reply) {
     } catch (err) {
         console.error(err);
         return reply.code(500).send({ error: "Database error" });
+    }
+};
+
+exports.twoFaSetUp = async function (req, reply) {
+    try {
+        const userId = userUtil.getUserIdFromRequest(req);
+        if (!userId) return reply.code(401).send({ error: "Unauthorized" });
+
+        const { qrCodeDataUrl } = await twoFaService.generateTwoFaSecret(userId);
+
+        return reply.send({ qrCodeDataUrl });
+    } catch (err) {
+        console.error(err);
+        return reply.code(500).send({ error: "Failed to setup 2FA" });
     }
 };
