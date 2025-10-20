@@ -5,9 +5,16 @@ const fastifyCookie = require('@fastify/cookie');
 const multipart = require('@fastify/multipart');
 const fastifyWebsocket = require('@fastify/websocket');
 const gameController = require('../controllers/gameController');
+const tournamentController = require('../controllers/tournamentController');
 const wsChat = require('../websocket/ws');
 const wsTournament = require('../websocket/tournament');
-const fastify = Fastify({ logger: { level: 'info' } });
+
+const BODY_LIMIT = 5001 * 1024;
+
+const fastify = Fastify({
+  logger: { level: 'info' },
+  bodyLimit: BODY_LIMIT
+});
 
 fastify.register(fastifyWebsocket);
 fastify.register(multipart);
@@ -25,7 +32,7 @@ fastify.setNotFoundHandler((request, reply) => {
 
 fastify.register(wsChat);
 fastify.register(gameController.chatWebSocketRoute);
-fastify.register(wsTournament);
+fastify.register(tournamentController.tournamentRoute);
 
 const start = async () => {
   try {

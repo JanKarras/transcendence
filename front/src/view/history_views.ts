@@ -16,6 +16,7 @@ import { render_local_tournament_game } from "./render_local_tournament_game.js"
 import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
 import { getSocket } from "../websocket/wsService.js";
 import { initTranslations, t } from "../constants/i18n.js"
+import { getTournamentSocket } from "../websocket/wsTournamentService.js";
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game' | 'remote_tournament_game';
 
@@ -31,7 +32,7 @@ const renderers: Record<View, ViewRenderFunction> = {
   two_fa : render_two_fa,
   profile : render_profile_settings,
   friends : render_friends,
-  chat : render_chat,
+  chat : render_dashboard,
   friend_profile : render_friend_profile,
   matchmaking : render_matchmaking,
   game : render_game,
@@ -144,6 +145,13 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
             // socket = null;
         }
     }
+	if (view !== "tournament" && view !== "remote_tournament_game") {
+		const tournamentSocket = getTournamentSocket();
+		if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
+			tournamentSocket.close(1000, "Navigated away from tournament");
+			// tournamentSocket = null;
+		}
+	}
     await initTranslations();
     if (protectedViews.includes(view)) {
     const isLoggedIn = await is_logged_in_api();

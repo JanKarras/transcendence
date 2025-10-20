@@ -3,24 +3,35 @@ import { showErrorMessage, showSuccessMessage } from "../templates/popup_message
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { initTranslations, t } from "../constants/i18n.js"
 
-export async function two_fa(email: string) {
-  const inputs = Array.from(document.querySelectorAll<HTMLInputElement>("#emailValidationForm input"));
+export async function two_fa(email: string, method: string = 'email') {
+	await initTranslations();
 
-  const code = inputs.map(input => input.value.trim()).join('');
+	let code = '';
 
-  const isValidCode = /^[0-9]{6}$/.test(code);
+	if (method === 'email') {
+		const inputs = Array.from(document.querySelectorAll<HTMLInputElement>("#emailValidationForm input"));
+		code = inputs.map(input => input.value.trim()).join('');
+	} else if (method === 'authapp') {
+		const input = document.getElementById("authAppCode") as HTMLInputElement | null;
+		code = input?.value.trim() || '';
+	}
 
-  await initTranslations();
-  if (!isValidCode) {
-	showErrorMessage(t('invalid6DigitCode'));
-	return;
-  }
+	if (!/^[0-9]{6}$/.test(code)) {
+		showErrorMessage(t('invalid6DigitCode'));
+		return;
+	}
 
-	const res = await two_fa_api(email, code);
-  	if (res.success) {
+	try {
+		const res = await two_fa_api(email, code, method);
+
+		if (res.success) {
 			showSuccessMessage(t('twoFASuccess'));
-			render_with_delay('dashboard')
-  	} else {
-		showErrorMessage(res.error)
- 	}
+			render_with_delay('dashboard');
+		} else {
+			showErrorMessage(res.error || t('twoFAFail'));
+		}
+	} catch (err: any) {
+		console.error(err);
+		showErrorMessage(err.message || t('twoFAFail'));
+	}
 }

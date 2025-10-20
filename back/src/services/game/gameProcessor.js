@@ -51,6 +51,7 @@ function eraseMatchFromOngoingMatches(i) {
 }
 
 function checkForBothConnected(match) {
+	console.log(match)
     if (match.user1Connected && match.user2Connected) {
         match.gameState = GameState.BOTH_CONNECTED;
     }

@@ -111,28 +111,30 @@ export async function emailValidationApi(email: string, code: string) {
   }
 }
 
-export async function two_fa_api(email: string, code: string) {
-	const body = JSON.stringify({ email, code })
-  try {
-	const response = await fetch('/api/set/two_fa_api', {
-	  method: 'POST',
-	  headers: {
-		'Content-Type': 'application/json',
-	  },
-	  body
-	});
+export async function two_fa_api(email: string, code: string, method: string = 'email') {
+	const body = JSON.stringify({ email, code, method });
 
-	if (!response.ok) {
-	  const errData = await response.json().catch(() => ({}));
-	  return { success: false, error: errData.error || 'Request failed' };
+	try {
+		const response = await fetch('/api/set/two_fa_api', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body,
+		});
+
+		const data = await response.json().catch(() => ({}));
+
+		if (!response.ok) {
+			return { success: false, error: data.error || 'Request failed' };
+		}
+
+		return { success: true, data };
+	} catch (error: any) {
+		return { success: false, error: error.message || 'Network error' };
 	}
-
-	const data = await response.json();
-	return { success: true, data };
-  } catch (error: any) {
-	return { success: false, error: error.error };
-  }
 }
+
 
 export async function is_logged_in_api(): Promise<boolean> {
 	try {
@@ -140,7 +142,6 @@ export async function is_logged_in_api(): Promise<boolean> {
 			method: "GET",
 			credentials: "include",
 		});
-
 		if (!res.ok) {
 			return false;
 		}
@@ -206,10 +207,22 @@ export async function saveProfileChanges(updateData: FormData) {
 			body: updateData,
 			credentials: 'include',
 		});
-		console.log(response);
+
 		if (!response.ok) {
-			const errData = await response.json().catch(() => ({}));
-			return { success: false, error: errData.error || 'Request failed' };
+			let errorMsg: string | undefined;
+
+			try {
+				const errData = await response.json();
+				errorMsg = errData.error || errData.message;
+			} catch {
+				errorMsg = response.statusText;
+			}
+
+			return {
+				success: false,
+				status: response.status,
+				error: errorMsg || 'Request failed'
+			};
 		}
 
 		return { success: true };
@@ -217,6 +230,7 @@ export async function saveProfileChanges(updateData: FormData) {
 		return { success: false, error: error.message || 'Network error' };
 	}
 }
+
 
 export async function handleAcceptRequestApi(request: RequestInfo): Promise<{ success: boolean; error?: string }> {
 	const body = JSON.stringify(request);
@@ -432,6 +446,25 @@ export async function getFreshToken(): Promise<string | null> {
 	} catch (err) {
 		console.error('Ошибка обновления токена:', err);
 		return null;
+	}
+}
+
+export async function createTwoFaApp(): Promise<{ success: boolean; qrCodeDataUrl?: string; error?: string }> {
+	try {
+		const res = await fetch('/api/get/2fa/setup', {
+			method: 'GET',
+			credentials: 'include'
+		});
+
+		if (!res.ok) {
+			const errData = await res.json().catch(() => ({}));
+			return { success: false, error: errData.error || 'Request failed' };
+		}
+
+		const data = await res.json();
+		return { success: true, qrCodeDataUrl: data.qrCodeDataUrl };
+	} catch (err: any) {
+		return { success: false, error: err.message || 'Network error' };
 	}
 }
 
