@@ -6,6 +6,7 @@ const multipart = require('@fastify/multipart');
 const fastifyWebsocket = require('@fastify/websocket');
 const gameController = require('../controllers/gameController');
 const tournamentController = require('../controllers/tournamentController');
+const friendController = require('../controllers/friendsWsController');
 const wsChat = require('../websocket/ws');
 const wsTournament = require('../websocket/tournament');
 
@@ -33,6 +34,7 @@ fastify.setNotFoundHandler((request, reply) => {
 fastify.register(wsChat);
 fastify.register(gameController.chatWebSocketRoute);
 fastify.register(tournamentController.tournamentRoute);
+fastify.register(friendController.friendRoute);
 
 const start = async () => {
   try {

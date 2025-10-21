@@ -1,72 +1,17 @@
-import { bodyContainer, friendsBtn, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
-import { Friend, FriendsViewData, UserInfo, RequestInfo } from "../constants/structs.js";
-import { getAllUser, getUser, handleAcceptRequestApi, handleDeclineRequestApi, logOutApi, removeFriendApi, sendFriendRequestApi } from "../remote_storage/remote_storage.js";
-import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
-import { isFriendOnline } from "../utils/isFriendOnline.js";
-import { render_with_delay } from "../utils/render_with_delay.js";
-import { getPos, render_header } from "./render_header.js";
-import { initTranslations, t } from "../constants/i18n.js"
-
-let data: FriendsViewData | null = null;
-
-async function fetchAndPrepareFriendsData(): Promise<FriendsViewData | null> {
-	const [userData, allUsers] = await Promise.all([getUser(), getAllUser()]);
-	if (!userData || !allUsers) return null;
-
-	const currentUser = userData.user;
-	const allFriends: Friend[] = userData.friends;
-	const usersWithoutMe = allUsers.filter(user => user.username !== currentUser.username);
-
-	const FIVE_MINUTES_MS = 5 * 60 * 1000;
-	const now = Date.now();
-
-	const onlineFriends: Friend[] = allFriends.filter(friend => {
-		if (!friend.last_seen) return true;
-		const lastSeenTime = new Date(friend.last_seen + " UTC").getTime();
-		return now - lastSeenTime <= FIVE_MINUTES_MS;
-	});
-
-	const sortedFriends = [...allFriends].sort((a, b) => {
-		const aOnline = onlineFriends.some(f => f.username === a.username);
-		const bOnline = onlineFriends.some(f => f.username === b.username);
-		if (aOnline && !bOnline) return -1;
-		if (!aOnline && bOnline) return 1;
-		return a.username.localeCompare(b.username);
-	});
-
-	const recv = userData.requests?.received || [];
-
-	const send = userData.requests?.sent || [];
-
-	return {
-		allUsers: usersWithoutMe,
-		allFriends: sortedFriends,
-		onlineFriends,
-		recvRequest: recv,
-		sendRequest: send
-	};
-}
-
+import { bodyContainer } from "../constants/constants.js";
+import { initTranslations, t } from "../constants/i18n.js";
+import { Friend } from "../constants/structs";
+import { connectFriend, getFriendSocket } from "../websocket/wsFriendsService.js";
+import { navigateTo } from "./history_views.js";
+import { render_header } from "./render_header.js";
 
 export async function render_friends(params: URLSearchParams | null) {
-    await initTranslations();
+	await initTranslations();
 
-	if (!bodyContainer || !profileContainer || !friendsBtn || !headernavs || !profile || !profileImg) {
-		showErrorMessage(t('domLoadError'));
-		await logOutApi();
-		render_with_delay("login");
-		return;
-	}
-
+	if (!bodyContainer) return;
 	await render_header();
 
 	bodyContainer.innerHTML = "";
-
-	data = await fetchAndPrepareFriendsData();
-	console.log(data)
-	if (!data) {
-		return;
-	}
 
 	const wrapper = document.createElement("div");
 	wrapper.className = "w-full h-full p-10 min-h-[200px]";
@@ -76,27 +21,37 @@ export async function render_friends(params: URLSearchParams | null) {
 
 	const contentContainer = document.createElement("div");
 	contentContainer.id = "friends-content";
+	contentContainer.className = "mt-4";
+	contentContainer.textContent = "👋 Willkommen bei deinen Freunden!";
+	contentContainer.setAttribute("data-active-tab", "online");
 
 	const tabs = [
-		{ id: "online", label: t('friendsOnline'), render: () => renderFriendsOnline(data?.onlineFriends ?? []) },
-		{ id: "all", label: t('allFriends'), render: () => renderAllFriends(data?.allFriends ?? []) },
-		{ id: "add", label: t('addFriends'), render: () => renderAddFriends(data?.allUsers ?? [], data?.allFriends ?? [], data?.recvRequest ?? [], data?.sendRequest ?? []) },
-		{ id: "requests", label: t('friendRequests'), render: () => renderFriendRequests(data?.recvRequest ?? [], data?.sendRequest ?? []) },
-
+		{ id: "online", label: "Freunde online", icon: "🟢" },
+		{ id: "all", label: "Alle Freunde", icon: "👥" },
+		{ id: "add", label: "Freunde hinzufügen", icon: "➕" },
+		{ id: "requests", label: "Anfragen", icon: "✉️" },
 	];
 
 	tabs.forEach((tab, index) => {
 		const btn = document.createElement("button");
-		btn.textContent = tab.label;
-		btn.className = "py-2 px-4 border-b-2 border-transparent hover:border-blue-400 transition";
-		if (index === 0) btn.classList.add("border-blue-500", "font-semibold");
+		btn.textContent = `${tab.icon} ${tab.label}`;
+		btn.className =
+			"py-2 px-4 border-b-2 border-transparent hover:border-blue-400 text-white transition";
+
+		if (index === 0) {
+			btn.classList.add("border-blue-500", "font-semibold");
+			contentContainer.textContent = `${tab.icon} ${tab.label}`;
+		}
 
 		btn.addEventListener("click", () => {
-			Array.from(tabNav.children).forEach(child => child.classList.remove("border-blue-500", "font-semibold"));
+			Array.from(tabNav.children).forEach(child =>
+				child.classList.remove("border-blue-500", "font-semibold")
+			);
+
 			btn.classList.add("border-blue-500", "font-semibold");
-			contentContainer.innerHTML = "";
+
+			contentContainer.innerHTML = `<p class="text-lg">${tab.icon} ${tab.label}</p>`;
 			contentContainer.setAttribute("data-active-tab", tab.id);
-			tab.render();
 		});
 
 		tabNav.appendChild(btn);
@@ -106,609 +61,111 @@ export async function render_friends(params: URLSearchParams | null) {
 	wrapper.appendChild(contentContainer);
 	bodyContainer.appendChild(wrapper);
 
-	tabs[0].render();
-	contentContainer.setAttribute("data-active-tab", "online");
-
+	await connect();
 }
 
-function createFriendElement(friend: Friend): HTMLElement {
-	const isOnline = isFriendOnline(friend);
-	const friendDiv = document.createElement("div");
-	friendDiv.className = "friend-item border-b border-gray-700 p-2 cursor-pointer";
+async function connect() {
+	const socket = await connectFriend();
 
-	const headerDiv = document.createElement("div");
-	headerDiv.className = "flex items-center gap-3 relative";
+	socket.onmessage = (msg) => {
+		const message = JSON.parse(msg.data.toString());
+		console.log("📩 WS message:", message);
 
-	const imgWrapper = document.createElement("div");
-	imgWrapper.className = "relative w-10 h-10";
-
-	const img = document.createElement("img");
-	img.src = `/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}`;
-	img.alt = friend.username;
-	img.className = "w-10 h-10 rounded-full object-cover";
-
-	const statusDot = document.createElement("span");
-	statusDot.className =
-		"absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-800 " +
-		(isOnline ? "bg-green-400" : "bg-green-900");
-
-	imgWrapper.appendChild(img);
-	imgWrapper.appendChild(statusDot);
-
-	const usernameSpan = document.createElement("span");
-	usernameSpan.textContent = friend.username;
-	usernameSpan.className = "font-semibold text-white";
-
-	headerDiv.appendChild(imgWrapper);
-	headerDiv.appendChild(usernameSpan);
-	friendDiv.appendChild(headerDiv);
-
-	const detailsDiv = document.createElement("div");
-	detailsDiv.className = "friend-details mt-2 text-sm text-gray-300 hidden";
-
-	const nameAge = document.createElement("div");
-	const fullName = (friend.first_name || "") + (friend.last_name ? " " + friend.last_name : "");
-	nameAge.textContent = `Name: ${fullName.trim() || "-"}`;
-	if (friend.age !== null && friend.age !== undefined) {
-		nameAge.textContent = `${t('name')}: ${fullName.trim() || "-"}`;
-	}
-
-	const statsDiv = document.createElement("div");
-	statsDiv.innerHTML = `
-		${t('wins')}: <strong>${friend.wins || 0}</strong>,
-		${t('loses')}: <strong>${friend.loses || 0}</strong>,
-		${t('tournamentWins')}: <strong>${friend.tournamentWins || 0}</strong>
-	`;
-
-	const btnContainer = document.createElement("div");
-	btnContainer.className = "mt-2 flex gap-3";
-
-	const chatBtn = document.createElement("button");
-	chatBtn.textContent = `💬 ${t('startChat')}`;
-	chatBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
-	chatBtn.addEventListener("click", e => {
-		e.stopPropagation();
-		console.log(`Chat mit ${friend.username} starten...`);
-	});
-
-	const gameBtn = document.createElement("button");
-	gameBtn.textContent = `🎮 ${t('startMatch')}`;
-	gameBtn.className = "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
-	gameBtn.addEventListener("click", e => {
-		e.stopPropagation();
-		console.log(`Spiel-Einladung an ${friend.username} senden...`);
-	});
-
-	const removeBtn = document.createElement("button");
-	removeBtn.textContent = `🗑 ${t('unfriend')}`;
-	removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
-	removeBtn.addEventListener("click", async e => {
-		e.stopPropagation();
-		removeFriend(friend)
-	});
-
-	if (isOnline) {
-		btnContainer.appendChild(chatBtn);
-		btnContainer.appendChild(gameBtn);
-	}
-	btnContainer.appendChild(removeBtn);
-
-	detailsDiv.appendChild(nameAge);
-	detailsDiv.appendChild(statsDiv);
-	detailsDiv.appendChild(btnContainer);
-
-	friendDiv.appendChild(detailsDiv);
-
-	friendDiv.addEventListener("click", () => {
-		detailsDiv.classList.toggle("hidden");
-	});
-
-	return friendDiv;
-}
-
-async function removeFriend(friend: Friend) {
-	console.log(friend)
-	const res = await removeFriendApi(friend);
-	if (res.success) {
-		showSuccessMessage(
-			t('friendRemoved').replace("{username}", friend.username)
-		);
-	} else {
-		const errorText = res.error ?? "Unknown Error";
-		showErrorMessage(
-			t('friendRemoveFailed').replace("{error}", errorText)
-		);
-	}
-}
-
-
-function renderSearchInput(container: HTMLElement, onSearch: (query: string) => void) {
-	const searchWrapper = document.createElement("div");
-	searchWrapper.className = "mb-4";
-
-	const input = document.createElement("input");
-	input.type = "text";
-	input.placeholder = `${t('searchFriend')}`;
-	input.className = "w-full p-2 rounded border border-gray-600 bg-gray-800 text-white";
-
-	input.addEventListener("input", () => {
-		onSearch(input.value.trim());
-	});
-
-	searchWrapper.appendChild(input);
-	container.prepend(searchWrapper);
-}
-
-function renderFriendList(container: HTMLElement, friends: Friend[]) {
-	while (container.childNodes.length > 1) {
-		container.removeChild(container.lastChild!);
-	}
-
-	friends.forEach(friend => {
-		const friendElement = createFriendElement(friend);
-		container.appendChild(friendElement);
-	});
-}
-
-function renderFriendsOnline(friends: Friend[]) {
-	const container = document.getElementById("friends-content");
-	if (!container) return;
-
-	container.innerHTML = "";
-
-	renderSearchInput(container, (query) => {
-		const filtered = friends.filter(friend =>
-			friend.username.toLowerCase().includes(query.toLowerCase())
-		);
-		renderFriendList(container, filtered);
-	});
-
-	renderFriendList(container, friends);
-}
-
-
-
-function renderAllFriends(friends: Friend[]) {
-	const container = document.getElementById("friends-content");
-	if (!container) return;
-
-	renderSearchInput(container, (query) => {
-		const filtered = friends.filter(friend =>
-			friend.username.toLowerCase().includes(query.toLowerCase())
-		);
-		renderFriendList(container, filtered);
-	});
-
-	renderFriendList(container, friends);
-}
-
-function renderAddFriendList(
-	container: HTMLElement,
-	users: UserInfo[],
-	recvRequests: Map<string, string>,
-	sendRequests: Map<string, string>
-) {
-	while (container.childNodes.length > 1) {
-		container.removeChild(container.lastChild!);
-	}
-
-	users.forEach(user => {
-		const userElement = createAddFriendElement(user, recvRequests, sendRequests);
-		container.appendChild(userElement);
-	});
-}
-
-function renderAddFriends(
-	allUsers: UserInfo[],
-	friends: Friend[],
-	recvRequests: RequestInfo[],
-	sendRequests: RequestInfo[]
-) {
-	const container = document.getElementById("friends-content");
-	if (!container) return;
-
-	container.innerHTML = "";
-
-	const friendUsernames = new Set(friends.map(f => f.username));
-
-	const recvFriendStatus = new Map<string, string>();
-	recvRequests
-		.filter(r => r.type === "friend")
-		.forEach(r => {
-			if (r.sender_username) recvFriendStatus.set(r.sender_username, r.status);
-		});
-
-	const sendFriendStatus = new Map<string, string>();
-	sendRequests
-		.filter(r => r.type === "friend")
-		.forEach(r => {
-			if (r.receiver_username) sendFriendStatus.set(r.receiver_username, r.status);
-		});
-
-	const nonFriends = allUsers.filter(user =>
-		!friendUsernames.has(user.username)
-	);
-
-	renderSearchInput(container, (query) => {
-		const filtered = nonFriends.filter(user =>
-			user.username.toLowerCase().includes(query.toLowerCase())
-		);
-		renderAddFriendList(container, filtered, recvFriendStatus, sendFriendStatus);
-	});
-
-	renderAddFriendList(container, nonFriends, recvFriendStatus, sendFriendStatus);
-}
-
-
-function createAddFriendElement(
-	user: UserInfo,
-	recvRequests: Map<string, string>,
-	sendRequests: Map<string, string>
-): HTMLElement {
-	const userDiv = document.createElement("div");
-	userDiv.className =
-		"friend-item group flex justify-start items-center border-b border-gray-700 p-2 hover:bg-gray-800 transition";
-
-	const leftDiv = document.createElement("div");
-	leftDiv.className = "flex items-center gap-3";
-
-	const imgWrapper = document.createElement("div");
-	imgWrapper.className = "relative w-10 h-10 flex-shrink-0";
-
-	const img = document.createElement("img");
-	img.src = `/api/get/getImage?filename=${encodeURIComponent(user.path || "std_user_img.png")}`;
-	img.alt = user.username;
-	img.className = "w-10 h-10 rounded-full object-cover";
-
-	imgWrapper.appendChild(img);
-
-
-	const usernameSpan = document.createElement("span");
-	usernameSpan.textContent = user.username;
-	usernameSpan.className = "font-semibold text-white";
-
-	leftDiv.appendChild(imgWrapper);
-	leftDiv.appendChild(usernameSpan);
-
-	function mapStatusToText(status: string | undefined): string {
-		switch (status) {
-			case "nothandled":
-				return t('status.nothandled');
-			case "accepted":
-				return t('status.accepted');
-			case "declined":
-				return t('status.declined');
-			default:
-				return t('status.unknown');
+		switch (message.type) {
+			case "friendsUpdate":
+				renderFriendsOnline(message.data.onlineFriends);
+				break;
 		}
-	}
-
-	function mapStatusToClass(status: string | undefined): string {
-		switch (status) {
-			case "nothandled":
-				return "text-gray-400 italic";
-			case "accepted":
-				return "text-green-600 font-semibold";
-			case "declined":
-				return "text-red-600 font-semibold";
-			default:
-				return "text-gray-400 italic";
-		}
-	}
-
-	let statusText: string | null = null;
-	let statusClass = "";
-
-	if (recvRequests.has(user.username)) {
-		const status = recvRequests.get(user.username);
-		statusText = mapStatusToText(status);
-		statusClass = mapStatusToClass(status);
-	} else if (sendRequests.has(user.username)) {
-		const status = sendRequests.get(user.username);
-		statusText = mapStatusToText(status);
-		statusClass = mapStatusToClass(status);
-	}
-
-	if (statusText) {
-		const statusLabel = document.createElement("span");
-		statusLabel.textContent = statusText;
-		statusLabel.className = `text-sm ml-2 ${statusClass}`;
-		leftDiv.appendChild(statusLabel);
-		userDiv.appendChild(leftDiv);
-	} else {
-		const addBtn = document.createElement("button");
-	addBtn.textContent = `➕ ${t('addFriend')}`;
-	addBtn.className =
-		"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm ml-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity";
-
-	addBtn.addEventListener("click", async () => {
-		sendFriendRequest(user);
-	});
-
-	leftDiv.appendChild(addBtn);
-	userDiv.appendChild(leftDiv);
-}
-
-
-
-	return userDiv;
-}
-
-
-async function sendFriendRequest(user: UserInfo) {
-	const res = await sendFriendRequestApi(user);
-
-	if (res.success) {
-		showSuccessMessage(
-			t('friendRequestSent').replace("{username}", user.username)
-		);
-	} else {
-		const errorText = res.error ?? "Unknown Error";
-		showErrorMessage(
-			t('friendRequestFailed').replace("{error}", errorText)
-		);
-	}
-}
-
-
-
-function renderFriendRequests(
-	recvRequests: RequestInfo[],
-	sendRequests: RequestInfo[]
-) {
-	const container = document.getElementById("friends-content");
-	if (!container) return;
-
-	container.innerHTML = "";
-
-	const wrapper = document.createElement("div");
-	wrapper.className = "flex gap-8";
-
-	const recvSection = document.createElement("div");
-	recvSection.className = "flex-1";
-	recvSection.innerHTML = `<h3 class="font-semibold mb-2">${t('renderFriendRequests.receivedTitle')}</h3>`;
-
-	if (recvRequests.length === 0) {
-		const noRecv = document.createElement("p");
-		noRecv.textContent = t('renderFriendRequests.noReceived');
-		recvSection.appendChild(noRecv);
-	} else {
-		recvRequests.forEach(request => {
-			const requestBox = createRequestBox(request, true, "recv");
-			recvSection.appendChild(requestBox);
-		});
-	}
-
-	const sendSection = document.createElement("div");
-	sendSection.className = "flex-1";
-	sendSection.innerHTML = `<h3 class="font-semibold mb-2">${t('renderFriendRequests.sentTitle')}</h3>`;
-
-	if (sendRequests.length === 0) {
-		const noSend = document.createElement("p");
-		noSend.textContent = t('renderFriendRequests.noSent');
-		sendSection.appendChild(noSend);
-	} else {
-		sendRequests.forEach(request => {
-			const requestBox = createRequestBox(request, false, "send");
-			sendSection.appendChild(requestBox);
-		});
-	}
-
-	wrapper.appendChild(recvSection);
-	wrapper.appendChild(sendSection);
-
-	container.appendChild(wrapper);
-}
-
-function createRequestBox(
-	request: RequestInfo,
-	canRespond: boolean,
-	direction: "recv" | "send"
-): HTMLElement {
-	const requestBox = document.createElement("div");
-	requestBox.className = "flex items-center justify-between p-4 mb-3 border rounded shadow";
-
-	const info = document.createElement("div");
-
-	let username = "";
-	let text = "";
-
-	if (direction === "recv") {
-		username = request.sender_username || t('general.unknownUser');
-		if (request.type === "friend") {
-			text = t('requestBox.friendRequestRecv');
-		} else {
-			text = t('requestBox.gameInviteRecv');
-		}
-	} else if (direction === "send") {
-		username = request.receiver_username || t('general.unknownUser');
-		if (request.type === "friend") {
-			text = t('requestBox.friendRequestSend');
-		} else {
-			text = t('requestBox.gameInviteSend');
-		}
-	}
-
-	info.innerHTML = `
-		<p class="font-semibold">${username}</p>
-		<p class="text-sm text-gray-600">${text}</p>
-	`;
-
-	requestBox.appendChild(info);
-
-	function mapStatusToText(status: string | undefined): string {
-		switch (status) {
-			case "nothandled":
-				return t('status.nothandled');
-			case "accepted":
-				return t('status.accepted');
-			case "declined":
-				return t('status.declined');
-			default:
-				return t('status.unknown');
-		}
-	}
-
-	const statusColorMap: Record<string, string> = {
-		nothandled: "text-gray-400 italic",
-		accepted: "text-green-600 font-semibold",
-		declined: "text-red-600 font-semibold",
 	};
 
-	const statusText = mapStatusToText(request.status);
-	const statusClass = statusColorMap[request.status] || "text-gray-400 italic";
+	socket.onclose = () => {
+		console.log("🔴 Tournament WebSocket disconnected");
+		navigateTo('dashboard');
+	};
 
-	if (canRespond) {
-		if (request.status === "nothandled") {
-			const btns = document.createElement("div");
-			btns.className = "flex gap-2";
-
-			const acceptBtn = document.createElement("button");
-			acceptBtn.textContent = t('requestBox.accept');
-			acceptBtn.className = "px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600";
-			acceptBtn.addEventListener("click", () => {
-				handleAcceptRequest(request);
-			});
-
-			const declineBtn = document.createElement("button");
-			declineBtn.textContent = t('requestBox.decline');
-			declineBtn.className = "px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600";
-			declineBtn.addEventListener("click", () => {
-				handleDeclineRequest(request);
-			});
-
-			btns.appendChild(acceptBtn);
-			btns.appendChild(declineBtn);
-
-			requestBox.appendChild(btns);
-		} else {
-			const status = document.createElement("span");
-			status.className = statusClass;
-			status.textContent = statusText;
-			requestBox.appendChild(status);
+	setInterval(() => {
+		if (socket.readyState === WebSocket.OPEN) {
+			socket.send(JSON.stringify({ type: "ping" }));
 		}
-	} else {
-		const status = document.createElement("span");
-		status.className = statusClass;
-		status.textContent = statusText;
-		requestBox.appendChild(status);
-	}
-
-	return requestBox;
+	}, 30000);
 }
 
+export function renderFriendsOnline(friends: Friend[]): void {
+	console.log(friends)
+	const container = document.getElementById("friends-content");
+	if (!container) return;
 
-async function handleAcceptRequest(req: RequestInfo) {
-	const res = await handleAcceptRequestApi(req);
-
-	if (res.success) {
-		showSuccessMessage(
-			t('friendRequestAccepted').replace("{username}", req.sender_username || "User")
-		);
-	} else {
-		const errorText = res.error ?? "Unknown Error";
-		showErrorMessage(
-			t('friendRequestAcceptFailed').replace("{error}", errorText)
-		);
-	}
-}
-
-async function handleDeclineRequest(req: RequestInfo) {
-	const res = await handleDeclineRequestApi(req);
-
-	if (res.success) {
-		showSuccessMessage(
-			t('friendRequestDeclined').replace("{username}", req.sender_username || "User")
-		);
-	} else {
-		const errorText = res.error ?? "Unknown Error";
-		showErrorMessage(
-			t('friendRequestDeclineFailed').replace("{error}", errorText)
-		);
-	}
-}
-
-let intervalId: ReturnType<typeof setInterval>;
-
-function findDifferences(obj1: any, obj2: any, path = ""): string[] {
-	const diffs: string[] = [];
-
-	if (typeof obj1 !== typeof obj2) {
-		diffs.push(`${path}: Type mismatch (${typeof obj1} vs ${typeof obj2})`);
-		return diffs;
-	}
-
-	if (typeof obj1 !== "object" || obj1 === null || obj2 === null) {
-		if (obj1 !== obj2) {
-			diffs.push(`${path}: ${obj1} !== ${obj2}`);
-		}
-		return diffs;
-	}
-
-	const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
-
-	for (const key of allKeys) {
-		const subPath = path ? `${path}.${key}` : key;
-		diffs.push(...findDifferences(obj1[key], obj2[key], subPath));
-	}
-
-	return diffs;
-}
-
-function deepEqual(a: any, b: any): boolean {
-	if (a === b) return true;
-
-	if (typeof a !== typeof b || a == null || b == null) return false;
-
-	if (typeof a === "object") {
-		const aKeys = Object.keys(a);
-		const bKeys = Object.keys(b);
-		if (aKeys.length !== bKeys.length) return false;
-
-		for (const key of aKeys) {
-			if (!deepEqual(a[key], b[key])) return false;
-		}
-		return true;
-	}
-
-	return false;
-}
-
-intervalId = setInterval(async () => {
-
-	const pos = getPos();
-
-	if (pos !== 'friends') {
-		clearInterval(intervalId);
+	container.innerHTML = "";
+	if (!friends || friends.length === 0) {
+		const emptyMsg = document.createElement("p");
+		emptyMsg.className = "text-gray-400";
+		emptyMsg.textContent = t("noFriendsOnline") || "Keine Freunde online 😢";
+		container.appendChild(emptyMsg);
 		return;
 	}
+	const list = document.createElement("div");
+	list.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
 
-	const newData = await fetchAndPrepareFriendsData();
-	if (!newData) {
-		return;
-	}
+	friends.forEach(friend => {
+		const card = document.createElement("div");
+		card.className =
+			"bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
 
-	if (deepEqual(data, newData)) {
-		return;
-	}
+		const header = document.createElement("div");
+		header.className = "flex items-center gap-3 mb-2";
 
-	console.log("Differences:", findDifferences(data, newData));
+		const img = document.createElement("img");
+		img.src = `/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}`;
+		img.alt = friend.username;
+		img.className = "w-12 h-12 rounded-full object-cover border border-gray-600";
 
-	data = newData;
+		const name = document.createElement("span");
+		name.className = "font-semibold text-white text-lg";
+		name.textContent = friend.username;
 
-	const currentTab = document.querySelector("#friends-content")?.getAttribute("data-active-tab");
-	if (currentTab === "online") {
-		renderFriendsOnline(data.onlineFriends);
-	}
-	if (currentTab === "all") {
-		renderAllFriends(data.allFriends);
-	}
-	if (currentTab === "add") {
-		renderAddFriends(data.allUsers, data.allFriends, data.recvRequest, data.sendRequest);
-	}
-	if (currentTab === "requests") {
-		renderFriendRequests(data.recvRequest, data.sendRequest);
-	}
-}, 10000);
+		const dot = document.createElement("span");
+		dot.className = "ml-auto w-3 h-3 rounded-full bg-green-500";
 
+		header.appendChild(img);
+		header.appendChild(name);
+		header.appendChild(dot);
 
+		const info = document.createElement("div");
+		info.className = "text-sm text-gray-400 mt-1";
+		info.textContent = `${t("lastSeen") || "Zuletzt online"}: ${
+			friend.last_seen || "-"
+		}`;
+
+		const actions = document.createElement("div");
+		actions.className = "flex gap-3 mt-3";
+
+		const chatBtn = document.createElement("button");
+		chatBtn.textContent = "💬 Chat";
+		chatBtn.className =
+			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
+		chatBtn.addEventListener("click", e => {
+			e.stopPropagation();
+			console.log(`Chat mit ${friend.username} öffnen`);
+		});
+
+		const playBtn = document.createElement("button");
+		playBtn.textContent = "🎮 Spiel starten";
+		playBtn.className =
+			"bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
+		playBtn.addEventListener("click", e => {
+			e.stopPropagation();
+			console.log(`Spiel mit ${friend.username} starten`);
+		});
+
+		actions.appendChild(chatBtn);
+		actions.appendChild(playBtn);
+
+		card.appendChild(header);
+		card.appendChild(info);
+		card.appendChild(actions);
+
+		list.appendChild(card);
+	});
+
+	container.appendChild(list);
+}
