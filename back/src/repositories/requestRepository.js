@@ -26,11 +26,21 @@ function doesFriendRequestExist(senderId, receiverId) {
 }
 
 function addFriendRequest(senderId, receiverId) {
-    return db.prepare(`
-			INSERT INTO requests (sender_id, receiver_id, type)
-			VALUES (?, ?, 'friend')
-		`).run(senderId, receiverId);
+	db.prepare(`
+		DELETE FROM requests
+		WHERE type = 'friend'
+		AND (
+			(sender_id = ? AND receiver_id = ?)
+			OR (sender_id = ? AND receiver_id = ?)
+		)
+	`).run(senderId, receiverId, receiverId, senderId);
+
+	return db.prepare(`
+		INSERT INTO requests (sender_id, receiver_id, type)
+		VALUES (?, ?, 'friend')
+	`).run(senderId, receiverId);
 }
+
 
 function addTournamentRequest(senderId, receiverId) {
     return db.prepare(`
@@ -44,7 +54,7 @@ function getRequestById(id) {
 }
 
 function updateRequestStatusById(status, id) {
-    db.prepare('UPDATE requests SET status = ? WHERE id = ?').run(status, id)
+	db.prepare('UPDATE requests SET status = ? WHERE id = ?').run(status, id)
 }
 
 function deleteRequestBySenderIdAndReceiverId(senderId, receiverId) {
@@ -55,6 +65,57 @@ function deleteRequestBySenderIdAndReceiverId(senderId, receiverId) {
 		`).run(senderId, receiverId, receiverId, senderId);
 }
 
+function deleteRequestById(requestId) {
+	db.prepare(`
+			DELETE FROM requests
+			WHERE id = ?
+		`).run(requestId);
+}
+
+function getSentRequestsByUserIdFriend(userId) {
+	return db.prepare(`
+		SELECT
+			r.id,
+			r.type,
+			r.status,
+			u.username AS receiver_username,
+			r.created_at
+		FROM requests r
+		INNER JOIN users u ON r.receiver_id = u.id
+		WHERE r.sender_id = ?
+		AND r.type = 'friend'
+		ORDER BY r.created_at DESC
+	`).all(userId);
+}
+
+function getReceivedRequestsByUserIdFriend(userId) {
+	return db.prepare(`
+		SELECT
+			r.id,
+			r.type,
+			r.status,
+			u.username AS sender_username,
+			r.created_at
+		FROM requests r
+		INNER JOIN users u ON r.sender_id = u.id
+		WHERE r.receiver_id = ?
+		AND r.type = 'friend'
+		ORDER BY r.created_at DESC
+	`).all(userId);
+}
+
+function deleteAllFriendRequestsBetween(senderId, receiverId) {
+    db.prepare(`
+        DELETE FROM requests
+        WHERE type = 'friend'
+        AND (
+            (sender_id = ? AND receiver_id = ?)
+            OR (sender_id = ? AND receiver_id = ?)
+        )
+    `).run(senderId, receiverId, receiverId, senderId);
+}
+
+
 module.exports = {
     getSentRequestsByUserId,
     getReceivedRequestsByUserId,
@@ -63,5 +124,9 @@ module.exports = {
     getRequestById,
     updateRequestStatusById,
     deleteRequestBySenderIdAndReceiverId,
-	addTournamentRequest
+	addTournamentRequest,
+	getSentRequestsByUserIdFriend,
+	getReceivedRequestsByUserIdFriend,
+	deleteRequestById,
+	deleteAllFriendRequestsBetween
 }

@@ -1,5 +1,8 @@
+const { acceptFriendRequest } = require("./acceptFriendRequest");
 const { ping } = require("./ping");
-
+const { sendFriendRequest } = require("./sendFriendRequest");
+const { removeFriend } = require("./unfriend");
+const { declineFriendRequest } = require("./declineFriendRequest");
 
 async function handleWsMessage(ws, userId, msg) {
 	let data;
@@ -15,6 +18,10 @@ async function handleWsMessage(ws, userId, msg) {
 
 	const handlers = {
 		ping,
+		removeFriend,
+		sendFriendRequest,
+		acceptFriendRequest,
+		declineFriendRequest
 	}
 
 	const handler = handlers[data.type];

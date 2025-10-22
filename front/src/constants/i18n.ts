@@ -11,6 +11,12 @@ const translations: Record<string, any> = {};
 export async function initTranslations() {
     if (!translations[LANGUAGE]) {
         const res = await fetch(`./locales/${LANGUAGE}.json`);
+		if (!res.ok) {
+			console.warn(`Could not load translations for language: ${LANGUAGE}, falling back to English.`);
+			const fallbackRes = await fetch(`./locales/eng.json`);
+			translations["eng"] = await fallbackRes.json();
+			return;
+		}
         // const res = await fetch(`/assets/js/locales/${LANGUAGE}.json`);
         translations[LANGUAGE] = await res.json();
     }

@@ -48,8 +48,8 @@ export interface trans {
 export interface RequestInfo {
   id: number;
   type: string;
-  receiver_username?: string;
-  sender_username?: string;
+  receiver_username: string;
+  sender_username: string;
   created_at: string;
   status: string;
 }

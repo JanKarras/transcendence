@@ -8,8 +8,8 @@ async function collectFriendsData(userId) {
 	if (!userData || !allUsers) return null;
 
 	const allFriends = await userRepo.getFriends(userId);
-	const recvRequests = await reqRepo.getReceivedRequestsByUserId(userId);
-	const sentRequests = await reqRepo.getSentRequestsByUserId(userId);
+	const recvRequests = await reqRepo.getReceivedRequestsByUserIdFriend(userId);
+	const sentRequests = await reqRepo.getSentRequestsByUserIdFriend(userId);
 
 	const FIVE_MINUTES_MS = 5 * 60 * 1000;
 	const now = Date.now();

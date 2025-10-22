@@ -157,16 +157,13 @@ export function renderFriendsOnline(friends: Friend[]): void {
 		header.appendChild(name);
 		header.appendChild(dot);
 
-		// 🕓 Info
 		const info = document.createElement("div");
 		info.className = "text-sm text-gray-400 mt-1";
 		info.textContent = `${t("lastSeen") || "Zuletzt online"}: ${friend.last_seen || "-"}`;
 
-		// ⚙️ Aktionen
 		const actions = document.createElement("div");
 		actions.className = "flex gap-3 mt-3";
 
-		// 👤 Profil anzeigen
 		const profileBtn = document.createElement("button");
 		profileBtn.textContent = "👤 Profil";
 		profileBtn.className =
@@ -174,10 +171,9 @@ export function renderFriendsOnline(friends: Friend[]): void {
 		profileBtn.addEventListener("click", e => {
 			e.stopPropagation();
 			console.log(`Profil von ${friend.username} anzeigen`);
-			// Hier später: navigateTo(`profile?user=${friend.id}`)
+
 		});
 
-		// 🗑 Freund entfernen
 		const removeBtn = document.createElement("button");
 		removeBtn.textContent = "🗑 Freund entfernen";
 		removeBtn.className =
@@ -285,7 +281,7 @@ export function renderOfflineFriends(friends: Friend[]): void {
 
 
 
-function renderAddFriends(
+export function renderAddFriends(
 	allUsers: UserInfo[],
 	notFriends: UserInfo[],
 	recvRequests: RequestInfo[],
@@ -309,6 +305,7 @@ function renderAddFriends(
 		return;
 	}
 
+	// 🧭 Maps für Status
 	const recvMap = new Map<string, string>();
 	recvRequests.forEach(req => {
 		if (req.type === "friend" && req.sender_username)
@@ -362,66 +359,91 @@ function renderAddFriends(
 			left.appendChild(img);
 			left.appendChild(name);
 
-			let status = null;
+			let status: string | null = null;
 			let statusClass = "";
-			let actionBtn = null;
+			let actionBtn: HTMLButtonElement | null = null;
 
+			// 🔹 Empfangene Anfragen
 			if (recvMap.has(user.username)) {
 				const s = recvMap.get(user.username);
-				status = s === "nothandled" ? "Hat dir eine Anfrage gesendet" : s;
-				statusClass = "text-yellow-400 italic";
-			} else if (sendMap.has(user.username)) {
+				if (s === "nothandled") {
+					status = "Hat dir eine Anfrage gesendet";
+					statusClass = "text-yellow-400 italic";
+					// ⛔ kein Button, weil aktive Anfrage besteht
+				} else if (s === "accepted") {
+					status = "Bereits Freunde";
+					statusClass = "text-green-400";
+				} else if (s === "declined") {
+					// ✅ Du hast abgelehnt → darf erneut senden
+					status = "Du hast diese Anfrage abgelehnt";
+					statusClass = "text-gray-400 italic";
+
+					actionBtn = document.createElement("button");
+					actionBtn.textContent = "🔁 Anfrage erneut senden";
+					actionBtn.className =
+						"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded ml-3";
+					actionBtn.addEventListener("click", async e => {
+						e.stopPropagation();
+						sendFriendRequest(user.id);
+					});
+				}
+			}
+			// 🔹 Gesendete Anfragen
+			else if (sendMap.has(user.username)) {
 				const s = sendMap.get(user.username);
-				status =
-					s === "nothandled"
-						? "Anfrage gesendet"
-						: s === "accepted"
-						? "Bereits angenommen"
-						: "Abgelehnt";
-				statusClass = s === "accepted" ? "text-green-400" : "text-gray-400";
-			} else {
-				// ➕ Freund hinzufügen
+				if (s === "nothandled") {
+					status = "Anfrage gesendet";
+					statusClass = "text-yellow-400 italic";
+					// ⛔ kein Button, weil aktive Anfrage besteht
+				} else if (s === "accepted") {
+					status = "Bereits Freunde";
+					statusClass = "text-green-400";
+				} else if (s === "declined") {
+					// ✅ Abgelehnt → darf erneut senden
+					actionBtn = document.createElement("button");
+					actionBtn.textContent = "🔁 Anfrage erneut senden";
+					actionBtn.className =
+						"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
+					actionBtn.addEventListener("click", async e => {
+						e.stopPropagation();
+						sendFriendRequest(user.id);
+					});
+				}
+			}
+			// 🔹 Noch keine Anfrage vorhanden
+			else {
 				actionBtn = document.createElement("button");
 				actionBtn.textContent = "➕ Freund hinzufügen";
 				actionBtn.className =
 					"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 				actionBtn.addEventListener("click", async e => {
 					e.stopPropagation();
-					console.log(`📨 Sende Freundschaftsanfrage an ${user.username}`);
-					try {
-						const res = await fetch(`/api/set/friend/request`, {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ receiver_username: user.username }),
-							credentials: "include",
-						});
-						if (res.ok) {
-							//actionBtn.textContent = "✅ Anfrage gesendet";
-							//actionBtn.className =
-								"bg-gray-600 text-white px-3 py-1 rounded cursor-default";
-							//actionBtn.disabled = true;
-						}
-					} catch (err) {
-						console.error("Fehler beim Senden der Anfrage:", err);
-					}
+					sendFriendRequest(user.id);
 				});
 			}
 
 			row.appendChild(left);
 
+			const rightSide = document.createElement("div");
+			rightSide.className = "flex items-center gap-2";
+
 			if (status) {
 				const statusSpan = document.createElement("span");
 				statusSpan.textContent = status;
 				statusSpan.className = statusClass;
-				row.appendChild(statusSpan);
-			} else if (actionBtn) {
-				row.appendChild(actionBtn);
+				rightSide.appendChild(statusSpan);
 			}
 
+			if (actionBtn) {
+				rightSide.appendChild(actionBtn);
+			}
+
+			row.appendChild(rightSide);
 			list.appendChild(row);
 		});
 	}
 
+	// 🔍 Suchlogik
 	searchInput.addEventListener("input", () => {
 		const query = searchInput.value.toLowerCase();
 		const filtered = notFriends.filter(user =>
@@ -434,54 +456,221 @@ function renderAddFriends(
 }
 
 
-function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: RequestInfo[]): void {
+
+
+export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: RequestInfo[]): void {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
 
 	container.innerHTML = "";
 
+	const title = document.createElement("h2");
+	title.textContent = "Freundschaftsanfragen";
+	title.className = "text-xl font-semibold mb-6 text-white";
+	container.appendChild(title);
+
 	const recvSection = document.createElement("div");
-	const sendSection = document.createElement("div");
-
 	const recvTitle = document.createElement("h3");
-	recvTitle.textContent = "Empfangene Anfragen:";
-	recvTitle.className = "font-semibold text-lg mb-2";
-
-	const sendTitle = document.createElement("h3");
-	sendTitle.textContent = "Gesendete Anfragen:";
-	sendTitle.className = "font-semibold text-lg mb-2 mt-4";
-
+	recvTitle.textContent = "📥 Empfangene Anfragen";
+	recvTitle.className = "font-semibold text-lg mb-3 text-blue-300";
 	recvSection.appendChild(recvTitle);
-	sendSection.appendChild(sendTitle);
 
 	if (recvRequests.length === 0) {
-		recvSection.append("Keine empfangenen Anfragen.");
+		const p = document.createElement("p");
+		p.textContent = "Keine empfangenen Anfragen 😴";
+		p.className = "text-gray-400";
+		recvSection.appendChild(p);
 	} else {
-		recvRequests.forEach(req => {
-			const p = document.createElement("p");
-			p.textContent = `${req.sender_username} → ${req.status}`;
-			recvSection.appendChild(p);
-		});
-	}
+		const list = document.createElement("div");
+		list.className = "flex flex-col gap-3";
 
-	if (sendRequests.length === 0) {
-		sendSection.append("Keine gesendeten Anfragen.");
-	} else {
-		sendRequests.forEach(req => {
-			const p = document.createElement("p");
-			p.textContent = `${req.receiver_username} → ${req.status}`;
-			sendSection.appendChild(p);
+		recvRequests.forEach(req => {
+			const row = document.createElement("div");
+			row.className =
+				"flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
+
+			const left = document.createElement("div");
+			left.className = "flex items-center gap-3";
+
+			const img = document.createElement("img");
+			img.src = `/api/get/getImage?filename=${encodeURIComponent((req.sender_username || "std_user_img") + ".png")}`;
+			img.alt = req.sender_username || "User";
+			img.className = "w-10 h-10 rounded-full object-cover border border-gray-600";
+
+			const name = document.createElement("span");
+			name.className = "text-white font-semibold";
+			name.textContent = req.sender_username || "Unbekannt";
+
+			left.appendChild(img);
+			left.appendChild(name);
+
+			const right = document.createElement("div");
+
+			if (req.status === "nothandled") {
+				right.className = "flex gap-2";
+
+				const acceptBtn = document.createElement("button");
+				acceptBtn.textContent = "✅ Annehmen";
+				acceptBtn.className = "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
+				acceptBtn.addEventListener("click", e => {
+					e.stopPropagation();
+					console.log(`✅ Anfrage von ${req.sender_username} akzeptieren`);
+					acceptFriendRequest(req.id);
+				});
+
+				const declineBtn = document.createElement("button");
+				declineBtn.textContent = "❌ Ablehnen";
+				declineBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
+				declineBtn.addEventListener("click", e => {
+					e.stopPropagation();
+					console.log(`❌ Anfrage von ${req.sender_username} ablehnen`);
+					sayNoToFriendRequest(req.id);
+				});
+
+				right.appendChild(acceptBtn);
+				right.appendChild(declineBtn);
+			} else {
+				const status = document.createElement("span");
+				status.className = "text-sm font-semibold " +
+					(req.status === "accepted"
+						? "text-green-500"
+						: req.status === "declined"
+						? "text-red-500"
+						: "text-gray-400");
+				status.textContent =
+					req.status === "accepted"
+						? "✅ Angenommen"
+						: req.status === "declined"
+						? "❌ Abgelehnt"
+						: "⏳ Ausstehend";
+				right.appendChild(status);
+			}
+
+			row.appendChild(left);
+			row.appendChild(right);
+			list.appendChild(row);
 		});
+
+		recvSection.appendChild(list);
 	}
 
 	container.appendChild(recvSection);
+
+	const sendSection = document.createElement("div");
+	sendSection.className = "mt-8";
+	const sendTitle = document.createElement("h3");
+	sendTitle.textContent = "📤 Gesendete Anfragen";
+	sendTitle.className = "font-semibold text-lg mb-3 text-blue-300";
+	sendSection.appendChild(sendTitle);
+
+	if (sendRequests.length === 0) {
+		const p = document.createElement("p");
+		p.textContent = "Keine gesendeten Anfragen 📭";
+		p.className = "text-gray-400";
+		sendSection.appendChild(p);
+	} else {
+		const list = document.createElement("div");
+		list.className = "flex flex-col gap-3";
+
+		sendRequests.forEach(req => {
+			const row = document.createElement("div");
+			row.className =
+				"flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
+
+			const left = document.createElement("div");
+			left.className = "flex items-center gap-3";
+
+			const img = document.createElement("img");
+			img.src = `/api/get/getImage?filename=${encodeURIComponent((req.receiver_username || "std_user_img") + ".png")}`;
+			img.alt = req.receiver_username || "User";
+			img.className = "w-10 h-10 rounded-full object-cover border border-gray-600";
+
+			const name = document.createElement("span");
+			name.className = "text-white font-semibold";
+			name.textContent = req.receiver_username || "Unbekannt";
+
+			left.appendChild(img);
+			left.appendChild(name);
+
+			const status = document.createElement("span");
+			status.className =
+				"text-sm font-semibold " +
+				(req.status === "accepted"
+					? "text-green-500"
+					: req.status === "declined"
+					? "text-red-500"
+					: "text-gray-400");
+			status.textContent =
+				req.status === "nothandled"
+					? "⏳ Ausstehend"
+					: req.status === "accepted"
+					? "✅ Angenommen"
+					: "❌ Abgelehnt";
+
+			row.appendChild(left);
+			row.appendChild(status);
+			list.appendChild(row);
+		});
+
+		sendSection.appendChild(list);
+	}
+
 	container.appendChild(sendSection);
 }
+
+
 
 async function removeFriend(friend: Friend) {
 	const socket = getFriendSocket()
 
 	const payload = {
-		type : ""
+		type : "removeFriend",
+		data : {
+			friendId : friend.id
+		}
+	}
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		socket.send(JSON.stringify(payload));
+	}
+}
+
+async function sendFriendRequest(userId: number) {
+	const socket = getFriendSocket()
+
+	const payload = {
+		type : "sendFriendRequest",
+		data : {
+			userId : userId
+		}
+	}
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		socket.send(JSON.stringify(payload));
+	}
+}
+
+async function acceptFriendRequest(requestId: number) {
+	const socket = getFriendSocket()
+
+	const payload = {
+		type : "acceptFriendRequest",
+		data : {
+			requestId : requestId
+		}
+	}
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		socket.send(JSON.stringify(payload));
+	}
+}
+
+async function sayNoToFriendRequest(requestId: number) {
+	const socket = getFriendSocket();
+	const payload = {
+		type: "declineFriendRequest",
+		data: {
+			requestId: requestId
+		}
+	};
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		socket.send(JSON.stringify(payload));
 	}
 }

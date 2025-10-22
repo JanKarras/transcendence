@@ -23,9 +23,10 @@ function getFriendsInfoByUserId(userId) {
 }
 
 function addFriend(userId, friendId) {
-    const insertFriend = db.prepare('INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)');
-    insertFriend.run(userId, friendId);
-    insertFriend.run(friendId, userId);
+	console.log("Adding friend:", userId, friendId);
+	const insertFriend = db.prepare('INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)');
+	insertFriend.run(userId, friendId);
+	insertFriend.run(friendId, userId);
 }
 
 function isFriend(userId, id) {
