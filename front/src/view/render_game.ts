@@ -4,34 +4,25 @@ import { getFreshToken } from "../remote_storage/remote_storage.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
 import { GameInfo } from "../game/GameInfo.js"
-import { connectWithHandler ,connect, getSocket } from "../websocket/wsService.js";
+import { connect, getSocket } from "../websocket/wsService.js";
 import { t } from "../constants/i18n.js"
-
 
 let gameInfo : GameInfo;
 let gameState = 0;
 let gameOver = false;
 let showUsernameModal = true;
 let username: string | null | undefined;
-let alreadyRendered = false;
 
 const wsUrl = `wss://${location.host}/ws/game?token=${localStorage.getItem('auth_token')}`;
 
-
 export async function render_game(params: URLSearchParams | null) {
-    if (alreadyRendered) {
-		console.warn("⚠️ render_game already called, skipping");
-		return;
-	}
-	alreadyRendered = true;
-    console.log("🧩 render_game called with", params?.toString());
 	if (!bodyContainer || !profile || !profileImg || !friendsNumber || !profileContainer || !headernavs || !friendsBtn) {
 		console.error("bodyContainer Container missing")
 		return;
 	}
+
     const mode = params?.get("mode");
     username = params?.get("username");
-    
     if (mode === "remote" || !!username) {
         showUsernameModal = false;
     } else if (mode === "local" && !username) {
@@ -207,7 +198,6 @@ export async function render_game(params: URLSearchParams | null) {
                 console.log(data);
 
                 console.log("countdownFinished");
-                console.log("🎮 Starting gameLoop");
                 enablePaddles();
                 gameLoop();
             }
@@ -216,7 +206,6 @@ export async function render_game(params: URLSearchParams | null) {
 
 	function gameLoop() {
 		// calculate estimation
-        console.log("🖼 Rendering frame");
 		renderFrame(ctx, gameInfo);
 		if (gameOver) {
 			showWinner();
@@ -247,14 +236,12 @@ export async function render_game(params: URLSearchParams | null) {
                 }
                 navigateTo("game", params);
             } else {
-                alreadyRendered = false;
                 navigateTo("matchmaking");
             }
             gameOver = false;
 		};
 
 		exitBtn.onclick = () => {
-            alreadyRendered = false;
 			navigateTo("dashboard");
             gameOver = false;
 		};
@@ -280,11 +267,9 @@ export async function render_game(params: URLSearchParams | null) {
                     gameInfo = data.gameInfo;
                     displayNames();
                     renderFrame(ctx, gameInfo)
-                    if (data.startCountdown)startCountdown("remote");
-                    else startCountdown("local");
+                    startCountdown("local");
                     break;
                 case 'sendFrames':
-                    console.log("📩 Frame received:", data.gameInfo);
                     gameInfo = data.gameInfo;
                     gameState = data.gameState;
                     break;
@@ -313,55 +298,61 @@ export async function render_game(params: URLSearchParams | null) {
         console.log(data);
     }
 
-    async function startGame() {
-        console.log("🚀 startGame() called");
-       
-        const token = await getFreshToken();
-        console.log("🔐 Token:", token);
-              
-        const socket = await connectWithHandler((event) => {
-            console.log("📩 WS message received:", event.data);
-            const data = JSON.parse(event.data);
-            switch (data.type) {
-                case 'restoreGame':
-                gameState = data.gameState;
-                gameInfo = data.gameInfo;
-                renderFrame(ctx, gameInfo);
-                break;
-                case 'startGame':
-                console.log('🚀 startGame received');
-                gameState = data.gameState;
-                gameInfo = data.gameInfo;
-                displayNames();
-                renderFrame(ctx, gameInfo);
-                startCountdown("remote");
-                break;
-                case 'sendFrames':
-                gameInfo = data.gameInfo;
-                gameState = data.gameState;
-                break;
-                case 'gameOver':
-                gameOver = true;
-                break;
-                default:
-                console.warn("⚠️ Unknown message type:", data.type);
-            }
-        });
+	async function startGame() {
+		const token = await getFreshToken();
+		console.log(token)
+        const socket = await connect();
+        if (!socket) {
+            throw new Error("WebSocket is not connected");
+        }
 
         const response = await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
             method: "POST",
             headers: {
-            "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+                "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
             },
             credentials: "include"
         });
 
         const data = await response.json();
-        console.log("📨 Matchmaking response:", data);
-        }
+        console.log(data);
+
+		socket.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+            switch (data.type) {
+                case 'restoreGame':
+                    console.log('restoreGame');
+                    gameState = data.gameState;
+                    gameInfo = data.gameInfo;
+                    renderFrame(ctx, gameInfo);
+                    break;
+                case 'startGame':
+                    gameState = data.gameState;
+                    gameInfo = data.gameInfo;
+					displayNames();
+                    renderFrame(ctx, gameInfo)
+                    startCountdown("remote");
+                    break;
+                case 'sendFrames':
+                    gameInfo = data.gameInfo;
+                    gameState = data.gameState;
+                    break;
+			    case 'gameOver':
+					gameOver = true;
+                    break;
+					/* 			case 'partnerLeft':
+                    // winner modal +
+                    break;
+					*/
+                default:
+
+            }
+		};
+		// socket.onclose = (event) => {
+		// console.warn(`❌ WebSocket closed (code=${event.code}, reason=${event.reason || "no reason"})`);
+		// };
+	}
 }
-
-
 
 /* 	function updatePaddleVelocity(state: GameState, keys: Set<string>) {
 		// Reset velocities

@@ -4,7 +4,7 @@ import { getMatchHistory, getUserForProfile } from "../remote_storage/remote_sto
 import { render_header } from "./render_header.js";
 import { initTranslations, t } from "../constants/i18n.js"
 
-export async function renderProfile(user: UserInfo, id: number, container: HTMLElement | null) {
+async function renderProfile(user: UserInfo, id: number) {
 	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
 
     await initTranslations();
@@ -25,8 +25,8 @@ export async function renderProfile(user: UserInfo, id: number, container: HTMLE
 		</div>
 	`;
 
-	if (!container) return;
-	container.innerHTML = profileHTML;
+	if (!bodyContainer) return;
+	bodyContainer.innerHTML = profileHTML;
 
 	const profileInner = document.getElementById("profileInner");
 	const containerHeight = profileInner?.offsetHeight || 400;
@@ -34,7 +34,7 @@ export async function renderProfile(user: UserInfo, id: number, container: HTMLE
 	const showHistoryBtn = document.getElementById("showHistoryBtn");
 	showHistoryBtn?.addEventListener("click", async () => {
 		const matchHistory = await getMatchHistory(Number(id));
-		renderMatchHistory(matchHistory || [], () => renderProfile(user, id, container), containerHeight);
+		renderMatchHistory(matchHistory || [], () => renderProfile(user, id), containerHeight);
 	});
 }
 
@@ -92,7 +92,7 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 	const user = await getUserForProfile(id);
 	if ('error' in user) return;
 
-	await renderProfile(user, Number(id), bodyContainer);
+	await renderProfile(user, Number(id));
 }
 
 function renderReadonlyField(field: string, value: string | number) {

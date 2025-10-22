@@ -2,7 +2,7 @@ const db = require("../db");
 
 function getUserById(userId) {
     return db.prepare(`
-        SELECT id, username, first_name, last_name, age, path, last_seen, twofa_active, twofa_method
+        SELECT id, username, first_name, last_name, age, path, last_seen, twofa_active
         FROM users
         WHERE id = ?
     `).get(userId);
@@ -78,15 +78,17 @@ function deleteFriends(userId, friendId) {
 
 function isUserBlockedByFriend(friendId, userId) {
     return db.prepare(`
-    SELECT
-      (CASE WHEN EXISTS(
-         SELECT 1 FROM blocks WHERE blocker_id = ? AND blocked_id = ?
-       ) THEN 2 ELSE 0 END) -- friendId заблокировал userId → код 2
-      +
-      (CASE WHEN EXISTS(
-         SELECT 1 FROM blocks WHERE blocker_id = ? AND blocked_id = ?
-       ) THEN 1 ELSE 0 END) -- userId заблокировал friendId → код 1
-      AS blocked
+          SELECT CASE
+    WHEN EXISTS(
+        SELECT 1 FROM blocks
+        WHERE blocker_id = ? AND blocked_id = ?
+    ) THEN 2
+    WHEN EXISTS(
+        SELECT 1 FROM blocks
+        WHERE blocker_id = ? AND blocked_id = ?
+    ) THEN 1
+    ELSE 0
+END AS blocked
     `).get(friendId, userId, userId, friendId);
 }
 
@@ -139,19 +141,6 @@ function updateUserTwofaActive(twofa_active, userId) {
     db.prepare('UPDATE users SET twofa_active = ? WHERE id = ?').run(twofa_active, userId)
 }
 
-function updateUserTwoFaMethod(twofa_method, userId) {
-    db.prepare('UPDATE users SET twofa_method = ? WHERE id = ?').run(twofa_method, userId)
-}
-
-function saveTwoFaSecret(userId, secret) {
-	db.prepare('UPDATE users SET twofa_secret = ? WHERE id = ?').run(secret, userId)
-}
-
-function getTwoFaSecret(userId) {
-    const row = db.prepare('SELECT twofa_secret FROM users WHERE id = ?').get(userId);
-    return row ? row.twofa_secret : null;
-}
-
 module.exports = {
     getUserById,
     getFriendsInfoByUserId,
@@ -170,9 +159,6 @@ module.exports = {
     updateUserFirstName,
     updateUserLastName,
     getUserIdByUsername,
-	updateUserTwofaActive,
-	updateUserTwoFaMethod,
-	saveTwoFaSecret,
-	getTwoFaSecret
+	updateUserTwofaActive
 }
 

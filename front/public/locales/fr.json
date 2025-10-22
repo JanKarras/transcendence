@@ -173,32 +173,5 @@
     },
     "active": "Actif",
     "inactive": "Inactif",
-    "typeMessage": "Tapez un message...",
-    "cht":{
-        "block": "Bloquer",
-        "unblock": "Débloquer",
-        "invite_sent": "Une invitation au jeu a été envoyée",
-        "blocked_you": " vous a bloqué ❌ ",
-        "retryBlock": "Réessayer le blocage !",
-        "retryUnblock": "Réessayer le déblocage !",
-        "reconnecting": "Reconnexion en cours...",
-        "userSwitched": "Vous avez changé ou pas sélectionné d'utilisateur",
-        "blocked": "🚫Bloqué",
-        "unblocked": "🔓Débloqué",
-        "deliveryFail": "❌ Échec de l'envoi du message.",
-        "chatWith": "Discuter avec",
-        "selectChatPartner": "Sélectionnez un partenaire de discussion",
-        "leftChat": "Vous avez quitté le chat !",
-        "noToken": "❌ Message non envoyé : erreur de connexion.",
-        "blockedYou": "❌ Vous avez été bloqué !",
-        "you": "Vous",
-        "userBlocked": "❌ L'utilisateur est bloqué !",
-        "retryInvite": "Réessayer l'envoi de l'invitation !",
-        "inviteSent": "Une invitation au jeu a été envoyée",
-        "waitInviteResponse": "Attendez une réponse ou annulez l'invitation !",
-        "acceptCancelInvite": "Acceptez ou annulez l'invitation !",
-        "inviteCancelled": "Invitation annulée",
-        "inviteDeclined": "Invitation refusée",
-        "inviteToGame": "Inviter au jeu"
-    }
+    "typeMessage": "Tapez un message..."
 }

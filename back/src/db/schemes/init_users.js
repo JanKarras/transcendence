@@ -17,9 +17,7 @@ db.prepare(`
 	age INTEGER DEFAULT NULL,
 	path TEXT DEFAULT NULL,
 	last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
-	twofa_active BOOLEAN DEFAULT 0,
-	twofa_method TEXT DEFAULT "email",
-	twofa_secret TEXT DEFAULT NULL
+	twofa_active BOOLEAN DEFAULT 0
   );
 `).run();
 

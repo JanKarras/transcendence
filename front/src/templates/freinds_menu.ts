@@ -10,7 +10,6 @@ import { navigateTo } from '../view/history_views.js';
 import { hideMenu } from './menu.js';
 import { showErrorMessage } from './popup_message.js';
 import { render_chat } from '../view/render_chat.js';
-import { connectDialog } from "../websocket/ws.js";
 import { initTranslations, t } from "../constants/i18n.js"
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
@@ -132,14 +131,14 @@ function renderFriendItem(
 	console.log('hasUnread', hasUnread);
     hasUnread ? chatBtn.innerHTML = ' 📩' : chatBtn.innerHTML = '💬';
 	chatBtn.addEventListener('click', () => {
-        console.log("Start chat");
-        if (window.location.hash === '#dashboard') {
-            connectDialog( friend.id, '');
-        } else {
-            window.location.hash = '#dashboard';
-            localStorage.setItem('selectedFriendId', String(friend.id));
-        }
-    });
+	localStorage.setItem('selectedFriendId', String(friend.id));
+
+	if (window.location.hash === '#chat') {
+		render_chat(null);
+	} else {
+		window.location.hash = '#chat';
+	}
+});
     chatBtn.className = 'hover:scale-110 transition transform';
     chatBtn.title = t('startChat');
     const playBtn = document.createElement('button');

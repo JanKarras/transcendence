@@ -114,25 +114,6 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
                 </div>
 			  </div>
 			</div>
-			<!--  Invite  -->
-			<div id="inviteModeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
-              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
-                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
-                <div class="flex gap-12 mt-4">
-                  <button id="startBtn" class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded">${t('startMatch')}</button>
-                  <button id="cancelBtn" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
-                </div>
-			  </div>
-			</div>
-			<!--  Invite  one cansel-->
-			<div id="inviteModeModalCancel" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
-              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
-                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
-                <div class="flex gap-12 mt-4">
-                  <button id="cancelBtnNew" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
-                </div>
-			  </div>
-			</div>
 		</main>
 
 		<!-- Right sidebar: Chat -->
@@ -142,28 +123,7 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 
 	</div>
 	`;
-	connectWebSocket();
-	refreshFriendsList();
 
-	const sendBtn = document.getElementById('sendBtn') as HTMLButtonElement;
-	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
-
-	function sendMessageHandler() {
-	    const content: string = chatInput.value.trim();
-	    if (content) {
-	        friendChat(content);
-	        chatInput.value = '';
-	    }
-	}
-
-	sendBtn.addEventListener('click', sendMessageHandler);
-
-	chatInput.addEventListener('keydown', (e) => {
-	    if (e.key === 'Enter') {
-	        e.preventDefault();
-	        sendMessageHandler();
-	    }
-	});
 	// Event listeners
 	const playNowBtn = document.getElementById("playNowBtn");
 	const localBtn = document.getElementById("localBtn");
@@ -171,15 +131,15 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 	const startTournamentBtn = document.getElementById("startTournamentBtn");
 	const mode = document.getElementById("modeModal");
 
-	//const chatInput = document.getElementById('chatInput') as HTMLTextAreaElement;
+	const chatInput = document.getElementById('chatInput') as HTMLTextAreaElement;
 
-	// chatInput.addEventListener('input', () => {
-	// 	chatInput.style.height = 'auto'; // reset height
-	// 	const lineHeight = 24; // approximate line height in px
-	// 	const maxLines = 5;
-	// 	const maxHeight = lineHeight * maxLines;
-	// 	chatInput.style.height = Math.min(chatInput.scrollHeight, maxHeight) + 'px';
-	// });
+	chatInput.addEventListener('input', () => {
+		chatInput.style.height = 'auto'; // reset height
+		const lineHeight = 24; // approximate line height in px
+		const maxLines = 5;
+		const maxHeight = lineHeight * maxLines;
+		chatInput.style.height = Math.min(chatInput.scrollHeight, maxHeight) + 'px';
+	});
 
 /* 	refreshFriendsList();
 	connectWebSocket();
@@ -202,7 +162,7 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 			sendMessageHandler();
 		}
 	}); */
-	
+
 	playNowBtn?.addEventListener("click", () => mode?.classList.remove("hidden"));
 	mode?.addEventListener("click", (e) => { if (e.target === mode) mode.classList.add("hidden"); });
 	localBtn?.addEventListener("click", () => { const p = new URLSearchParams(); p.set("mode","local"); navigateTo("game", p); });
@@ -210,15 +170,7 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 	startTournamentBtn?.addEventListener("click", () => navigateTo("tournament"));
 
 	window.location.hash = "#dashboard";
-
-	const storedId = localStorage.getItem('selectedFriendId');
-	console.log("ID = ", storedId);
-    if (storedId){
-        connectDialog( parseInt(storedId), '');
-        localStorage.removeItem('selectedFriendId');
-    }
-	
-	//render_header();
+	render_header();
 }
 
 // function selectFriend(friendName: string) {

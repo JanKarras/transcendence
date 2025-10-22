@@ -178,32 +178,5 @@
     },
     "active": "Aktiv",
     "inactive": "Inaktiv",
-    "typeMessage": "Gib eine Nachricht ein...",
-    "cht":{
-        "block": "Blockieren",
-        "unblock": "Entsperren",
-        "invite_sent": "Eine Einladung zum Spiel wurde gesendet",
-        "blocked_you": " hat dich blockiert ❌ ",
-        "retryBlock": "Blockieren wiederholen!",
-        "retryUnblock": "Entsperren wiederholen!",
-        "reconnecting": "Verbindung wird wiederhergestellt...",
-        "userSwitched": "Du hast den Benutzer gewechselt oder keinen ausgewählt",
-        "blocked": "🚫Blockiert",
-        "unblocked": "🔓Entsperrt",
-        "deliveryFail": "❌ Nachricht konnte nicht gesendet werden.",
-        "chatWith": "Chat mit",
-        "selectChatPartner": "Wähle einen Chatpartner",
-        "leftChat": "Du hast den Chat verlassen!",
-        "noToken": "❌ Nachricht nicht gesendet: Verbindungsfehler.",
-        "blockedYou": "❌ Du wurdest blockiert!",
-        "you": "Du",
-        "userBlocked": "❌ Benutzer ist blockiert!",
-        "retryInvite": "Einladung erneut senden!",
-        "inviteSent": "Eine Einladung zum Spiel wurde gesendet",
-        "waitInviteResponse": "Warte auf eine Antwort oder storniere die Einladung!",
-        "acceptCancelInvite": "Einladung annehmen oder ablehnen!",
-        "inviteCancelled": "Einladung storniert",
-        "inviteDeclined": "Einladung abgelehnt",
-        "inviteToGame": "Zum Spiel einladen"
-    }
+    "typeMessage": "Gib eine Nachricht ein..."
 }
