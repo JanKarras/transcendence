@@ -56,7 +56,9 @@ export interface RequestInfo {
 
 export interface FriendsViewData {
   allUsers: UserInfo[];
+  notFriends: UserInfo[];
   allFriends: Friend[];
+  offlineFriends: Friend[];
   onlineFriends: Friend[];
   recvRequest: RequestInfo[];
   sendRequest: RequestInfo[];
