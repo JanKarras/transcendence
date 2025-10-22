@@ -1,9 +1,7 @@
 FROM debian:bullseye
 
 RUN apt-get update && \
-    apt-get install -y curl gnupg sqlite3 \
-    build-essential libc6-dev libvips-dev libpng-dev libjpeg-dev \
-    libwebp-dev libtiff-dev libgif-dev && \
+    apt-get install -y curl gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g yarn && \
@@ -12,12 +10,12 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 RUN yarn install
 
 COPY . .
 
-EXPOSE 4000
+EXPOSE 4001
 
 CMD ["yarn", "dev"]
