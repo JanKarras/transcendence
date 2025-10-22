@@ -38,7 +38,6 @@ exports.chatWebSocketRoute = async function (fastify) {
         //     reconnectUser(data);
         // }
         gameStore.connectedUsers.set(userId, data);
-		console.log("Connected Users", gameStore.connectedUsers)
         // console.log(gameStore.connectedUsers.get(userId));
 
         ws.on('message', (msg) => {
@@ -139,6 +138,30 @@ exports.joinQueue = async (req, reply) => {
     gameService.tryMatch(userId);
     console.log(`Waiting for joining the game ${userId}`);
     reply.send({ message: "Waiting for joining the game" });
+}
+
+/* new by alex */
+exports.createInvitation = async (req, reply) => {
+    const userId = userUtils.getUserIdFromRequest(req);
+    // const otherId = req.body;
+    if (!userId) {
+        return reply.status(400).send({ error: 'UserId required' });
+    }
+    invitationService.invite(userId, other);
+    console.log(`Waiting for friend to accept the invitation ${userId}`);
+    reply.send({ message: "Waiting for friend to accept the invitation" });
+}
+
+/* new by alex */
+exports.acceptInvitation = async (req, reply) => {
+    const userId = userUtils.getUserIdFromRequest(req);
+    // const other = req.body;
+    if (!userId) {
+        return reply.status(400).send({ error: 'UserId required' });
+    }
+    invitationService.accept(userId, other);
+    console.log(`Waiting for friend to accept the invitation by ${userId}`);
+    reply.send({ message: "Waiting for friend to accept the invitation" });
 }
 
 exports.waitForTheGame = async (req, reply) => {

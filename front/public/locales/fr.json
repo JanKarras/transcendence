@@ -173,14 +173,5 @@
     },
     "active": "Actif",
     "inactive": "Inactif",
-    "typeMessage": "Tapez un message...",
-	"twofaSettings": "Paramètres d’authentification à deux facteurs",
-	"twofaEnable": "Activer / désactiver l’authentification à deux facteurs",
-	"twofaTitle": "Authentification à deux facteurs",
-	"twofaSelectMethod": "Choisir la méthode d’authentification",
-	"twofaEmail": "E-mail",
-	"twofaAuthApp": "Application d’authentification",
-	"twofaScanQR": "Scanner le code QR",
-	"save": "Enregistrer",
-	"cancel": "Annuler"
+    "typeMessage": "Tapez un message..."
 }

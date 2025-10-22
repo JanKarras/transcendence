@@ -189,14 +189,5 @@
       "willStartSoon": "Tournament will start soon",
       "alias": "Alias"
     }
-  },
-  "twofaSettings": "Two-Factor Settings",
-	"twofaEnable": "Enable/Disable Two-Factor Authentication",
-	"twofaTitle": "Two-Factor Authentication",
-	"twofaSelectMethod": "Select Authentication Method",
-	"twofaEmail": "Email",
-	"twofaAuthApp": "Authentication App",
-	"twofaScanQR": "Scan QR Code",
-	"save": "Save",
-	"cancel": "Cancel"
+  }
 }

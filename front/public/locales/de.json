@@ -140,7 +140,7 @@
     "backToProfile": "Zurück zum Profil",
     "trophy": "🏆",
     "matchHis": "Spielverlauf",
-    "selectChatPartner": "Waehle einen chat partner aus",
+    "selectChatPartner": "Wähle einen Chat-Partner aus",
     "enterMessage": "Nachricht schreiben",
     "send": "verschicken",
     "game": {
@@ -174,19 +174,9 @@
         "lastName": "Nachname",
         "age": "Alter",
         "lastSeen": "Letzter Beitrag",
-        "twoFA": "Zwei Faktor Authentifizierung"
+        "twoFA": "Zwei-Faktor-Authentifizierung"
     },
     "active": "Aktiv",
     "inactive": "Inaktiv",
-    "typeMessage": "Geben Sie eine Nachricht ein...",
-	"twofaSettings" : "Zwei-Faktor-Einstellungen",
-	"twofaEnable" : "Zwei-Faktor-Authentifizierung aktivieren/deaktivieren",
-	"twofaTitle" : "Zwei-Faktor-Authentifizierung",
-	"twofaSelectMethod" : "Authentifizierungsmethode wählen",
-	"twofaEmail" : "E-Mail",
-	"twofaAuthApp" : "Authentifizierungs-App",
-	"twofaScanQR" : "QR-Code scannen",
-	"save" : "Speichern",
-	"cancel" : "Abbrechen"
-
+    "typeMessage": "Gib eine Nachricht ein..."
 }

@@ -30,7 +30,6 @@ function getUserIdFromToken(token) {
 
 
 function getUser(userId) {
-	console.log(`Fetching user with ID: ${userId}`);
     const res = userUtilsRepo.getUserById(userId);
     return (res);
 }

@@ -9,13 +9,7 @@ const tournamentController = require('../controllers/tournamentController');
 const friendController = require('../controllers/friendsWsController');
 const wsChat = require('../websocket/ws');
 const wsTournament = require('../websocket/tournament');
-
-const BODY_LIMIT = 5001 * 1024;
-
-const fastify = Fastify({
-  logger: { level: 'info' },
-  bodyLimit: BODY_LIMIT
-});
+const fastify = Fastify({ logger: { level: 'info' } });
 
 fastify.register(fastifyWebsocket);
 fastify.register(multipart);

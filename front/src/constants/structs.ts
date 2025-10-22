@@ -26,7 +26,6 @@ export interface UserInfo {
   path: string;
   last_seen: string;
   twofa_active: boolean;
-  twofa_method : string
 }
 
 export interface UserResponse {
@@ -77,4 +76,11 @@ export interface MatchHistoryEntry {
     score: number;
     rank?: number | null;
   }[];
+}
+
+export interface Stats { 
+  user_id: number;
+  wins: number; 
+  loses: number;
+  tournamentWins: number ;
 }

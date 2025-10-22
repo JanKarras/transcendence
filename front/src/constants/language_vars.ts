@@ -75,29 +75,29 @@ export const lang = {
 		ua: "Почати зараз!",
         bel: "Пачаць зараз!"
 	},
-	onlinePlayers: {
-		ger: "Spieler online",
-		eng: "Online Players",
+	wonGames: {
+		ger: "Gewonnene Spiele",
+		eng: "Won games",
 		nig: "Ụmụ egwuregwu dị n'ịntanetị",
-		fr: "Joueurs en ligne",
-		ua: "Гравців онлайн",
-        bel: "Гульцы анлайн"
+		fr: "Jeux gagnés",
+		ua: "Виграні ігри",
+        bel: "Выйграныя гульні"
 	},
-	activeTournaments: {
-		ger: "Aktive Turniere",
-		eng: "Active Tournaments",
+	lostGames: {
+		ger: "Verlorene Spiele",
+		eng: "Lost games",
 		nig: "Asọmpi dị na-aga",
-		fr: "Tournois actifs",
-		ua: "Активні турніри",
-        bel: "Актыўныя турнiры"
+		fr: "Jeux perdus",
+		ua: "Програні ігри",
+        bel: "Прайграныя гульні"
 	},
-	matchesToday: {
-		ger: "Spiele heute",
-		eng: "Matches Today",
+	wonTournaments: {
+		ger: "Gewonnene Tourniere",
+		eng: "Won tournaments",
 		nig: "Egwuregwu taa",
-		fr: "Matchs aujourd'hui",
-		ua: "Матчів сьогодні",
-        bel: "Матчэй сёння"
+		fr: "Tournois gagnés",
+		ua: "Виграв турніри",
+        bel: "Перамагаў у турнірах"
 	},
 
 	emailTitle: {

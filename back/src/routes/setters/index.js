@@ -17,6 +17,8 @@ module.exports = async function (fastify, opts) {
   fastify.post('/removeFriend', {preHandler: authMiddleware}, userController.removeFriend);
   fastify.post('/matchmaking/join',{ preHandler: authMiddleware }, gameController.joinQueue);
   fastify.post('/matchmaking/wait',{ preHandler: authMiddleware }, gameController.waitForTheGame);
+  // fastify.post('/invitation/invite', { preHandler: authMiddleware }, gameController.createInvitation);
+  // fastify.post('/invitation/accept', { preHandler: authMiddleware }, gameController.acceptInvitation);
   fastify.post('/game/start',{ preHandler: authMiddleware }, gameController.startTheGame);
   fastify.post('/game/create',{ preHandler: authMiddleware }, gameController.createLocalGame);
 };
