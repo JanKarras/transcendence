@@ -10,13 +10,14 @@ import { render_two_fa } from "./render_two_fa.js";
 import { render_chat } from "./render_chat.js";
 import { render_friend_profile } from "./render_friend_profile.js";
 import { render_matchmaking } from "./render_matchmaking.js";
-import { render_game } from "./render_game.js";
+import { render_game } from "../view/render_game.js";
 import { render_tournament } from "./render_tournament.js";
 import { render_local_tournament_game } from "./render_local_tournament_game.js";
 import { render_remote_tournament_game } from "./render_remote_tournament_game.js";
 import { getSocket } from "../websocket/wsService.js";
 import { initTranslations, t } from "../constants/i18n.js"
 import { getTournamentSocket } from "../websocket/wsTournamentService.js";
+import { getFriendSocket } from "../websocket/wsFriendsService.js";
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game' | 'remote_tournament_game';
 
@@ -150,6 +151,12 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
 		if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
 			tournamentSocket.close(1000, "Navigated away from tournament");
 			// tournamentSocket = null;
+		}
+	}
+	if (view !== "friends") {
+		const friendSocket = getFriendSocket();
+		if (friendSocket && friendSocket.readyState === WebSocket.OPEN) {
+			friendSocket.close(1000, "Navigated away from friends");
 		}
 	}
     await initTranslations();

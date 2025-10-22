@@ -4,6 +4,8 @@ import { Friend, UserInfo, RequestInfo, FriendsViewData } from "../constants/str
 import { connectFriend, getFriendSocket } from "../websocket/wsFriendsService.js";
 import { navigateTo } from "./history_views.js";
 import { render_header } from "./render_header.js";
+import { showFriendProfileModal } from "../templates/friendProfileModal.js";
+
 
 let friendsData: FriendsViewData | null = null;
 
@@ -170,8 +172,7 @@ export function renderFriendsOnline(friends: Friend[]): void {
 			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 		profileBtn.addEventListener("click", e => {
 			e.stopPropagation();
-			console.log(`Profil von ${friend.username} anzeigen`);
-
+			showFriendProfileModal(friend);
 		});
 
 		const removeBtn = document.createElement("button");
@@ -254,7 +255,7 @@ export function renderOfflineFriends(friends: Friend[]): void {
 			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 		profileBtn.addEventListener("click", e => {
 			e.stopPropagation();
-			console.log(`Profil von ${friend.username} anzeigen`);
+			showFriendProfileModal(friend);
 		});
 
 		const removeBtn = document.createElement("button");
