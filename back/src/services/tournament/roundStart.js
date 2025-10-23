@@ -2,6 +2,10 @@ const tournamentUtils = require("./utils");
 
 async function roundStart(userId, ws, data) {
 	const { playerLeft, playerRight } = data;
+	console.log("Round start received from", userId, "for", playerLeft, "vs", playerRight);
+	if (userId == playerLeft.userId) {
+		return;
+	}
 	const tournament = tournamentUtils.findTournamentByUser(userId);
 	if (!tournament) return;
 	if (tournament.roundStartMsgCounter <= 1) {
@@ -15,4 +19,3 @@ async function roundStart(userId, ws, data) {
 module.exports = {
 	roundStart
 }
- 

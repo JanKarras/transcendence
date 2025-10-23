@@ -149,16 +149,16 @@ function startCountdown() {
 			countdownEl.classList.add('hidden');
 			console.log("route game start called")
 			const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
-                    },
-                    body: JSON.stringify({
-                        mode: "remote",
-                    }),
-                    credentials: "include"
-                });
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+					},
+					body: JSON.stringify({
+						mode: "tournament",
+					}),
+					credentials: "include"
+				});
 			console.log(response)
 			enablePaddles();
 			gameLoop();
@@ -192,24 +192,26 @@ function showWinner() {
 	console.log("round win pending...");
 
 	const socket = getSocket();
-
 	matchfound = false;
 
 	if (!socket) {
 		console.warn("No game socket, sending immediately");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+		showWaitingForNextRound();
 		return;
 	}
 
 	if (socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
 		console.log("Socket already closed or closing, sending roundWin immediately");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+		showWaitingForNextRound();
 		return;
 	}
 
 	socket.addEventListener("close", () => {
 		console.log("Socket successfully closed, sending roundWin");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
+		showWaitingForNextRound();
 	});
 
 	socket.close();
@@ -297,6 +299,9 @@ async function connectGame() {
 				console.log("Tournament Finished", data.data)
 				showPodium(data.data.results);
 				break
+			case 'firstRoundFinished':
+				showCountdownForNextRound();
+				break;
 			default:
 				break;
 		}
@@ -434,64 +439,95 @@ function displayNames() {
 
 function renderGameChat(messages: { text: string, type: "system" | "user" }[]) {
 	console.log("renderGameChat was acalled: ", messages);
-    // Prüfen, ob Container existiert, sonst erstellen
-    let chatContainer = document.getElementById("gameChatContainer");
-    if (!chatContainer) {
-        chatContainer = document.createElement("div");
-        chatContainer.id = "gameChatContainer";
-        chatContainer.className = "w-full max-w-3xl bg-gray-900 rounded-lg mt-6 p-4 flex flex-col h-64";
+	// Prüfen, ob Container existiert, sonst erstellen
+	let chatContainer = document.getElementById("gameChatContainer");
+	if (!chatContainer) {
+		chatContainer = document.createElement("div");
+		chatContainer.id = "gameChatContainer";
+		chatContainer.className = "w-full max-w-3xl bg-gray-900 rounded-lg mt-6 p-4 flex flex-col h-64";
 
-        const chatMessages = document.createElement("div");
-        chatMessages.id = "gameChatMessages";
-        chatMessages.className = "flex-1 overflow-y-auto text-sm text-white space-y-2 mb-2";
-        chatContainer.appendChild(chatMessages);
+		const chatMessages = document.createElement("div");
+		chatMessages.id = "gameChatMessages";
+		chatMessages.className = "flex-1 overflow-y-auto text-sm text-white space-y-2 mb-2";
+		chatContainer.appendChild(chatMessages);
 
-        const chatInputWrapper = document.createElement("div");
-        chatInputWrapper.className = "flex gap-2";
+		const chatInputWrapper = document.createElement("div");
+		chatInputWrapper.className = "flex gap-2";
 
-        const chatInput = document.createElement("input");
-        chatInput.id = "gameChatInput";
-        chatInput.className = "flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none";
-        chatInput.placeholder = t('typeMessage');
-        chatInputWrapper.appendChild(chatInput);
+		const chatInput = document.createElement("input");
+		chatInput.id = "gameChatInput";
+		chatInput.className = "flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none";
+		chatInput.placeholder = t('typeMessage');
+		chatInputWrapper.appendChild(chatInput);
 
-        const chatSend = document.createElement("button");
-        chatSend.id = "gameChatSend";
-        chatSend.className = "px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold";
-        chatSend.textContent = "Send";
-        chatInputWrapper.appendChild(chatSend);
+		const chatSend = document.createElement("button");
+		chatSend.id = "gameChatSend";
+		chatSend.className = "px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold";
+		chatSend.textContent = "Send";
+		chatInputWrapper.appendChild(chatSend);
 
-        chatContainer.appendChild(chatInputWrapper);
+		chatContainer.appendChild(chatInputWrapper);
 
-        const canvas = document.getElementById("gameCanvas");
-        canvas?.insertAdjacentElement("afterend", chatContainer);
-    }
+		const canvas = document.getElementById("gameCanvas");
+		canvas?.insertAdjacentElement("afterend", chatContainer);
+	}
 
-    const chatMessages = document.getElementById("gameChatMessages")!;
-    chatMessages.innerHTML = "";
+	const chatMessages = document.getElementById("gameChatMessages")!;
+	chatMessages.innerHTML = "";
 
-    messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = msg.type === "system" ? "text-gray-400 italic" : "text-white";
-        div.textContent = msg.text;
-        chatMessages.appendChild(div);
-    });
+	messages.forEach(msg => {
+		const div = document.createElement("div");
+		div.className = msg.type === "system" ? "text-gray-400 italic" : "text-white";
+		div.textContent = msg.text;
+		chatMessages.appendChild(div);
+	});
 
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+	chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Event Listener für Senden
-    const chatInput = document.getElementById("gameChatInput") as HTMLInputElement;
-    const chatSend = document.getElementById("gameChatSend") as HTMLButtonElement;
+	// Event Listener für Senden
+	const chatInput = document.getElementById("gameChatInput") as HTMLInputElement;
+	const chatSend = document.getElementById("gameChatSend") as HTMLButtonElement;
 
-    chatSend.onclick = () => {
-        if (!chatInput.value.trim()) return;
-        const msg = chatInput.value.trim();
-        const socket = getTournamentSocket();
-        socket?.send(JSON.stringify({ type: "tournamentChat", data: { message: msg } }));
-        chatInput.value = "";
-    };
+	chatSend.onclick = () => {
+		if (!chatInput.value.trim()) return;
+		const msg = chatInput.value.trim();
+		const socket = getTournamentSocket();
+		socket?.send(JSON.stringify({ type: "tournamentChat", data: { message: msg } }));
+		chatInput.value = "";
+	};
 
-    chatInput.onkeydown = (e) => {
-        if (e.key === "Enter") chatSend.click();
-    };
+	chatInput.onkeydown = (e) => {
+		if (e.key === "Enter") chatSend.click();
+	};
 }
+
+function showWaitingForNextRound() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "#ffffff";
+	ctx.font = "36px Arial";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillText("🏁 " + t("tournament.waitForNextRound"), canvas.width / 2, canvas.height / 2);
+}
+
+function showCountdownForNextRound() {
+	let counter = 10;
+	const interval = setInterval(() => {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		ctx.fillStyle = "#ffffff";
+		ctx.font = "72px Arial";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+
+		ctx.fillText(counter.toString(), canvas.width / 2, canvas.height / 2);
+
+		counter--;
+
+		if (counter < 0) {
+			clearInterval(interval);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
+	}, 1000);
+}
+

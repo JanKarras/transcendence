@@ -1,5 +1,6 @@
 const tournamentUtils = require("./utils");
 const { createMatch } = require("../game/matchService");
+const { createTournamenHistory, getRecentMatches } = require("../../repositories/tournamentMatchHistoryRepository");
 
 async function handleRoundWin(userId, data) {
 	const tournament = tournamentUtils.findTournamentByUser(userId);
@@ -82,33 +83,68 @@ async function createRoundMatches(tournament, players, isConsolation) {
 
 	tournamentUtils.addSystemMessage(tournament, `${isConsolation ? "Consolation match" : "Next match"}: ${players[0].name} vs ${players[1].name}`);
 
-	player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
-	player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
+	player1.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
+	player2.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
+
+	setTimeout(() => {
+		player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
+		player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
+	}, 10000)
 }
 
+
 async function finishTournament(tournament) {
-	tournament.round = 2;
-	tournamentUtils.addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
+	try {
+		tournament.round = 2;
+		tournamentUtils.addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
 
-	const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
-	const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
+		const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
+		const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
 
-	const results = [
-		finalMatch?.winner,
-		finalMatch?.loser,
-		consolationMatch?.winner,
-		consolationMatch?.loser
-	].filter(Boolean);
+		const results = [
+			finalMatch?.winner,
+			finalMatch?.loser,
+			consolationMatch?.winner,
+			consolationMatch?.loser
+		].filter(Boolean);
 
-	results.forEach((player, index) => tournamentUtils.addSystemMessage(tournament, `🥇${index + 1} Place: ${player.name}`));
+		results.forEach((player, index) => {
+			tournamentUtils.addSystemMessage(tournament, `🥇${index + 1} Place: ${player.name}`);
+		});
 
-	tournament.players.forEach(p => {
-		if (!p.ws) return;
-		p.ws.send(JSON.stringify({
-			type: "tournamentFinished",
-			data: { results: results.map((r, i) => ({ place: i + 1, player: r })) }
-		}));
-	});
+		tournament.players.forEach(p => {
+			if (!p.ws) return;
+			p.ws.send(JSON.stringify({
+				type: "tournamentFinished",
+				data: { results: results.map((r, i) => ({ place: i + 1, player: r })) }
+			}));
+		});
+
+		const tournamentId = await createTournamenHistory(tournament);
+
+		const playerIds = tournament.players
+			.filter(p => !!p.id)
+			.map(p => p.id);
+
+		for (const playerId of playerIds) {
+			const recentMatches = getRecentMatches(playerId);
+
+			for (let i = 0; i < recentMatches.length; i++) {
+				const match = recentMatches[i];
+				const round = i === 0 ? 2 : 1;
+
+				try {
+					await updateMatch(tournamentId, round, match.id);
+				} catch (err) {
+					console.error(`❌ Failed to update match ${match.id}:`, err.message);
+				}
+			}
+		}
+
+		console.log(`✅ Tournament #${tournamentId} saved and linked successfully!`);
+	} catch (err) {
+		console.error("❌ Error in finishTournament:", err);
+	}
 }
 
 function generateMatchId(tournament) {

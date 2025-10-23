@@ -155,27 +155,32 @@ function getTwoFaSecret(userId) {
     return row ? row.twofa_secret : null;
 }
 
+function logoutUser(userId) {
+	db.prepare(`UPDATE users SET last_seen = DATETIME('now', '-5 minutes') WHERE id = ?;`).run(userId);
+}
+
 module.exports = {
-    getUserById,
-    getFriendsInfoByUserId,
-    addFriend,
-    isFriend,
-    getFriends,
-    deleteFriends,
-    getAllUsers,
-    isUserBlockedByFriend,
-    addUser,
-    getUserByEmail,
-    getUserByUsername,
-    updateUserAfterValidation,
-    updateUserAge,
-    updateUserImageName,
-    updateUserFirstName,
-    updateUserLastName,
-    getUserIdByUsername,
+	getUserById,
+	getFriendsInfoByUserId,
+	addFriend,
+	isFriend,
+	getFriends,
+	deleteFriends,
+	getAllUsers,
+	isUserBlockedByFriend,
+	addUser,
+	getUserByEmail,
+	getUserByUsername,
+	updateUserAfterValidation,
+	updateUserAge,
+	updateUserImageName,
+	updateUserFirstName,
+	updateUserLastName,
+	getUserIdByUsername,
 	updateUserTwofaActive,
 	updateUserTwoFaMethod,
 	saveTwoFaSecret,
-	getTwoFaSecret
+	getTwoFaSecret,
+	logoutUser
 }
 

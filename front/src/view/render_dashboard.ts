@@ -30,7 +30,8 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 	const stats = await getStats(user.id);
 	console.log(stats);
 	bodyContainer.innerHTML = `
-	<div class="flex max-h-[calc(100vh-8rem)] w-full">
+	<div class="flex w-full max-h-[calc(100vh-8rem)] min-h-[calc(100vh-8rem)]">
+
 		<!-- Left sidebar: Match History -->
 		<aside class="w-96 p-4 overflow-y-auto ">
 			${renderMatchHistory(matchesFromHistory || [])}

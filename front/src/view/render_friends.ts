@@ -29,10 +29,10 @@ export async function render_friends(params: URLSearchParams | null) {
 	contentContainer.setAttribute("data-active-tab", "online");
 
 	const tabs = [
-		{ id: "online", label: "Freunde online", icon: "🟢" },
-		{ id: "all", label: "Alle Freunde", icon: "👥" },
-		{ id: "add", label: "Freunde hinzufügen", icon: "➕" },
-		{ id: "requests", label: "Anfragen", icon: "✉️" },
+		{ id: "online", label: t("friendsLang.online"), icon: "🟢" },
+		{ id: "all", label: t("friendsLang.all"), icon: "👥" },
+		{ id: "add", label: t("friendsLang.add"), icon: "➕" },
+		{ id: "requests", label: t("friendsLang.requests"), icon: "✉️" },
 	];
 
 	tabs.forEach((tab, index) => {
@@ -127,7 +127,7 @@ export function renderFriendsOnline(friends: Friend[]): void {
 	if (!friends || friends.length === 0) {
 		const emptyMsg = document.createElement("p");
 		emptyMsg.className = "text-gray-400";
-		emptyMsg.textContent = t("noFriendsOnline") || "Keine Freunde online 😢";
+		emptyMsg.textContent = t("friendsLang.noOnline");
 		container.appendChild(emptyMsg);
 		return;
 	}
@@ -161,13 +161,13 @@ export function renderFriendsOnline(friends: Friend[]): void {
 
 		const info = document.createElement("div");
 		info.className = "text-sm text-gray-400 mt-1";
-		info.textContent = `${t("lastSeen") || "Zuletzt online"}: ${friend.last_seen || "-"}`;
+		info.textContent = `${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}`;
 
 		const actions = document.createElement("div");
 		actions.className = "flex gap-3 mt-3";
 
 		const profileBtn = document.createElement("button");
-		profileBtn.textContent = "👤 Profil";
+		profileBtn.textContent = `👤 ${t("friendsLang.profile")}`;
 		profileBtn.className =
 			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 		profileBtn.addEventListener("click", e => {
@@ -176,12 +176,12 @@ export function renderFriendsOnline(friends: Friend[]): void {
 		});
 
 		const removeBtn = document.createElement("button");
-		removeBtn.textContent = "🗑 Freund entfernen";
+		removeBtn.textContent = `🗑 ${t("friendsLang.remove")}`;
 		removeBtn.className =
 			"bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
 		removeBtn.addEventListener("click", e => {
 			e.stopPropagation();
-			console.log(`❌ Freund ${friend.username} entfernen`);
+			console.log(`❌ ${t("friendsLang.remove")}: ${friend.username}`);
 			removeFriend(friend);
 		});
 
@@ -198,6 +198,7 @@ export function renderFriendsOnline(friends: Friend[]): void {
 	container.appendChild(list);
 }
 
+
 export function renderOfflineFriends(friends: Friend[]): void {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
@@ -207,7 +208,7 @@ export function renderOfflineFriends(friends: Friend[]): void {
 	if (!friends || friends.length === 0) {
 		const emptyMsg = document.createElement("p");
 		emptyMsg.className = "text-gray-400";
-		emptyMsg.textContent = t("noFriendsOffline") || "Keine Freunde offline 🙌";
+		emptyMsg.textContent = t("friendsLang.noOffline");
 		container.appendChild(emptyMsg);
 		return;
 	}
@@ -217,10 +218,8 @@ export function renderOfflineFriends(friends: Friend[]): void {
 
 	friends.forEach(friend => {
 		const card = document.createElement("div");
-		card.className =
-			"bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
+		card.className = "bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
 
-		// 🧩 Header
 		const header = document.createElement("div");
 		header.className = "flex items-center gap-3 mb-2";
 
@@ -240,28 +239,24 @@ export function renderOfflineFriends(friends: Friend[]): void {
 		header.appendChild(name);
 		header.appendChild(dot);
 
-		// 🕓 Info
 		const info = document.createElement("div");
 		info.className = "text-sm text-gray-400 mt-1";
-		info.textContent = `${t("lastSeen") || "Zuletzt online"}: ${friend.last_seen || "-"}`;
+		info.textContent = `${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}`;
 
-		// ⚙️ Aktionen
 		const actions = document.createElement("div");
 		actions.className = "flex gap-3 mt-3";
 
 		const profileBtn = document.createElement("button");
-		profileBtn.textContent = "👤 Profil";
-		profileBtn.className =
-			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
+		profileBtn.textContent = `👤 ${t("friendsLang.profile")}`;
+		profileBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 		profileBtn.addEventListener("click", e => {
 			e.stopPropagation();
 			showFriendProfileModal(friend);
 		});
 
 		const removeBtn = document.createElement("button");
-		removeBtn.textContent = "🗑 Freund entfernen";
-		removeBtn.className =
-			"bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
+		removeBtn.textContent = `🗑 ${t("friendsLang.remove")}`;
+		removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
 		removeBtn.addEventListener("click", e => {
 			e.stopPropagation();
 			removeFriend(friend);
@@ -281,7 +276,6 @@ export function renderOfflineFriends(friends: Friend[]): void {
 }
 
 
-
 export function renderAddFriends(
 	allUsers: UserInfo[],
 	notFriends: UserInfo[],
@@ -294,19 +288,18 @@ export function renderAddFriends(
 	container.innerHTML = "";
 
 	const title = document.createElement("h2");
-	title.textContent = "Freunde hinzufügen";
+	title.textContent = t("friendsLang.addTitle");
 	title.className = "text-xl font-semibold mb-4 text-white";
 	container.appendChild(title);
 
 	if (!notFriends || notFriends.length === 0) {
 		const emptyMsg = document.createElement("p");
 		emptyMsg.className = "text-gray-400";
-		emptyMsg.textContent = "Alle Benutzer sind bereits deine Freunde 👏";
+		emptyMsg.textContent = t("friendsLang.allAlreadyFriends");
 		container.appendChild(emptyMsg);
 		return;
 	}
 
-	// 🧭 Maps für Status
 	const recvMap = new Map<string, string>();
 	recvRequests.forEach(req => {
 		if (req.type === "friend" && req.sender_username)
@@ -319,12 +312,11 @@ export function renderAddFriends(
 			sendMap.set(req.receiver_username, req.status);
 	});
 
-	// 🔍 Suchfeld
 	const searchWrapper = document.createElement("div");
 	searchWrapper.className = "mb-4";
 	const searchInput = document.createElement("input");
 	searchInput.type = "text";
-	searchInput.placeholder = "🔍 Benutzer suchen...";
+	searchInput.placeholder = t("friendsLang.searchPlaceholder");
 	searchInput.className =
 		"w-full p-2 rounded border border-gray-600 bg-gray-800 text-white";
 	searchWrapper.appendChild(searchInput);
@@ -364,23 +356,20 @@ export function renderAddFriends(
 			let statusClass = "";
 			let actionBtn: HTMLButtonElement | null = null;
 
-			// 🔹 Empfangene Anfragen
 			if (recvMap.has(user.username)) {
 				const s = recvMap.get(user.username);
 				if (s === "nothandled") {
-					status = "Hat dir eine Anfrage gesendet";
+					status = t("friendsLang.receivedRequest");
 					statusClass = "text-yellow-400 italic";
-					// ⛔ kein Button, weil aktive Anfrage besteht
 				} else if (s === "accepted") {
-					status = "Bereits Freunde";
+					status = t("friendsLang.alreadyFriends");
 					statusClass = "text-green-400";
 				} else if (s === "declined") {
-					// ✅ Du hast abgelehnt → darf erneut senden
-					status = "Du hast diese Anfrage abgelehnt";
+					status = t("friendsLang.declinedRequest");
 					statusClass = "text-gray-400 italic";
 
 					actionBtn = document.createElement("button");
-					actionBtn.textContent = "🔁 Anfrage erneut senden";
+					actionBtn.textContent = t("friendsLang.resendRequest");
 					actionBtn.className =
 						"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded ml-3";
 					actionBtn.addEventListener("click", async e => {
@@ -388,21 +377,17 @@ export function renderAddFriends(
 						sendFriendRequest(user.id);
 					});
 				}
-			}
-			// 🔹 Gesendete Anfragen
-			else if (sendMap.has(user.username)) {
+			} else if (sendMap.has(user.username)) {
 				const s = sendMap.get(user.username);
 				if (s === "nothandled") {
-					status = "Anfrage gesendet";
+					status = t("friendsLang.sendRequest");
 					statusClass = "text-yellow-400 italic";
-					// ⛔ kein Button, weil aktive Anfrage besteht
 				} else if (s === "accepted") {
-					status = "Bereits Freunde";
+					status = t("friendsLang.alreadyFriends");
 					statusClass = "text-green-400";
 				} else if (s === "declined") {
-					// ✅ Abgelehnt → darf erneut senden
 					actionBtn = document.createElement("button");
-					actionBtn.textContent = "🔁 Anfrage erneut senden";
+					actionBtn.textContent = t("friendsLang.resendRequest");
 					actionBtn.className =
 						"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 					actionBtn.addEventListener("click", async e => {
@@ -410,11 +395,9 @@ export function renderAddFriends(
 						sendFriendRequest(user.id);
 					});
 				}
-			}
-			// 🔹 Noch keine Anfrage vorhanden
-			else {
+			} else {
 				actionBtn = document.createElement("button");
-				actionBtn.textContent = "➕ Freund hinzufügen";
+				actionBtn.textContent = t("friendsLang.sendRequest");
 				actionBtn.className =
 					"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 				actionBtn.addEventListener("click", async e => {
@@ -444,7 +427,6 @@ export function renderAddFriends(
 		});
 	}
 
-	// 🔍 Suchlogik
 	searchInput.addEventListener("input", () => {
 		const query = searchInput.value.toLowerCase();
 		const filtered = notFriends.filter(user =>
@@ -457,8 +439,6 @@ export function renderAddFriends(
 }
 
 
-
-
 export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: RequestInfo[]): void {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
@@ -466,19 +446,19 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 	container.innerHTML = "";
 
 	const title = document.createElement("h2");
-	title.textContent = "Freundschaftsanfragen";
+	title.textContent = t("friendsLang.requests");
 	title.className = "text-xl font-semibold mb-6 text-white";
 	container.appendChild(title);
 
 	const recvSection = document.createElement("div");
 	const recvTitle = document.createElement("h3");
-	recvTitle.textContent = "📥 Empfangene Anfragen";
+	recvTitle.textContent = t("friendsLang.recvRequestsTitle");
 	recvTitle.className = "font-semibold text-lg mb-3 text-blue-300";
 	recvSection.appendChild(recvTitle);
 
 	if (recvRequests.length === 0) {
 		const p = document.createElement("p");
-		p.textContent = "Keine empfangenen Anfragen 😴";
+		p.textContent = t("friendsLang.noReceivedRequests");
 		p.className = "text-gray-400";
 		recvSection.appendChild(p);
 	} else {
@@ -487,8 +467,7 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 
 		recvRequests.forEach(req => {
 			const row = document.createElement("div");
-			row.className =
-				"flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
+			row.className = "flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
 
 			const left = document.createElement("div");
 			left.className = "flex items-center gap-3";
@@ -511,20 +490,18 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 				right.className = "flex gap-2";
 
 				const acceptBtn = document.createElement("button");
-				acceptBtn.textContent = "✅ Annehmen";
+				acceptBtn.textContent = t("friendsLang.accept");
 				acceptBtn.className = "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded";
 				acceptBtn.addEventListener("click", e => {
 					e.stopPropagation();
-					console.log(`✅ Anfrage von ${req.sender_username} akzeptieren`);
 					acceptFriendRequest(req.id);
 				});
 
 				const declineBtn = document.createElement("button");
-				declineBtn.textContent = "❌ Ablehnen";
+				declineBtn.textContent = t("friendsLang.decline");
 				declineBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
 				declineBtn.addEventListener("click", e => {
 					e.stopPropagation();
-					console.log(`❌ Anfrage von ${req.sender_username} ablehnen`);
 					sayNoToFriendRequest(req.id);
 				});
 
@@ -540,10 +517,10 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 						: "text-gray-400");
 				status.textContent =
 					req.status === "accepted"
-						? "✅ Angenommen"
+						? t("friendsLang.accepted")
 						: req.status === "declined"
-						? "❌ Abgelehnt"
-						: "⏳ Ausstehend";
+						? t("friendsLang.declined")
+						: t("friendsLang.pending");
 				right.appendChild(status);
 			}
 
@@ -560,13 +537,13 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 	const sendSection = document.createElement("div");
 	sendSection.className = "mt-8";
 	const sendTitle = document.createElement("h3");
-	sendTitle.textContent = "📤 Gesendete Anfragen";
+	sendTitle.textContent = t("friendsLang.sentRequestsTitle");
 	sendTitle.className = "font-semibold text-lg mb-3 text-blue-300";
 	sendSection.appendChild(sendTitle);
 
 	if (sendRequests.length === 0) {
 		const p = document.createElement("p");
-		p.textContent = "Keine gesendeten Anfragen 📭";
+		p.textContent = t("friendsLang.noSentRequests");
 		p.className = "text-gray-400";
 		sendSection.appendChild(p);
 	} else {
@@ -575,8 +552,7 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 
 		sendRequests.forEach(req => {
 			const row = document.createElement("div");
-			row.className =
-				"flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
+			row.className = "flex items-center justify-between bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition";
 
 			const left = document.createElement("div");
 			left.className = "flex items-center gap-3";
@@ -594,8 +570,7 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 			left.appendChild(name);
 
 			const status = document.createElement("span");
-			status.className =
-				"text-sm font-semibold " +
+			status.className = "text-sm font-semibold " +
 				(req.status === "accepted"
 					? "text-green-500"
 					: req.status === "declined"
@@ -603,10 +578,10 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 					: "text-gray-400");
 			status.textContent =
 				req.status === "nothandled"
-					? "⏳ Ausstehend"
+					? t("friendsLang.pending")
 					: req.status === "accepted"
-					? "✅ Angenommen"
-					: "❌ Abgelehnt";
+					? t("friendsLang.accepted")
+					: t("friendsLang.declined");
 
 			row.appendChild(left);
 			row.appendChild(status);
@@ -618,6 +593,7 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 
 	container.appendChild(sendSection);
 }
+
 
 
 

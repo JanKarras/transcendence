@@ -182,5 +182,37 @@
 	"twofaAuthApp": "Application d’authentification",
 	"twofaScanQR": "Scanner le code QR",
 	"save": "Enregistrer",
-	"cancel": "Annuler"
+	"cancel": "Annuler",
+	"friendsLang": {
+		"online": "Amis en ligne",
+		"all": "Tous les amis",
+		"add": "Ajouter des amis",
+		"requests": "Demandes d’amis",
+		"loading": "Chargement des amis...",
+		"noOnline": "Aucun ami en ligne 😢",
+		"noOffline": "Aucun ami hors ligne 🙌",
+		"profile": "Profil",
+		"remove": "Supprimer l’ami",
+		"lastSeen": "Dernière connexion",
+		"addTitle": "Ajouter des amis",
+		"allAlreadyFriends": "Tous les utilisateurs sont déjà vos amis 👏",
+		"searchPlaceholder": "🔍 Rechercher des utilisateurs...",
+		"receivedRequest": "T’a envoyé une demande d’ami",
+		"alreadyFriends": "Déjà amis",
+		"declinedRequest": "Tu as refusé cette demande",
+		"resendRequest": "🔁 Renvoyer la demande",
+		"sendRequest": "➕ Ajouter un ami",
+		"recvRequestsTitle": "📥 Demandes reçues",
+		"noReceivedRequests": "Aucune demande reçue 😴",
+		"accept": "✅ Accepter",
+		"decline": "❌ Refuser",
+		"accepted": "✅ Accepté",
+		"declined": "❌ Refusé",
+		"pending": "⏳ En attente",
+		"sentRequestsTitle": "📤 Demandes envoyées",
+		"noSentRequests": "Aucune demande envoyée 📭"
+	},
+	"tournament": {
+		"waitForNextRound": "Veuillez patienter jusqu'au début du prochain tour..."
+	}
 }

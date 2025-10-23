@@ -187,6 +187,38 @@
 	"twofaAuthApp" : "Authentifizierungs-App",
 	"twofaScanQR" : "QR-Code scannen",
 	"save" : "Speichern",
-	"cancel" : "Abbrechen"
+	"cancel" : "Abbrechen",
+	"friendsLang": {
+		"online": "Freunde online",
+		"all": "Alle Freunde",
+		"add": "Freunde hinzufügen",
+		"requests": "Freundschaftsanfragen",
+		"loading": "Freunde werden geladen...",
+		"noOnline": "Keine Freunde online 😢",
+		"noOffline": "Keine Freunde offline 🙌",
+		"profile": "Profil",
+		"remove": "Freund entfernen",
+		"lastSeen": "Zuletzt online",
+		"addTitle": "Freunde hinzufügen",
+		"allAlreadyFriends": "Alle Benutzer sind bereits deine Freunde 👏",
+		"searchPlaceholder": "🔍 Benutzer suchen...",
+		"receivedRequest": "Hat dir eine Anfrage gesendet",
+		"alreadyFriends": "Bereits Freunde",
+		"declinedRequest": "Du hast diese Anfrage abgelehnt",
+		"resendRequest": "🔁 Anfrage erneut senden",
+		"sendRequest": "➕ Freund hinzufügen",
+		"recvRequestsTitle": "📥 Empfangene Anfragen",
+		"noReceivedRequests": "Keine empfangenen Anfragen 😴",
+		"accept": "✅ Annehmen",
+		"decline": "❌ Ablehnen",
+		"accepted": "✅ Angenommen",
+		"declined": "❌ Abgelehnt",
+		"pending": "⏳ Ausstehend",
+		"sentRequestsTitle": "📤 Gesendete Anfragen",
+		"noSentRequests": "Keine gesendeten Anfragen 📭"
+	},
+	"tournament": {
+		"waitForNextRound": "Bitte warte, bis die nächste Runde startet..."
+	}
 
 }

@@ -2,40 +2,41 @@ const jwt = require('jsonwebtoken');
 const logger = require('../logger/logger');
 const JWT_SECRET = process.env.JWT_SECRET
 const db = require("../db");
+const { sendChangesToAll } = require('../services/friends/sendChangesToAll');
 
 function updateLastSeen(userId) {
   db.prepare(`UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?`).run(userId);
 }
 
 async function authMiddleware(request, reply) {
-  const token = request.cookies.auth_token;
-  //logger.info(`Middleware: Checking token for user`);
+	const token = request.cookies.auth_token;
 
-  if (!token) {
-    logger.warn(`Middleware: No token found for user`);
-    return reply.redirect('/');
-  }
+	if (!token) {
+		logger.warn(`Middleware: No token found for user`);
+		return reply.redirect('/');
+	}
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    request.user = decoded;
-    //logger.info(`Middleware: Token verified for user: ${decoded.id}`);
+	try {
+	const decoded = jwt.verify(token, JWT_SECRET);
+	request.user = decoded;
 
-	updateLastSeen(decoded.id);
+	await updateLastSeen(decoded.id);
 
-    const newToken = jwt.sign({ id: decoded.id }, JWT_SECRET, { expiresIn: '3h' });
-    reply.setCookie('auth_token', newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      path: '/',
-      maxAge: 3 * 60 * 60
-    });
+	sendChangesToAll(decoded.id);
 
-  } catch (err) {
-    logger.warn(`Middleware: Token verification failed: ${err.message}`);
-    return reply.redirect('/');
-  }
+	const newToken = jwt.sign({ id: decoded.id }, JWT_SECRET, { expiresIn: '3h' });
+	reply.setCookie('auth_token', newToken, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+		sameSite: 'Strict',
+		path: '/',
+		maxAge: 3 * 60 * 60
+	});
+
+	} catch (err) {
+		logger.warn(`Middleware: Token verification failed: ${err.message}`);
+		return reply.redirect('/');
+	}
 }
 
 module.exports = authMiddleware;
