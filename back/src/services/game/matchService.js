@@ -25,8 +25,8 @@ function getMatchByUserId(userId) {
 async function createMatch(userData1, userData2) {
     const matchData = await initRemoteMatch(userData1, userData2);
     gameStore.onGoingMatches.push(matchData);
-    userData1.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId2 }));
-    userData2.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId1 }));
+	userData1.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId2 }));
+	userData2.ws.send(JSON.stringify({ type: "matchFound", opponent: matchData.userId1 }));
 }
 
 function createLocalMatch(userData1, username) {

@@ -15,8 +15,6 @@ exports.getMatchHistory = async (req, reply) => {
 
         const matchesWithPlayers = await matchService.getMatchesWithPlayersByUserId(userId);
 
-        console.log(`📊 Match-History für userId ${userIdNum}:`, matchesWithPlayers);
-
         reply.code(200).send({ matchHistory: matchesWithPlayers });
     } catch (err) {
         console.error('Error fetching match history:', err);

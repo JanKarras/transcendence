@@ -94,13 +94,30 @@ async function createRoundMatches(tournament, players, isConsolation) {
 
 
 async function finishTournament(tournament) {
+	console.log("🏁 [DEBUG] finishTournament() called with tournament:", {
+		id: tournament?.id,
+		name: tournament?.name,
+		matches: tournament?.matches?.length,
+		players: tournament?.players?.length
+	});
+
 	try {
+		console.log("🔄 Setting tournament.round = 2");
 		tournament.round = 2;
+
+		console.log("🧠 Adding system message: Tournament finished");
 		tournamentUtils.addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
 
+		// Find final and consolation matches
 		const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
 		const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
 
+		console.log("🔍 Found matches:", {
+			finalMatch: finalMatch ? { id: finalMatch.id, winner: finalMatch.winner?.name, loser: finalMatch.loser?.name } : "❌ None",
+			consolationMatch: consolationMatch ? { id: consolationMatch.id, winner: consolationMatch.winner?.name, loser: consolationMatch.loser?.name } : "❌ None"
+		});
+
+		// Compute results
 		const results = [
 			finalMatch?.winner,
 			finalMatch?.loser,
@@ -108,44 +125,65 @@ async function finishTournament(tournament) {
 			consolationMatch?.loser
 		].filter(Boolean);
 
+		console.log("🏆 Results computed:", results.map(r => r.name));
+
 		results.forEach((player, index) => {
-			tournamentUtils.addSystemMessage(tournament, `🥇${index + 1} Place: ${player.name}`);
+			const msg = `🥇${index + 1} Place: ${player.name}`;
+			console.log("💬 Adding system message:", msg);
+			tournamentUtils.addSystemMessage(tournament, msg);
 		});
 
+		// Notify all players
+		console.log("📡 Broadcasting 'tournamentFinished' to players...");
 		tournament.players.forEach(p => {
-			if (!p.ws) return;
-			p.ws.send(JSON.stringify({
+			if (!p.ws) {
+				console.log(`⚠️ Player ${p.name || p.id} has no active websocket`);
+				return;
+			}
+			const payload = {
 				type: "tournamentFinished",
 				data: { results: results.map((r, i) => ({ place: i + 1, player: r })) }
-			}));
+			};
+			console.log(`➡️ Sending to ${p.name || p.id}:`, JSON.stringify(payload, null, 2));
+			p.ws.send(JSON.stringify(payload));
 		});
 
+		// Save to database
+		console.log("💾 Calling createTournamenHistory()...");
 		const tournamentId = await createTournamenHistory(tournament);
+		console.log(`✅ Tournament history created: ID = ${tournamentId}`);
 
 		const playerIds = tournament.players
 			.filter(p => !!p.id)
 			.map(p => p.id);
+		console.log("👥 Player IDs to update matches for:", playerIds);
 
+		// Update recent matches for each player
 		for (const playerId of playerIds) {
+			console.log(`🔁 Processing player ${playerId}...`);
 			const recentMatches = getRecentMatches(playerId);
+			console.log(`📊 Found ${recentMatches.length} recent matches for player ${playerId}`);
 
 			for (let i = 0; i < recentMatches.length; i++) {
 				const match = recentMatches[i];
 				const round = i === 0 ? 2 : 1;
+				console.log(`📝 Updating match ${match.id} (round ${round}) → tournament ${tournamentId}`);
 
 				try {
 					await updateMatch(tournamentId, round, match.id);
+					console.log(`✅ Successfully updated match ${match.id}`);
 				} catch (err) {
 					console.error(`❌ Failed to update match ${match.id}:`, err.message);
 				}
 			}
 		}
 
-		console.log(`✅ Tournament #${tournamentId} saved and linked successfully!`);
+		console.log(`🎉 Tournament #${tournamentId} saved and linked successfully!`);
 	} catch (err) {
-		console.error("❌ Error in finishTournament:", err);
+		console.error("🔥 [ERROR] Uncaught error in finishTournament():", err);
 	}
 }
+
 
 function generateMatchId(tournament) {
 	return tournament.matches.length + 1;

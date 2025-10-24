@@ -302,6 +302,9 @@ async function connectGame() {
 			case 'firstRoundFinished':
 				showCountdownForNextRound();
 				break;
+			case 'endTournament':
+				const socket = getSocket();
+				try { socket?.close(); } catch {}
 			default:
 				break;
 		}

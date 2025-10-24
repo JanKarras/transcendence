@@ -34,13 +34,24 @@ function endTournament(tournament, userId) {
 function playerLeftTournament(userId) {
 	const tournament = tournamentServiceUtils.findTournamentByUser(userId);
 	if (!tournament) return;
-	const player = tournament.players.find(p => p.id === userId);
-	if (!player) return;
-	player.status = "left";
-	player.ws = null;
-	tournamentServiceUtils.addSystemMessage(tournament, `${player.username} has left the tournament.`);
-	tournamentServiceUtils.checkTournamentReady(tournament);
-	tournamentServiceUtils.broadcastTournamentUpdate(tournament);
+	if (tournament.started) {
+		tournamentServiceUtils.addSystemMessage(tournament, `A player has disconnected. Tournament is cancelled.`);
+		tournamentServiceUtils.broadcastTournamentUpdate(tournament);
+		for (const player of tournament.players) {
+			const userId = player.id;
+			if (onGoingTournaments.has(userId)) {
+				endTournament(tournament, userId);
+			}
+		}
+	} else {
+		const player = tournament.players.find(p => p.id === userId);
+		if (!player) return;
+		player.status = "left";
+		player.ws = null;
+		tournamentServiceUtils.addSystemMessage(tournament, `${player.username} has left the tournament.`);
+		tournamentServiceUtils.checkTournamentReady(tournament);
+		tournamentServiceUtils.broadcastTournamentUpdate(tournament);
+	}
 }
 
 
