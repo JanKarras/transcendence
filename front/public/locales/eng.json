@@ -232,7 +232,8 @@
 		"declined": "❌ Declined",
 		"pending": "⏳ Pending",
 		"sentRequestsTitle": "📤 Sent requests",
-		"noSentRequests": "No sent requests 📭"
+		"noSentRequests": "No sent requests 📭",
+    "confirmRemoveTitle": "Do you really want to remove your friend?"
 	},
 	"tournament": {
 		"waitForNextRound": "Please wait for the second round to start..."

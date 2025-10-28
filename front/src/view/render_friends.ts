@@ -158,13 +158,51 @@ function renderFriendsList(friendsData: FriendsViewData, online: boolean) {
 		});
 		card.querySelector('[data-action="remove"]')?.addEventListener("click", e => {
 			e.stopPropagation();
-			removeFriend(friend);
+			showRemoveFriendModal(friend);
 		});
 
 		list.appendChild(card);
 	});
 
 	container.appendChild(list);
+}
+
+function showRemoveFriendModal(friend: Friend) {
+	// Remove existing modal if any
+	const existing = document.getElementById("confirm-remove-modal");
+	if (existing) existing.remove();
+
+	// Overlay
+	const overlay = document.createElement("div");
+	overlay.id = "confirm-remove-modal";
+	overlay.className = "fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50";
+
+	// Modal box
+	const modal = document.createElement("div");
+	modal.className = "bg-gray-900 text-white rounded-lg shadow-2xl w-[350px] p-6 border border-gray-700";
+
+	modal.innerHTML = `
+		<h2 class="text-lg font-semibold mb-3">${t("friendsLang.confirmRemoveTitle") || "Remove Friend?"}</h2>
+		<div class="flex justify-center gap-3">
+			<button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-1 rounded" data-action="cancel">${t("cancel") || "Cancel"}</button>
+			<button class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded" data-action="confirm">${t("remove") || "Remove"}</button>
+		</div>
+	`;
+
+	overlay.appendChild(modal);
+	document.body.appendChild(overlay);
+
+	// Event listeners
+	modal.querySelector('[data-action="cancel"]')?.addEventListener("click", () => overlay.remove());
+	modal.querySelector('[data-action="confirm"]')?.addEventListener("click", () => {
+		removeFriend(friend);
+		overlay.remove();
+	});
+
+	// Close modal on outside click
+	overlay.addEventListener("click", e => {
+		if (e.target === overlay) overlay.remove();
+	});
 }
 
 export function renderAddFriends(
