@@ -103,10 +103,10 @@ function renderActiveTab() {
 
 	switch (activeTab) {
 		case "online":
-			renderFriendsOnline(friendsData.onlineFriends);
+			renderFriendsList(friendsData.onlineFriends, true);
 			break;
 		case "all":
-			renderOfflineFriends(friendsData.offlineFriends);
+			renderFriendsList(friendsData.offlineFriends, false);
 			break;
 		case "add":
 			renderAddFriends(friendsData.allUsers, friendsData.notFriends, friendsData.recvRequest, friendsData.sendRequest);
@@ -118,17 +118,13 @@ function renderActiveTab() {
 }
 
 
-export function renderFriendsOnline(friends: Friend[]): void {
+function renderFriendsList(friends: Friend[], online: boolean) {
 	const container = document.getElementById("friends-content");
 	if (!container) return;
-
 	container.innerHTML = "";
 
 	if (!friends || friends.length === 0) {
-		const emptyMsg = document.createElement("p");
-		emptyMsg.className = "text-gray-400";
-		emptyMsg.textContent = t("friendsLang.noOnline");
-		container.appendChild(emptyMsg);
+		container.innerHTML = `<p class="text-gray-400">${online ? t("friendsLang.noOnline") : t("friendsLang.noOffline")}</p>`;
 		return;
 	}
 
@@ -137,67 +133,35 @@ export function renderFriendsOnline(friends: Friend[]): void {
 
 	friends.forEach(friend => {
 		const card = document.createElement("div");
-		card.className =
-			"bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
+		card.className = "bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
 
-		const header = document.createElement("div");
-		header.className = "flex items-center gap-3 mb-2";
+		card.innerHTML = `
+			<div class="flex items-center gap-3 mb-2">
+				<img src="/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}" alt="${friend.username}" class="w-12 h-12 rounded-full object-cover border border-gray-600">
+				<span class="font-semibold text-white text-lg">${friend.username}</span>
+				<span class="ml-auto w-3 h-3 rounded-full ${online ? "bg-green-500" : "bg-gray-500"}"></span>
+			</div>
+			<div class="text-sm text-gray-400 mt-1">${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}</div>
+			<div class="flex gap-3 mt-3">
+				<button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded" data-action="profile">${t("friendsLang.profile")}</button>
+				<button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded" data-action="remove">${t("friendsLang.remove")}</button>
+			</div>
+		`;
 
-		const img = document.createElement("img");
-		img.src = `/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}`;
-		img.alt = friend.username;
-		img.className = "w-12 h-12 rounded-full object-cover border border-gray-600";
-
-		const name = document.createElement("span");
-		name.className = "font-semibold text-white text-lg";
-		name.textContent = friend.username;
-
-		const dot = document.createElement("span");
-		dot.className = "ml-auto w-3 h-3 rounded-full bg-green-500";
-
-		header.appendChild(img);
-		header.appendChild(name);
-		header.appendChild(dot);
-
-		const info = document.createElement("div");
-		info.className = "text-sm text-gray-400 mt-1";
-		info.textContent = `${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}`;
-
-		const actions = document.createElement("div");
-		actions.className = "flex gap-3 mt-3";
-
-		const profileBtn = document.createElement("button");
-		profileBtn.textContent = `👤 ${t("friendsLang.profile")}`;
-		profileBtn.className =
-			"bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
-		profileBtn.addEventListener("click", e => {
+		card.querySelector('[data-action="profile"]')?.addEventListener("click", e => {
 			e.stopPropagation();
 			showFriendProfileModal(friend);
 		});
-
-		const removeBtn = document.createElement("button");
-		removeBtn.textContent = `🗑 ${t("friendsLang.remove")}`;
-		removeBtn.className =
-			"bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
-		removeBtn.addEventListener("click", e => {
+		card.querySelector('[data-action="remove"]')?.addEventListener("click", e => {
 			e.stopPropagation();
-			console.log(`❌ ${t("friendsLang.remove")}: ${friend.username}`);
 			removeFriend(friend);
 		});
-
-		actions.appendChild(profileBtn);
-		actions.appendChild(removeBtn);
-
-		card.appendChild(header);
-		card.appendChild(info);
-		card.appendChild(actions);
 
 		list.appendChild(card);
 	});
 
 	container.appendChild(list);
 }
-
 
 export function renderOfflineFriends(friends: Friend[]): void {
 	const container = document.getElementById("friends-content");
@@ -593,9 +557,6 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 
 	container.appendChild(sendSection);
 }
-
-
-
 
 async function removeFriend(friend: Friend) {
 	const socket = getFriendSocket()

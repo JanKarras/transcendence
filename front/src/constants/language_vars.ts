@@ -461,8 +461,8 @@ export const lang = {
 	},
 	allFriends: {
 		ger: "Alle Freunde",
-		eng: "All Friends",
-		fr: "Tous les amis",
+		eng: "Friends offline",
+		fr: "Amis offline",
 		ua: "Усі друзі",
         bel: "Усе сябры",
 		nig: "Enyi niile"

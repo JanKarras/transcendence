@@ -7,9 +7,9 @@
   "tournamentTitle": "Tournament",
   "tournamentDesc": "Start a tournament",
   "tournamentBtn": "Start now!",
-  "onlinePlayers": "Online Players",
-  "activeTournaments": "Active Tournaments",
-  "matchesToday": "Matches Today",
+  "wonGames": "Won Games",
+  "lostGames": "Lost Games",
+  "wonTournaments": "Won Tournaments",
 
   "emailTitle": "Email Validation",
   "emailInstruction": "Please enter the 6-digit code sent to",
@@ -67,7 +67,7 @@
   "loginRequired": "You must be logged in to access this page.",
 
   "friendsOnline": "Friends Online",
-  "allFriends": "All Friends",
+  "allFriends": "Friends Offline",
   "addFriends": "Add Friends",
   "friendRequests": "Requests",
   "domLoadError": "Error with DOM loading. You will be logged out. Please try again later.",
@@ -201,7 +201,7 @@
 	"cancel": "Cancel",
 	"friendsLang": {
 		"online": "Friends online",
-		"all": "All friends",
+		"all": "Friends offline",
 		"add": "Add friends",
 		"requests": "Friend requests",
 		"loading": "Loading friends...",
