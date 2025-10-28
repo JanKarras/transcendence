@@ -143,14 +143,12 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
         const socket = getSocket();
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.close(1000, "Navigated away from game");
-            // socket = null;
         }
     }
 	if (view !== "tournament" && view !== "remote_tournament_game") {
 		const tournamentSocket = getTournamentSocket();
 		if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
 			tournamentSocket.close(1000, "Navigated away from tournament");
-			// tournamentSocket = null;
 		}
 	}
 	if (view !== "friends") {
