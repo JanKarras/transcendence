@@ -15,7 +15,7 @@ db.prepare(`
 	first_name TEXT DEFAULT NULL,
 	last_name TEXT DEFAULT NULL,
 	age INTEGER DEFAULT NULL,
-	path TEXT DEFAULT NULL,
+	path TEXT DEFAULT 'std_user_img.png',
 	last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
 	twofa_active BOOLEAN DEFAULT 0,
 	twofa_method TEXT DEFAULT "email",
@@ -35,11 +35,11 @@ db.prepare(`
 `).run();
 
 db.prepare(`
-  CREATE TABLE IF NOT EXISTS stats (
-	user_id INTEGER NOT NULL PRIMARY KEY,
-	wins INTEGER DEFAULT 0,
-	loses INTEGER DEFAULT 0,
-	tournamentWins INTEGER DEFAULT 0,
-	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-  )
+	CREATE TABLE IF NOT EXISTS stats (
+		user_id INTEGER NOT NULL PRIMARY KEY,
+		wins INTEGER DEFAULT 0,
+		loses INTEGER DEFAULT 0,
+		tournamentWins INTEGER DEFAULT 0,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	)
 `).run();

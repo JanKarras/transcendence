@@ -151,8 +151,8 @@ function saveTwoFaSecret(userId, secret) {
 }
 
 function getTwoFaSecret(userId) {
-    const row = db.prepare('SELECT twofa_secret FROM users WHERE id = ?').get(userId);
-    return row ? row.twofa_secret : null;
+	const row = db.prepare('SELECT twofa_secret FROM users WHERE id = ?').get(userId);
+	return row ? row.twofa_secret : null;
 }
 
 function logoutUser(userId) {

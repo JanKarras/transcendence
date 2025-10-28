@@ -12,7 +12,9 @@ function inviteToTournamentFun(hostId, guestId, slot) {
 	const user = userUtils.getUser(guestId);
 
 	const tournament = onGoingTournaments.get(hostId);
-	if (!tournament) return null;
+	if (!tournament) {
+		return null;
+	}
 	let player = null;
 	if (slot === 2) player = tournament.players[1];
 	else if (slot === 3) player = tournament.players[2];
