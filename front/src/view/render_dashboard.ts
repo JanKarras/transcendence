@@ -88,7 +88,7 @@ export async function render_dashboard(params: URLSearchParams | null, matches: 
 				</div>
 
 				<!-- Stats boxes (centered, closer together) -->
-				<div class="grid grid-cols-3 gap-6 mt-4 max-w-lg mx-auto">
+				<div class="grid grid-cols-3 gap-6 mt-4 w-full max-w-4xl">
 					<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
 						<h5 id="online" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${stats?.wins}</h5>
 						<p class="font-normal text-gray-700 dark:text-gray-400">${t('wonGames')}</p>
