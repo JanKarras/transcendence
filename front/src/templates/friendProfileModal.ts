@@ -1,6 +1,6 @@
 import { Friend } from "../constants/structs.js";
 import { t } from "../constants/i18n.js";
-import { getStats } from "../remote_storage/remote_storage.js";
+import { getMatchHistory, getStats, getUser } from "../remote_storage/remote_storage.js";
 
 export async function showFriendProfileModal(friend: Friend): Promise<void> {
 	// 🧹 Vorherige Modals entfernen
@@ -9,6 +9,7 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 
 	// 📊 Statistiken vom Backend laden
 	const stats = await getStats(friend.id);
+	const matchesFromHistory: any[] = await getMatchHistory(friend.id) || [];
 
 	// 🌒 Overlay
 	const overlay = document.createElement("div");
@@ -104,6 +105,49 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 
 		modal.appendChild(statBox);
 	}
+
+	
+	// 🕹 Match History
+	if (matchesFromHistory && matchesFromHistory.length > 0) {
+		const formatMatchType = (type: string) => {
+			switch (type) {
+				case "1v1_local": return t('matchType1v1Local');
+				case "1v1_remote": return t('matchType1v1Remote');
+				case "tournament": return t('matchTypeTournament');
+				default: return type;
+			}
+		};
+
+		const matchHistoryBox = document.createElement("div");
+		matchHistoryBox.className = "text-white mt-6 bg-[#2c2c58] rounded-lg p-4 shadow-md";
+		console.log(matchesFromHistory);
+		matchHistoryBox.innerHTML = `
+			<h2 class="text-lg font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent mb-3">${t('matchHistoryTitle')}</h2>
+			<div class="space-y-3 max-h-[250px] overflow-y-auto pr-1">
+				${matchesFromHistory.slice().reverse().map(match => `
+					<div class="p-2 rounded ${
+						match.match_type === 'tournament'
+							? 'bg-gradient-to-r from-[#8e00a8] to-[#7c0bac] shadow-[0_0_8px_#174de1]'
+							: 'bg-gradient-to-r from-[#07ae2d] to-[#0d6500] shadow-[0_0_8px_#b01ae2]'
+					}">
+						<p class="font-medium">
+							<strong>${formatMatchType(match.match_type)}</strong>
+							${match.tournament_name ? `- ${match.tournament_name} (${t('round')} ${match.round})` : ''}
+						</p>
+						<p class="text-xs text-gray-300 mb-1">${match.match_date}</p>
+						<ul class="pl-4 list-disc text-xs">
+							${match.players.map((p: any) => `
+								<li>${p.username} - ${t('score')}: ${p.score} ${p.rank === 1 ? '🏆' : ''}</li>
+							`).join('')}
+						</ul>
+					</div>
+				`).join('')}
+			</div>
+		`;
+
+		modal.appendChild(matchHistoryBox);
+	}
+
 
 	// Alles zusammen einfügen
 	overlay.appendChild(modal);
