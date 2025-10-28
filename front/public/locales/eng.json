@@ -67,7 +67,7 @@
   "loginRequired": "You must be logged in to access this page.",
 
   "friendsOnline": "Friends Online",
-  "allFriends": "Friends Offline",
+  "allFriends": "All friends",
   "addFriends": "Add Friends",
   "friendRequests": "Requests",
   "domLoadError": "Error with DOM loading. You will be logged out. Please try again later.",
@@ -147,6 +147,12 @@
     "noReceived": "No received requests.",
     "noSent": "No sent requests."
   },
+  "friendProfile": {
+    "lastSeen": "Last seen",
+    "wonGames" :"Won Games",
+    "lostGames" :"Lost Games",
+    "wonTournaments" :"Won Tournaments"
+  },
   "no_id_msg": "No user ID provided.",
   "missing_req_dom_elem": "Required DOM element is missing.",
   "chat": "Chat",
@@ -201,7 +207,7 @@
 	"cancel": "Cancel",
 	"friendsLang": {
 		"online": "Friends online",
-		"all": "Friends offline",
+		"all": "All friends",
 		"add": "Add friends",
 		"requests": "Friend requests",
 		"loading": "Loading friends...",

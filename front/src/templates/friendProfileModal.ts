@@ -66,7 +66,7 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 	// 🕓 Letzter Login
 	const info = document.createElement("p");
 	info.className = "text-gray-400 mb-4";
-	info.textContent = `${t("lastSeen") || "Zuletzt online"}: ${friend.last_seen || "-"}`;
+	info.textContent = `${t('friendProfile.lastSeen')}: ${friend.last_seen || "-"}`;
 	modal.appendChild(info);
 
 	// 🧾 Details
@@ -90,15 +90,15 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 		statBox.innerHTML = `
 			<div class="bg-gray-800 rounded-lg p-2">
 				<p class="text-green-400 font-bold text-lg">${stats.wins}</p>
-				<p class="text-xs">${t("wins") || "Siege"}</p>
+				<p class="text-xs">${t("friendProfile.wonGames")}</p>
 			</div>
 			<div class="bg-gray-800 rounded-lg p-2">
 				<p class="text-red-400 font-bold text-lg">${stats.loses}</p>
-				<p class="text-xs">${t("loses") || "Niederlagen"}</p>
+				<p class="text-xs">${t("friendProfile.lostGames")}</p>
 			</div>
 			<div class="bg-gray-800 rounded-lg p-2">
 				<p class="text-yellow-400 font-bold text-lg">${stats.tournamentWins}</p>
-				<p class="text-xs">${t("tournaments") || "Turniere"}</p>
+				<p class="text-xs">${t("friendProfile.wonTournaments")}</p>
 			</div>
 		`;
 

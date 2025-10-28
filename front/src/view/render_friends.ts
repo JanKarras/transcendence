@@ -103,10 +103,10 @@ function renderActiveTab() {
 
 	switch (activeTab) {
 		case "online":
-			renderFriendsList(friendsData.onlineFriends, true);
+			renderFriendsList(friendsData, true);
 			break;
 		case "all":
-			renderFriendsList(friendsData.offlineFriends, false);
+			renderFriendsList(friendsData, false);
 			break;
 		case "add":
 			renderAddFriends(friendsData.allUsers, friendsData.notFriends, friendsData.recvRequest, friendsData.sendRequest);
@@ -118,7 +118,10 @@ function renderActiveTab() {
 }
 
 
-function renderFriendsList(friends: Friend[], online: boolean) {
+function renderFriendsList(friendsData: FriendsViewData, online: boolean) {
+
+	const friends: Friend[] = online ? friendsData.onlineFriends : friendsData.allFriends;
+	const friendsOnline: Friend[] = friendsData.onlineFriends;
 	const container = document.getElementById("friends-content");
 	if (!container) return;
 	container.innerHTML = "";
@@ -132,6 +135,7 @@ function renderFriendsList(friends: Friend[], online: boolean) {
 	list.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
 
 	friends.forEach(friend => {
+		console.log(friends, friendsOnline);
 		const card = document.createElement("div");
 		card.className = "bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
 
@@ -139,7 +143,7 @@ function renderFriendsList(friends: Friend[], online: boolean) {
 			<div class="flex items-center gap-3 mb-2">
 				<img src="/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}" alt="${friend.username}" class="w-12 h-12 rounded-full object-cover border border-gray-600">
 				<span class="font-semibold text-white text-lg">${friend.username}</span>
-				<span class="ml-auto w-3 h-3 rounded-full ${online ? "bg-green-500" : "bg-gray-500"}"></span>
+				<span class="ml-auto w-3 h-3 rounded-full ${friendsOnline.some(f => f.id === friend.id) ? "bg-green-500" : "bg-gray-500"}"></span>
 			</div>
 			<div class="text-sm text-gray-400 mt-1">${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}</div>
 			<div class="flex gap-3 mt-3">
@@ -162,83 +166,6 @@ function renderFriendsList(friends: Friend[], online: boolean) {
 
 	container.appendChild(list);
 }
-
-export function renderOfflineFriends(friends: Friend[]): void {
-	const container = document.getElementById("friends-content");
-	if (!container) return;
-
-	container.innerHTML = "";
-
-	if (!friends || friends.length === 0) {
-		const emptyMsg = document.createElement("p");
-		emptyMsg.className = "text-gray-400";
-		emptyMsg.textContent = t("friendsLang.noOffline");
-		container.appendChild(emptyMsg);
-		return;
-	}
-
-	const list = document.createElement("div");
-	list.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
-
-	friends.forEach(friend => {
-		const card = document.createElement("div");
-		card.className = "bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
-
-		const header = document.createElement("div");
-		header.className = "flex items-center gap-3 mb-2";
-
-		const img = document.createElement("img");
-		img.src = `/api/get/getImage?filename=${encodeURIComponent(friend.path || "std_user_img.png")}`;
-		img.alt = friend.username;
-		img.className = "w-12 h-12 rounded-full object-cover border border-gray-600";
-
-		const name = document.createElement("span");
-		name.className = "font-semibold text-white text-lg";
-		name.textContent = friend.username;
-
-		const dot = document.createElement("span");
-		dot.className = "ml-auto w-3 h-3 rounded-full bg-gray-500";
-
-		header.appendChild(img);
-		header.appendChild(name);
-		header.appendChild(dot);
-
-		const info = document.createElement("div");
-		info.className = "text-sm text-gray-400 mt-1";
-		info.textContent = `${t("friendsLang.lastSeen")}: ${friend.last_seen || "-"}`;
-
-		const actions = document.createElement("div");
-		actions.className = "flex gap-3 mt-3";
-
-		const profileBtn = document.createElement("button");
-		profileBtn.textContent = `👤 ${t("friendsLang.profile")}`;
-		profileBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
-		profileBtn.addEventListener("click", e => {
-			e.stopPropagation();
-			showFriendProfileModal(friend);
-		});
-
-		const removeBtn = document.createElement("button");
-		removeBtn.textContent = `🗑 ${t("friendsLang.remove")}`;
-		removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded";
-		removeBtn.addEventListener("click", e => {
-			e.stopPropagation();
-			removeFriend(friend);
-		});
-
-		actions.appendChild(profileBtn);
-		actions.appendChild(removeBtn);
-
-		card.appendChild(header);
-		card.appendChild(info);
-		card.appendChild(actions);
-
-		list.appendChild(card);
-	});
-
-	container.appendChild(list);
-}
-
 
 export function renderAddFriends(
 	allUsers: UserInfo[],
