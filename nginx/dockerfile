@@ -1,10 +1,33 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && \
-    apt-get install -y nginx openssl && \
+    apt-get install -y nginx openssl \
+    libnginx-mod-http-modsecurity \
+    libmodsecurity3 \
+    libmodsecurity-dev \
+    git \
+    curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY default.conf /etc/nginx/conf.d/default.conf
+RUN git clone https://github.com/coreruleset/coreruleset /opt/crs
+
+# Copy and rename the setup file
+RUN cp /opt/crs/crs-setup.conf.example /opt/crs/crs-setup.conf
+
+# Convert all example rule files to real .conf files
+RUN mkdir -p /opt/crs/rules && \
+    for f in /opt/crs/rules/*.example; do \
+      cp "$f" "${f%.example}"; \
+    done
+
+RUN mkdir -p /var/log/modsec && \
+    chown -R www-data:www-data /var/log/nginx /var/log/modsec
+
+COPY transcendence.conf /etc/nginx/conf.d/transcendence.conf
+COPY modsec/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
+COPY modsec/modsec-api.conf /etc/nginx/modsec/modsec-api.conf
+
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
