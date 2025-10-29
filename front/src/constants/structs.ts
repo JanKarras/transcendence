@@ -49,7 +49,9 @@ export interface RequestInfo {
   id: number;
   type: string;
   receiver_username: string;
+  receiver_path: string;
   sender_username: string;
+  sender_path:string;
   created_at: string;
   status: string;
 }
