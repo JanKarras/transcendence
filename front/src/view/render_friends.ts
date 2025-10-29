@@ -457,7 +457,7 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 					removeBtn.addEventListener("click", e => {
 						e.stopPropagation();
 						console.log("test");
-						// sendFriendSocketMessage("removeFriendRequest", { requestId : req.id });
+						sendFriendSocketMessage("removeFriendRequest", { requestId : req.id });
 					});
 					right.appendChild(removeBtn);
 				}
