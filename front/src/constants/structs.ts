@@ -29,7 +29,7 @@ export interface UserInfo {
   twofa_method : string
 }
 
-export interface UserResponse {
+export interfaceUserResponse {
   user: UserInfo;
   friends: Friend[];
   stats: UserStats & { user_id: number };

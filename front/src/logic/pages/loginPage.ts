@@ -4,11 +4,14 @@ import { renderLoginPages } from "../../render/pages/renderLoginPage.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { showErrorMessage, showSuccessMessage } from "../../templates/popup_message.js";
 import { initTranslations, t } from "../gloabal/initTranslations.js";
+import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function loginPage(params: URLSearchParams | null) {
 	window.location.hash = "#login";
 
 	await initTranslations();
+
+	await headerTemplate()
 
 	await renderLoginPages(params);
 
