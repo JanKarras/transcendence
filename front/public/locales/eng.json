@@ -223,6 +223,7 @@
 		"alreadyFriends": "Already friends",
 		"declinedRequest": "You declined this request",
 		"resendRequest": "🔁 Resend request",
+    "removeRequest" : "Remove request",
 		"sendRequest": "➕ Add friend",
 		"recvRequestsTitle": "📥 Received requests",
 		"noReceivedRequests": "No received requests 😴",
