@@ -1,5 +1,7 @@
 import { dashboarPage } from "../logic/pages/dashboardPage.js";
+import { gamePage } from "../logic/pages/gamePage.js";
 import { loginPage } from "../logic/pages/loginPage.js";
+import { matchmakingPage } from "../logic/pages/matchmakingPage.js";
 import { profilePage } from "../logic/pages/profilePage.js";
 import { registerPage } from "../logic/pages/registerPage.js";
 
@@ -19,8 +21,8 @@ export const renderers: Record<View, ViewRenderFunction> = {
 	friends : loginPage,
 	chat : loginPage,
 	friend_profile : loginPage,
-	matchmaking : loginPage,
-	game : loginPage,
+	matchmaking : matchmakingPage,
+	game : gamePage,
 	tournament : loginPage,
 	local_tournament_game : loginPage,
 	remote_tournament_game : loginPage,

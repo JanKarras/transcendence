@@ -1,4 +1,3 @@
-import { headerTemplate } from "../../logic/templates/headerTemplate.js";
 import { navigateTo } from "../../router/navigateTo.js";
 
 export async function setEventListenersDashboardPage() {
@@ -23,6 +22,4 @@ export async function setEventListenersDashboardPage() {
 	localBtn?.addEventListener("click", () => { const p = new URLSearchParams(); p.set("mode","local"); navigateTo("game", p); });
 	remoteBtn?.addEventListener("click", () => navigateTo("matchmaking"));
 	startTournamentBtn?.addEventListener("click", () => navigateTo("tournament"));
-	window.location.hash = "#dashboard";
-	headerTemplate();
 }

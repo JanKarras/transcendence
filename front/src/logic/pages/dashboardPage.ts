@@ -2,6 +2,7 @@ import { getMatchHistory } from "../../api/getMatchHistory.js";
 import { getStats } from "../../api/getStats.js";
 import { getUser } from "../../api/getUser.js";
 import { UserInfo } from "../../constants/structs.js";
+import { setEventListenersDashboardPage } from "../../events/pages/dashboardPage.js";
 import { renderDashboard } from "../../render/pages/renderDashboard.js";
 import { initTranslations } from "../gloabal/initTranslations.js";
 import { logOut } from "../gloabal/logOut.js";
@@ -26,4 +27,6 @@ export async function dashboarPage(params: URLSearchParams | null) {
 	const stats = await getStats(user.id);
 
 	await renderDashboard(params, stats, matchesFromHistory);
+
+	await setEventListenersDashboardPage();
 }
