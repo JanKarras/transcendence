@@ -48,6 +48,7 @@ exports.login = async (request, reply) => {
 		}
 
 		if (!user.validated) {
+			mailService.sendEmailValidationMail(user.id, user.email);
 			return reply.code(403).send({ error: 'Account is not validated. Please confirm your email address.' });
 		}
 

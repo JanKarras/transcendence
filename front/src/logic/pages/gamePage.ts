@@ -24,7 +24,6 @@ export async function gamePage(params: URLSearchParams | null) {
 	await renderGamePage(currentMode, showUsernameModal);
 
 	setGameEventListeners(username);
-
 }
 
 export async function startLocalGame(username: string, ctx: CanvasRenderingContext2D): Promise<void> {
