@@ -6,53 +6,58 @@ import { t } from "../gloabal/initTranslations.js";
 import { logOut } from "../gloabal/logOut.js";
 
 export interface MenuItem {
+	id?: string;
 	label: string;
 	onClick: () => void;
 }
 
-export function getMenuEntries(currentPos: string): { label: string, onClick: () => void }[] {
-	const entries = [];
+/** Gibt Menüeinträge je nach aktueller Seite zurück */
+export function getMenuEntries(currentPos: string): MenuItem[] {
+	const entries: MenuItem[] = [];
+	const basePos = currentPos.split("?")[0];
 
-	const basePos = currentPos.split('?')[0];
+	switch (basePos) {
+		case "dashboard":
+			entries.push({ id: "menu-profile", label: `👤 ${t("profile")}`, onClick: () => navigateTo("profile") });
+			entries.push({ id: "menu-friends", label: `👥 ${t("friends")}`, onClick: () => navigateTo("friends") });
+			break;
 
-	if (basePos === "dashboard") {
-		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
-		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
+		case "profile":
+			entries.push({ id: "menu-dashboard", label: `🏠 ${t("dashboard2")}`, onClick: () => navigateTo("dashboard") });
+			entries.push({ id: "menu-friends", label: `👥 ${t("friends")}`, onClick: () => navigateTo("friends") });
+			break;
+
+		case "friends":
+			entries.push({ id: "menu-dashboard", label: `🏠 ${t("dashboard2")}`, onClick: () => navigateTo("dashboard") });
+			entries.push({ id: "menu-profile", label: `👤 ${t("profile")}`, onClick: () => navigateTo("profile") });
+			break;
+
+		case "chat":
+			entries.push({ id: "menu-profile", label: `👤 ${t("profile")}`, onClick: () => navigateTo("profile") });
+			entries.push({ id: "menu-friends", label: `👥 ${t("friends")}`, onClick: () => navigateTo("friends") });
+			break;
+
+		case "friend_profile":
+			entries.push({ id: "menu-dashboard", label: `🏠 ${t("dashboard2")}`, onClick: () => navigateTo("dashboard") });
+			entries.push({ id: "menu-profile", label: `👤 ${t("profile")}`, onClick: () => navigateTo("profile") });
+			entries.push({ id: "menu-friends", label: `👥 ${t("friends")}`, onClick: () => navigateTo("friends") });
+			break;
 	}
-	if (basePos === "profile") {
-		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
-	}
-	if (basePos === "friends") {
-		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
-	}
-	if (basePos === "chat") {
-		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
-		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
-	}
-	if (basePos === "friend_profile") {
-		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
-		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
-		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
-	}
+
 	return entries;
 }
 
 export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 	const langEntry: MenuItem = {
-		label: `${t('languageLabel')} ${LANGUAGE.toUpperCase()}`,
-		onClick: () => {
-
-		}
+		id: "menu-language",
+		label: `${t("languageLabel")} ${LANGUAGE.toUpperCase()}`,
+		onClick: () => {}, // Sprache wird über Submenu gehandhabt
 	};
 
 	const logoutEntry: MenuItem = {
-		label: `🚪 ${t('logout')}`,
-		onClick: () => {
-			logOut("You logged out")
-		}
-
+		id: "menu-logout",
+		label: `🚪 ${t("logout")}`,
+		onClick: () => logOut("You logged out"),
 	};
 
 	return [...baseItems, langEntry, logoutEntry];

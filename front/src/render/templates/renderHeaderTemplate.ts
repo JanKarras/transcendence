@@ -65,8 +65,8 @@ export async function renderHeader(pos: string, userData: UserResponse | false) 
 	}
 
 	removeEventListenerByClone(MENU_CONTAINER_ID);
-	if (!profileMenuListenerAttached) {
-		profileContainer?.addEventListener('click', (e) => {
+	if (!profileMenuListenerAttached && profileContainer) {
+		profileContainer.addEventListener("click", (e) => {
 			e.stopPropagation();
 			const pos = getPos();
 			const items = buildMenuItems(getMenuEntries(pos));

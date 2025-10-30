@@ -10,7 +10,7 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 	// 📊 Statistiken vom Backend laden
 	const stats = await getStats(friend.id);
 	const matchesFromHistory: any[] = await getMatchHistory(friend.id) || [];
-
+	console.log("matchhis", matchesFromHistory)
 	// 🌒 Overlay
 	const overlay = document.createElement("div");
 	overlay.id = "friend-profile-modal";
@@ -106,7 +106,7 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 		modal.appendChild(statBox);
 	}
 
-	
+
 	// 🕹 Match History
 	if (matchesFromHistory && matchesFromHistory.length > 0) {
 		const formatMatchType = (type: string) => {
