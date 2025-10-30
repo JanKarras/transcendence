@@ -1,10 +1,10 @@
 import { emailValidationApi } from "../../api/emailValidation.js";
 import { setEventListenersForEmailValidation } from "../../events/pages/emailValidation.js";
 import { renderEmailValidation } from "../../render/pages/renderEmailValidation.js";
-import { showErrorMessage, showSuccessMessage } from "../../templates/popup_message.js";
 import { initTranslations, t } from "../gloabal/initTranslations.js";
 import { renderWithDelay } from "../gloabal/renderWithDelay.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 
 export async function emailValidationPage(params: URLSearchParams | null) {
 	await initTranslations();

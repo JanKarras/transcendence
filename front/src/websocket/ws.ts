@@ -1,14 +1,11 @@
-import {
-    getMessages,
-    getBlocked,
-    getFriends,
-    getStatus,
-    getFreshToken,
-} from '../remote_storage/remote_storage.js';
-import { renderProfile } from '../view/render_friend_profile.js';
-import { t } from "../constants/i18n.js";
-import { navigateTo } from '../router/navigateTo.js';
-
+import { getBlocked } from "../api/getBlocked.js";
+import { getFreshToken } from "../api/getFreshToken.js";
+import { getFriends } from "../api/getFriends.js";
+import { getMessages } from "../api/getMessages.js";
+import { getStatus } from "../api/getStatus.js";
+import { t } from "../logic/gloabal/initTranslations.js";
+import { renderProfile } from "../render/templates/renderProfile.js";
+import { navigateTo } from "../router/navigateTo.js";
 
 let socket: WebSocket | null = null;
 let friendStatus = -1;

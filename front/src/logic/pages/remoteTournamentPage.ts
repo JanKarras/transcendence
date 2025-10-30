@@ -12,6 +12,9 @@ export let gameState = 0;
 export let gameOver = false;
 export let matchfound = false;
 
+export let canvas: HTMLCanvasElement;
+export let ctx : CanvasRenderingContext2D;
+
 export function resetGameState() {
 	gameOver = false;
 	matchfound = false;
@@ -24,7 +27,8 @@ export async function remoteTournamentPage(params: URLSearchParams | null) {
 	await renderRemoteTournamentPage()
 	await connect();
 	connectGame();
-
+	canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+	ctx = canvas.getContext('2d')!;
 	resetGameState()
 
 	const initialMessages: { text: string, type: "system" | "user" }[] = [
@@ -67,7 +71,7 @@ async function connectGame() {
 				startSecondRound()
 				break;
 			case 'matchFound' :
-				
+
 				matchfound = true;
 				break
 			case 'tournamentFinished':
@@ -188,9 +192,9 @@ function enablePaddles() {
 	});
 }
 
+
+
 function gameLoop() {
-	const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
-	const ctx = canvas.getContext('2d')!;
 	renderFrame(ctx, gameInfo);
 	if (gameOver) {
 		console.log(gameInfo, gameOver)

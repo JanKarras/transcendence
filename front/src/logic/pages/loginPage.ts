@@ -2,9 +2,9 @@ import { logInApi } from "../../api/logIn.js";
 import { setEventListenersForLoginPage } from "../../events/pages/loginPage.js";
 import { renderLoginPages } from "../../render/pages/renderLoginPage.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { showErrorMessage, showSuccessMessage } from "../../templates/popup_message.js";
 import { initTranslations, t } from "../gloabal/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 
 export async function loginPage(params: URLSearchParams | null) {
 	window.location.hash = "#login";
@@ -38,7 +38,7 @@ export async function tryToLogIn(event: Event) {
 				navigateTo('two_fa', params);
 			}, 1500);
 		} else if (res.method === 'authapp') {
-			showSuccessMessage(t('loginSuccess'));
+			showErrorMessage(t('loginSuccess'));
 			const params = new URLSearchParams({ email: username, method: 'authapp' });
 			setTimeout(() => {
 				navigateTo('two_fa', params);

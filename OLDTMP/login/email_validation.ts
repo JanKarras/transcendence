@@ -1,6 +1,6 @@
 import { initTranslations, t } from "../constants/i18n.js"
+import { showErrorMessage, showSuccessMessage } from "../logic/templates/popupMessage.js";
 import { emailValidationApi } from "../remote_storage/remote_storage.js";
-import { showErrorMessage, showSuccessMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 
 export async function validate_email(email: string) {

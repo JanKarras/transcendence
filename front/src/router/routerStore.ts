@@ -1,5 +1,6 @@
 import { dashboarPage } from "../logic/pages/dashboardPage.js";
 import { emailValidationPage } from "../logic/pages/emailValidationPage.js";
+import { friendsPage } from "../logic/pages/friendsPage.js";
 import { gamePage } from "../logic/pages/gamePage.js";
 import { loginPage } from "../logic/pages/loginPage.js";
 import { matchmakingPage } from "../logic/pages/matchmakingPage.js";
@@ -8,7 +9,6 @@ import { registerPage } from "../logic/pages/registerPage.js";
 import { remoteTournamentPage } from "../logic/pages/remoteTournamentPage.js";
 import { tournamentPage } from "../logic/pages/tournamentPage.js";
 import { twoFaPage } from "../logic/pages/twoFaPage.js";
-import { render_friends } from "../view/render_friends.js";
 
 export type View = 'login' | 'dashboard' | 'register' | 'email_validation' | 'two_fa' | 'profile' | 'friends' | 'chat' | 'friend_profile' | 'matchmaking' | 'game' | 'tournament' | 'local_tournament_game' | 'remote_tournament_game';
 
@@ -23,7 +23,7 @@ export const renderers: Record<View, ViewRenderFunction> = {
 	email_validation: emailValidationPage,
 	two_fa : twoFaPage,
 	profile : profilePage,
-	friends : render_friends,
+	friends : friendsPage,
 	chat : loginPage,
 	friend_profile : loginPage,
 	matchmaking : matchmakingPage,

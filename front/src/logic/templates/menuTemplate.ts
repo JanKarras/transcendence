@@ -11,7 +11,6 @@ export interface MenuItem {
 	onClick: () => void;
 }
 
-/** Gibt Menüeinträge je nach aktueller Seite zurück */
 export function getMenuEntries(currentPos: string): MenuItem[] {
 	const entries: MenuItem[] = [];
 	const basePos = currentPos.split("?")[0];
@@ -51,7 +50,7 @@ export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 	const langEntry: MenuItem = {
 		id: "menu-language",
 		label: `${t("languageLabel")} ${LANGUAGE.toUpperCase()}`,
-		onClick: () => {}, // Sprache wird über Submenu gehandhabt
+		onClick: () => {},
 	};
 
 	const logoutEntry: MenuItem = {

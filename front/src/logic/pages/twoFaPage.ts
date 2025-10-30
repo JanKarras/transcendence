@@ -1,10 +1,10 @@
 import { twoFaApi } from "../../api/twoFa.js";
 import { setEventListenersForTwoFaPage } from "../../events/pages/twoFaPage.js";
 import { renderTwoFaPage } from "../../render/pages/renderTwoFaPage.js";
-import { showErrorMessage, showSuccessMessage } from "../../templates/popup_message.js";
 import { initTranslations, t } from "../gloabal/initTranslations.js";
 import { renderWithDelay } from "../gloabal/renderWithDelay.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 
 export async function twoFaPage(params: URLSearchParams | null) {
 	await initTranslations();

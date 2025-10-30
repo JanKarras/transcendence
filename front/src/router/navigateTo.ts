@@ -1,7 +1,7 @@
 import { is_logged_in_api } from "../api/isLoggedIn.js";
 import { initTranslations } from "../constants/i18n.js";
 import { t } from "../logic/gloabal/initTranslations.js";
-import { showErrorMessage } from "../templates/popup_message.js";
+import { showErrorMessage } from "../logic/templates/popupMessage.js";
 import { getDashboardSocket } from "../websocket/wsDashboardServce.js";
 import { getFriendSocket } from "../websocket/wsFriendsService.js";
 import { getSocket } from "../websocket/wsService.js";

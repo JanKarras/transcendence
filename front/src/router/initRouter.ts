@@ -1,6 +1,6 @@
 import { is_logged_in_api } from "../api/isLoggedIn.js";
 import { initTranslations, t } from "../logic/gloabal/initTranslations.js";
-import { showErrorMessage } from "../templates/popup_message.js";
+import { showErrorMessage } from "../logic/templates/popupMessage.js";
 import { getSocket } from "../websocket/wsService.js";
 import { navigateTo } from "./navigateTo.js";
 import { protectedViews, View } from "./routerStore.js";

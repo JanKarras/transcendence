@@ -2,8 +2,7 @@ import { bodyContainer } from "../../constants/constants.js";
 import { Friend, FriendsViewData, RequestInfo, UserInfo } from "../../constants/structs.js";
 import { t } from "../../logic/gloabal/initTranslations.js";
 import { renderActiveTab, sendFriendSocketMessage } from "../../logic/pages/friendsPage.js";
-import { showFriendProfileModal } from "../../templates/friendProfileModal.js";
-
+import { showFriendProfileModal } from "../../logic/templates/friendProfileModal.js";
 export async function renderFriendsPage() {
 	if (!bodyContainer) {
 		return;

@@ -1,4 +1,5 @@
-import { getFreshToken } from "../remote_storage/remote_storage.js";
+import { getFreshToken } from "../api/getFreshToken.js";
+
 
 let tournamentSocket: WebSocket | null = null;
 

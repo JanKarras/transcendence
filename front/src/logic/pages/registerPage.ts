@@ -1,10 +1,10 @@
 import { createUser } from "../../api/createUser.js";
 import { setEventListenersForRegisterPage } from "../../events/pages/registerPage.js";
 import { renderRegisterPage } from "../../render/pages/renderRegisterPage.js";
-import { showErrorMessage, showSuccessMessage } from "../../templates/popup_message.js";
 import { initTranslations, t } from "../gloabal/initTranslations.js";
 import { renderWithDelay } from "../gloabal/renderWithDelay.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
+import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 
 export async function registerPage(params: URLSearchParams | null) {
 	await initTranslations();

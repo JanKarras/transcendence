@@ -3,8 +3,8 @@ import { saveProfileChanges } from "../../api/saveProfileChanges.js";
 import { verifyTwoFaCode } from "../../api/verifyTwoFaCode.js";
 import { UserInfo } from "../../constants/structs.js";
 import { t } from "../../logic/gloabal/initTranslations.js";
+import { showErrorMessage } from "../../logic/templates/popupMessage.js";
 import { renderProfile, renderTwoFaSettings } from "../../render/pages/renderProfilePage.js";
-import { showErrorMessage } from "../../templates/popup_message.js";
 
 
 export async function setEventListenerProfilePage(user: UserInfo) {

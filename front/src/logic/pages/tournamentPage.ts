@@ -1,9 +1,9 @@
 import { setTournamentEventListeners } from "../../events/pages/tournament.js";
 import { renderRemoteTournament, renderTournamentPage } from "../../render/pages/renderTournament.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { showErrorMessage } from "../../templates/popup_message.js";
 import { connectTournament, getTournamentSocket } from "../../websocket/wsTournamentService.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
+import { showErrorMessage } from "../templates/popupMessage.js";
 
 export async function tournamentPage(params: URLSearchParams | null) {
 	await headerTemplate();

@@ -1,9 +1,9 @@
 import { currentParams, currentView, renderers, setCurrentParams, setCurrentView, View } from "./routerStore.js";
 
 export function reRenderCurrentView() {
-  if (currentView) {
-	renderView(currentView, currentParams);
-  }
+	if (currentView) {
+		renderView(currentView, currentParams);
+	}
 }
 
 export function renderView(view: View, params: URLSearchParams | null = null) {

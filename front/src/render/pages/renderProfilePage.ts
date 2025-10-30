@@ -8,7 +8,9 @@ export async function renderProfile(params: URLSearchParams | null) {
 	if (!bodyContainer) return;
 
 	const userData = await getUser();
-
+	if (!userData) {
+		return;
+	}
 	const user = userData.user;
 	const safePath = user.path
 		? `/api/get/getImage?filename=${encodeURIComponent(user.path)}`
