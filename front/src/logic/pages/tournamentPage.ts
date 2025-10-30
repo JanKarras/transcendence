@@ -1,63 +1,72 @@
-import { navigateTo } from "../../router/navigateTo";
-import { showErrorMessage } from "../../templates/popup_message";
-import { connectTournament, getTournamentSocket } from "../../websocket/wsTournamentService";
-import { headerTemplate } from "../templates/headerTemplate";
+import { setTournamentEventListeners } from "../../events/pages/tournament.js";
+import { renderRemoteTournament, renderTournamentPage } from "../../render/pages/renderTournament.js";
+import { navigateTo } from "../../router/navigateTo.js";
+import { showErrorMessage } from "../../templates/popup_message.js";
+import { connectTournament, getTournamentSocket } from "../../websocket/wsTournamentService.js";
+import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function tournamentPage(params: URLSearchParams | null) {
-	await headerTemplate()
-	await connect()
+	await headerTemplate();
+	await connectTournament();
 
 	const socket = getTournamentSocket();
+	if (!socket) {
+		showErrorMessage("Failed to connect to tournament server.");
+		return navigateTo("dashboard");
+	}
 
 	const gameId = params?.get("gameId");
 	if (gameId) {
-		socket?.send(JSON.stringify({
+		console.log(gameId)
+		socket.send(JSON.stringify({
 			type: "joinGame",
 			data: { gameId: Number(gameId) }
 		}));
-		const btn = document.getElementById("toggleBtn");
-		if (btn) btn.style.display = "none";
+	}
+	await renderTournamentPage();
+
+	await setTournamentEventListeners(socket);
+	if (!gameId) {
+		socket.send(JSON.stringify({ type: "createRemoteTournament" }));
 	}
 }
 
-async function connect() {
-	const socket = await connectTournament();
-
-	socket.onmessage = (msg) => {
-		const message = JSON.parse(msg.data.toString());
-		console.log("📩 WS message:", message);
-
-		switch (message.type) {
-			case "tournamentCreated":
-				//renderRemoteTournament(message.data.players, message.data.messages);
-				break;
-			case "remoteTournamentUpdated":
-				//renderRemoteTournament(message.data.players, message.data.messages, message.data.ready);
-				break;
-			case "endTournament":
-				showErrorMessage(message.data.message || "Tournament ended.");
-				navigateTo("dashboard");
-				break;
-			case "pong":
-				console.log("Pong received");
-				break;
-			case "tournamentStarting":
-				const params = new URLSearchParams();
-				params.set("gameId", message.data.gameId);
-				console.log("Tournament starting, navigating to game with params:", params.toString());
-				navigateTo("remote_tournament_game", params);
-				break;
-		}
-	};
-
-	socket.onclose = () => {
-		console.log("🔴 Tournament WebSocket disconnected");
-		navigateTo("dashboard");
-	};
-
-	setInterval(() => {
-		if (socket.readyState === WebSocket.OPEN) {
-			socket.send(JSON.stringify({ type: "ping" }));
-		}
-	}, 30000);
+export function sendChatMessage(socket: WebSocket, input: HTMLInputElement): void {
+	const msg = input.value.trim();
+	if (!msg) return;
+	socket.send(JSON.stringify({ type: "tournamentChat", data: { message: msg } }));
+	addChatMessage(`You: ${msg}`, "user");
+	input.value = "";
 }
+
+export function handleTournamentMessage(msg: MessageEvent, socket: WebSocket): void {
+	const message = JSON.parse(msg.data.toString());
+	console.log("📩 WS:", message);
+
+	switch (message.type) {
+		case "tournamentCreated":
+		case "remoteTournamentUpdated":
+			renderRemoteTournament(message.data.players, message.data.messages, message.data.ready);
+			break;
+		case "endTournament":
+			showErrorMessage(message.data.message || "Tournament ended.");
+			navigateTo("dashboard");
+			break;
+		case "tournamentStarting":
+			const params = new URLSearchParams();
+			params.set("gameId", message.data.gameId);
+			navigateTo("remote_tournament_game", params);
+			break;
+	}
+}
+
+export function addChatMessage(text: string, type: "system" | "user" = "system"): void {
+	const chat = document.getElementById("chatMessages");
+	if (!chat) return;
+	const msg = document.createElement("div");
+	msg.className = type === "system" ? "text-gray-400 italic" : "text-white";
+	msg.textContent = text;
+	chat.appendChild(msg);
+	chat.scrollTop = chat.scrollHeight;
+}
+

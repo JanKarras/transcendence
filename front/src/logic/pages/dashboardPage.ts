@@ -9,6 +9,7 @@ import { logOut } from "../gloabal/logOut.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function dashboarPage(params: URLSearchParams | null) {
+	window.location.hash = "#dashboard";
 	await headerTemplate();
 
 	await initTranslations();
