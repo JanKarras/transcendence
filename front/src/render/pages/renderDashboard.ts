@@ -110,6 +110,24 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 						</div>
 					</div>
 				</div>
+				<div id="inviteModeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
+              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
+                <div class="flex gap-12 mt-4">
+                  <button id="startBtn" class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded">${t('startMatch')}</button>
+                  <button id="cancelBtn" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
+                </div>
+			  </div>
+			</div>
+			<!--  Invite  one cansel-->
+			<div id="inviteModeModalCancel" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
+              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
+                <div class="flex gap-12 mt-4">
+                  <button id="cancelBtnNew" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
+                </div>
+			  </div>
+			</div>
 			</main>
 
 			<aside class="w-96 p-4 overflow-y-auto">

@@ -12,9 +12,10 @@ let gameOver = false;
 export let currentMode: "local" | "remote" | null = null;
 
 export async function gamePage(params: URLSearchParams | null) {
+
 	const modeParam = params?.get("mode");
 	let username = params?.get("username");
-
+	console.log(params)
 	currentMode = modeParam === "local" || modeParam === "remote" ? modeParam : null;
 
 	let showUsernameModal = false;
@@ -23,7 +24,7 @@ export async function gamePage(params: URLSearchParams | null) {
 	await headerTemplate();
 	await renderGamePage(currentMode, showUsernameModal);
 
-	setGameEventListeners(username);
+	setGameEventListeners(username, params);
 
 }
 
@@ -44,19 +45,24 @@ export async function startLocalGame(username: string, ctx: CanvasRenderingConte
 	});
 }
 
-export async function startRemoteGame(ctx: CanvasRenderingContext2D): Promise<void> {
+export async function startRemoteGame(ctx: CanvasRenderingContext2D, params: URLSearchParams | null): Promise<void> {
 	const socket = await connect();
 	if (!socket) return;
 
 	socket.onmessage = (event: MessageEvent) => handleGameMessage(event, ctx, "remote");
 
-	await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
-		method: "POST",
-		headers: {
-			"Authorization": `Bearer ${localStorage.getItem("auth_token") || ""}`,
-		},
-		credentials: "include",
-	});
+	const via = params?.get("via");
+	console.log("VIAA", via);
+
+    const response = await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ via }),
+        credentials: "include"
+    });
 }
 
 function handleGameMessage(event: MessageEvent, ctx: CanvasRenderingContext2D, mode: "local" | "remote"): void {

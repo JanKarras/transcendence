@@ -3,7 +3,7 @@ import { navigateTo } from "../../router/navigateTo.js";
 
 
 
-export function setGameEventListeners(username : string | null | undefined): void {
+export function setGameEventListeners(username : string | null | undefined, params: URLSearchParams | null): void {
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
 	const ctx = canvas?.getContext("2d");
 	if (!ctx) return;
@@ -37,7 +37,8 @@ export function setGameEventListeners(username : string | null | undefined): voi
 	cancelUsernameBtn?.addEventListener("click", () => navigateTo("dashboard"));
 
 	if (currentMode === "remote") {
-		startRemoteGame(ctx);
+		console.log("remotgame started", params)
+		startRemoteGame(ctx, params);
 	} else if (username) {
 		startLocalGame(username, ctx);
 	}

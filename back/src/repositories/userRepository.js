@@ -79,17 +79,15 @@ function deleteFriends(userId, friendId) {
 
 function isUserBlockedByFriend(friendId, userId) {
     return db.prepare(`
-          SELECT CASE
-    WHEN EXISTS(
-        SELECT 1 FROM blocks
-        WHERE blocker_id = ? AND blocked_id = ?
-    ) THEN 2
-    WHEN EXISTS(
-        SELECT 1 FROM blocks
-        WHERE blocker_id = ? AND blocked_id = ?
-    ) THEN 1
-    ELSE 0
-END AS blocked
+    SELECT
+      (CASE WHEN EXISTS(
+         SELECT 1 FROM blocks WHERE blocker_id = ? AND blocked_id = ?
+       ) THEN 2 ELSE 0 END) -- friendId заблокировал userId → код 2
+      +
+      (CASE WHEN EXISTS(
+         SELECT 1 FROM blocks WHERE blocker_id = ? AND blocked_id = ?
+       ) THEN 1 ELSE 0 END) -- userId заблокировал friendId → код 1
+      AS blocked
     `).get(friendId, userId, userId, friendId);
 }
 

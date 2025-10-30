@@ -5,14 +5,15 @@ import {
     getStatus,
     getFreshToken,
 } from '../remote_storage/remote_storage.js';
-import { navigateTo } from '../view/history_views.js';
+import { renderProfile } from '../view/render_friend_profile.js';
+import { t } from "../constants/i18n.js";
+import { navigateTo } from '../router/navigateTo.js';
+
 
 let socket: WebSocket | null = null;
-let isConnecting = 0;
 let friendStatus = -1;
 let currentId: number | null = null;
 let friendId: number | null = null;
-let inviteStatus: number = 0;
 
 let friends: Friend[] = [];
 let messages: Message[] = [];
@@ -37,12 +38,11 @@ interface Message {
 }
 
 export async function connectWebSocket() {
+
     if (socket && socket.readyState === WebSocket.OPEN) return;
-    if (isConnecting) return;
+
     const token = await getFreshToken();
-    if (token) {
-        console.log('💬 Massage2:');
-    } else {
+    if (!token) {
         console.warn('WebSocket: No auth token found in cookies.');
     }
 
@@ -51,156 +51,122 @@ export async function connectWebSocket() {
     socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
-        isConnecting = 1;
+
+        console.log("open soket");
+        sendWS('dialog_open', { friendId, content: "4"});
+
     };
 
     socket.onmessage = (event) => {
-        // let msg: any;
-        // try {
-        //     msg = JSON.parse(event.data);
-        // } catch {
-        //     return;
-        // }
-
-        // switch (msg.type) {
-        //     case 'init': {
-        //         const { senderId: Id } = msg;
-        //         currentId = Id;
-        //         console.log('🔌 WebSocket connected', currentId);
-        //         break;
-        //     }
-
-        //     case 'chat': {
-        //         const { friendId: userId, senderName: name, content } = msg;
-        //         if (userId === friendId)
-        //             addMessageToChat(name, content, friendStatus);
-        //         break;
-        //     }
-
-        //     case 'chat-block': {
-        //         const { friendId: userId, senderName: name, content } = msg;
-        //         if (userId === currentId) {
-        //             if (socket && socket.readyState === WebSocket.OPEN) {
-        //                 friendId = 0;
-        //                 const chat = document.getElementById(
-        //                     'chatMessages'
-        //                 ) as HTMLElement;
-        //                 chat.innerHTML = '';
-        //                 addMessageToChat(name, content, friendStatus);
-        //             } else {
-        //                 console.warn(
-        //                     '❌ WebSocket not connected, trying to reconnect...'
-        //                 );
-        //                 reconnectAndRetryMessage(friendId, content);
-        //             }
-        //         }
-        //         break;
-        //     }
-
-        //     case 'read_receipt': {
-        //         const { readerId: userId, content } = msg;
-        //         if (userId === friendId) {
-        //             friendStatus = content === '1' ? 1 : 0;
-        //         }
-        //         if (content === '2') friendStatus = 0;
-        //         break;
-        //     }
-
-        //     case 'peer_dialog_open': {
-        //         if (msg.peerId === friendId) {
-        //             if (socket?.readyState === WebSocket.OPEN && friendId) {
-        //                 refreshDialog(friendId);
-        //             }
-        //         }
-        //         break;
-        //     }
-
-        //     case 'friend_status': {
-        //         const key = String(msg.userId);
-        //         const li = friendElById.get(key);
-        //         if (!li) return;
-        //         const nameSpan =
-        //             li.querySelector<HTMLSpanElement>('.friend-name');
-        //         if (!nameSpan) return;
-        //         const username = li.dataset.name || '';
-        //         const online = Number(msg.status);
-        //         nameSpan.textContent = `${username} ${
-        //             online === 1 ? '(online)' : '(offline)'
-        //         }`;
-        //         break;
-        //     }
-
-        //     case 'new_massage':
-        //         {
-        //             const key = String(msg.userId);
-        //             const badge = friendBadgeById.get(key);
-        //             if (!badge || msg.friendId !== currentId) return;
-        //             const has_unread = Number(msg.status);
-        //             badge.textContent = has_unread ? ' 📩' : '';
-        //             break;
-        //         }
-
-        //         //default:
-
-        //         break;
-        // }
         let msg: any;
-        try {
-            msg = JSON.parse(event.data);
-        } catch {
-            return;
-        }
-        if (msg.type === 'init') {
-            const { senderId: Id } = msg;
-            currentId = Id;
-            console.log('🔌 WebSocket connected', currentId);
-        }
-        if (msg.type === 'chat') {
-            const { friendId: userId, senderName: name, content } = msg;
-            if (userId === currentId && friendId)
-                addMessageToChat(name, content, friendStatus);
-        }
-        if (msg.type === 'chat-block') {
-            const { friendId: userId, senderName: name, content } = msg;
+    try {
+        msg = JSON.parse(event.data);
+    } catch {
+        return;
+    }
 
-            if (content === 'unblock' && friendId) {
-                refreshDialog(friendId);
-                return;
-            }
+    switch (msg.type) {
+        case 'init':
+            handleInit(msg);
+            break;
 
-            if (content === 'block' && userId === currentId) {
-                const newContent = ' has blocked you ❌ '; // uebersetzen
+        case 'chat':
+            handleChat(msg);
+            break;
 
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    const chat = document.getElementById('chatMessages') as HTMLElement;
-                    chat.innerHTML = '';
-                    addMessageToChat(name, newContent, friendStatus);
-                } else {
-                    console.warn('❌ WebSocket not connected, trying to reconnect...');
-                    reconnectAndRetryMessage(friendId, newContent);
-                }
-            }
+        case 'chat-block':
+            handleChatBlock(msg);
+            break;
+
+        case 'read_receipt':
+            handleReadReceipt(msg);
+            break;
+
+        case 'peer_dialog_open':
+            handlePeerDialogOpen(msg);
+            break;
+
+        case 'friend_status':
+            handleFriendStatus(msg);
+            break;
+
+        case 'new_message':
+            handleNewMassage(msg);
+            break;
+
+        case 'invite_message':
+            handleInviteMessage(msg);
+            break;
+    }
+    };
+
+    socket.onclose = (ev) => {
+        console.warn('🔌 WebSocket disconnected client');
+        socket = null;
+        closeDialog();
+    };
+
+    socket.onerror = (err) => {
+        console.error('⚠️ WebSocket error:', err);
+    };
+}
+
+function handleInit(msg: any) {
+    currentId = msg.senderId;
+    console.log('🔌 WebSocket connected', currentId);
+}
+
+function handleChat(msg: any) {
+    const { friendId: userId, senderName: name, content } = msg;
+    if (userId === currentId && friendId) {
+        addMessageToChat(name, content, friendStatus);
+    }
+}
+
+function handleChatBlock(msg: any) {
+    const { friendId: userId, senderName: name, content } = msg;
+    console.log("Content12, friend, userid",content, friendId, userId);
+    if (content === 'unblock' && friendId) {
+        refreshDialog(friendId);
+        return;
+    }
+
+    if (content === 'block' && userId === currentId) {
+        const newContent = t('cht.blocked_you');
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            const chat = document.getElementById('chatMessages') as HTMLElement;
+            chat.innerHTML = '';
+            addDisappearMessage(name + ': ' + newContent);
+        } else {
+            console.warn('❌ WebSocket not connected, trying to reconnect...');
+            retryMessage(friendId, newContent);
         }
-        if (msg.type === 'read_receipt') {
-            const { readerId: userId, content } = msg;
-            if (userId === friendId) {
-                content === '1' ? (friendStatus = 1) : (friendStatus = 0);
-            }
-            if (msg.content === '2') friendStatus = 0;
-            return;
+    }
+}
+
+function handleReadReceipt(msg: any) {
+
+    if (msg.readerId === friendId) {
+        friendStatus = msg.content === '1' ? 1 : 0;
+    }
+    if (msg.content === '2') friendStatus = 0;
+
+}
+
+function handlePeerDialogOpen(msg: any) {
+    if (friendId && msg.peerId === friendId) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log('peer_dialog_open');
+            refreshDialog(friendId);
         }
-        if (msg.type === 'peer_dialog_open') {
-            if (friendId && msg.peerId === friendId) {
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    console.log('peer_dialog_open');
-                        refreshDialog(friendId);
-                }
-            }
-            return;
-        }
-        if (msg.type === 'friend_status') {
+    }
+}
+
+function handleFriendStatus(msg: any) {
     const key = String(msg.userId);
     const li = friendElById.get(key);
+    const friend = friends.find(f => f.id === msg.userId);
+
     if (!li) return;
 
     const avatarWrapper = li.querySelector<HTMLDivElement>('.relative');
@@ -210,86 +176,161 @@ export async function connectWebSocket() {
     if (!statusDot) return;
 
     const online = Number(msg.status);
+
+    if (friend) friend.online = online === 1;
+
     statusDot.className = `w-3 h-3 rounded-full border-2 border-[#0f0f2a] absolute bottom-0 right-0 ${
         online === 1 ? 'bg-green-400' : 'bg-green-900'
     }`;
 }
-        if (msg.type === 'new_massage') {
-            const key = String(msg.userId);
-            const badge = friendBadgeById.get(key);
-            if (!badge || msg.friendId !== currentId) return;
-            const has_unread = Number(msg.status);
-            badge.textContent = has_unread ? ' 📩' : '';
-            return;
-        }
-        if (msg.type === 'invite_message') {
 
-            const { friendId: userId, friendUserName: name, content} = msg;
-            if (content === 'delete' && friendId)
-                {
-                    inviteStatus = 0;
-                    refreshDialog(friendId);
-                    return;
-                }
-            if (userId === currentId && content === 'sent'){
-                inviteStatus = 2;
-                //makeButton(name, 'Invite is decline',2);
-                //console.log('inviteStatus', inviteStatus)
-            }
-        }
-    };
-
-    socket.onclose = (ev) => {
-        console.warn('🔌 WebSocket disconnected client');
-        friendId = 0;
-        friendStatus = 0;
-        isConnecting = 0;
-        socket = null;
-        closeDialog();
-    };
-
-    socket.onerror = (err) => {
-        console.error('⚠️ WebSocket error:', err);
-        isConnecting = 0;
-    };
+function handleNewMassage(msg: any) {
+    const key = String(msg.userId);
+    const badge = friendBadgeById.get(key);
+    if (!badge || msg.friendId !== currentId) return;
+    const has_unread = Number(msg.status);
+    badge.textContent = has_unread ? ' 📩' : '';
 }
 
-async function refreshDialog(friendId: number) {
-    const friendTemp = friends.find((f) => f.id === friendId);
-    if (friendTemp) {
-        if (await getBlocked(friendId) === 2) return;
-        const chatHeader = document.getElementById('chatHeader') as HTMLElement;
-        chatHeader.textContent = `Chat with ${friendTemp.username}`;
-        messages = await getMessages(friendTemp.id);
-        const chat = document.getElementById('chatMessages') as HTMLElement;
-        chat.innerHTML = '';
-        messages.forEach((msg, index) => {
-            const isLast = index === messages.length - 1;
-            const sender =
-                msg.from_username === friendTemp.username
-                    ? msg.from_username
-                    : 'You';
-            if (msg.is_read && msg.from_username !== friendTemp.username)
-                addMessageToChat(sender, msg.content, 0);
-            else addMessageToChat(sender, msg.content, -1);
-            if(isLast && msg.content === 'An invitation to the game has been sent' && msg.is_invite === 1)
-            {
-                if(msg.from_username !== friendTemp.username && friendId)
-                    makeButton(sender, 'Invite is cancel', 1);
-                else if(msg.from_username === friendTemp.username && friendId)
-                    makeButton(sender, 'Invite is decline', 2);
-            }
-        });
+function handleInviteMessage(msg: any) {
+    const { friendId: userId, content } = msg;
+    if (content === 'delete' && friendId) {
+        const inviteMode = document.getElementById("inviteModeModal");
+        const inviteModeCancel = document.getElementById("inviteModeModalCancel");
+        inviteModeCancel?.classList.add("hidden");
+        inviteMode?.classList.add("hidden");
+        return;
+    }
+    if (content === 'accept'){
+
+
+        const p = new URLSearchParams();
+        p.set("mode", "remote");
+        p.set("via", "invite");
+        const inviteModeCancel = document.getElementById("inviteModeModalCancel");
+        inviteModeCancel?.classList.add("hidden");
+        console.log("🚦 Навигация в игру");
+        navigateTo("game", p);
+
+
+
+    }
+    if (userId === currentId && content === 'sent') {
+        renderInviteButtons(0);
     }
 }
 
 async function closeDialog() {
     friendId = 0;
     const chatHeader = document.getElementById('chatHeader') as HTMLElement;
-    chatHeader.textContent = `Select a chat partner`;
+    if (chatHeader) chatHeader.textContent = t('cht.selectChatPartner');
     const chat = document.getElementById('chatMessages') as HTMLElement;
-    chat.innerHTML = 'You left the chat!';
+    if (chat) chat.innerHTML = t('cht.leftChat');
+    const chatControls = document.getElementById('chatControls') as HTMLDivElement;
+    if (chatControls) chatControls.innerHTML = '';
+    const inviteMode = document.getElementById("inviteModeModal");
+    if (inviteMode) inviteMode?.classList.add("hidden");
+    const inviteModeCancel = document.getElementById("inviteModeModalCancel");
+    if (inviteModeCancel) inviteModeCancel?.classList.add("hidden");
 }
+
+async function blockedCheck(friendId: number): Promise<number> {
+    const temp = await getBlocked(friendId);
+    if (temp === 2 || temp === 3) {
+        addDisappearMessage(t('cht.blockedYou'));
+        return 2;
+    }
+    else if (temp === 1){
+        addDisappearMessage(t('cht.userBlocked'));
+        return 1;
+    }
+    return 0;
+}
+
+export async function blockUser(id: number) {
+    return toggleBlockUser(id, 'block');
+}
+
+export async function unblockUser(id: number) {
+    return toggleBlockUser(id, 'unblock');
+}
+
+async function toggleBlockUser(
+    targetId: number,
+    action: 'block' | 'unblock'
+) {
+
+    const msg = action === 'block' ? t('cht.retryBlock') : t('cht.retryUnblock');
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            connectWebSocket();
+            const chat = document.getElementById('chatMessages') as HTMLElement;
+            chat.innerHTML = t('cht.reconnecting');
+            addMessageToChat('', msg, -1);
+        }
+        return;
+    }
+
+    if (!friendId || friendId !== targetId) {
+        const chat = document.getElementById('chatMessages') as HTMLElement;
+        chat.innerHTML = t('cht.userSwitched');
+        addMessageToChat('', msg, -1);
+        setTimeout(() => connectDialog(targetId, ''), 2500);
+        return;
+    }
+
+    const label = action === 'block' ? t('cht.blocked') : t('cht.unblocked');
+    sendMessage(targetId, label);
+    console.log("Satatus Block = ", await getBlocked(friendId));
+    if (await getBlocked(friendId) === 2) {
+        addDisappearMessage(label);
+    } else {
+        addMessageToChat('You', label, friendStatus);
+    }
+
+    sendWS('blocked', { blockedId: targetId, content: action });
+}
+
+async function retryMessage(friendId: number | null, content: string) {
+    if (friendId === null) return;
+    const ok = await ensureConnected();
+    if (!ok || !socket) {
+        addDisappearMessage(t('cht.deliveryFail'));
+        return;
+    }
+    sendMessage(friendId, content);
+}
+
+async function renderChatMessages(peerId: number, peerName: string): Promise<void> {
+    const chatHeader = document.getElementById('chatHeader') as HTMLElement;
+    chatHeader.textContent = `${t('cht.chatWith')} ${peerName}`;
+
+    const chat = document.getElementById('chatMessages') as HTMLElement;
+    chat.innerHTML = '';
+    console.log("friendstatus masage", friendStatus);
+    messages = await getMessages(peerId);
+    messages.forEach((msg) => {
+        const sender = msg.from_username === peerName ? msg.from_username : t('cht.you');
+
+        if (msg.is_read && msg.from_username !== peerName)
+            addMessageToChat(sender, msg.content, 0);
+        else
+            addMessageToChat(sender, msg.content, -1);
+    });
+}
+
+async function refreshDialog(friendId: number) {
+    const friend = friends.find((f) => f.id === friendId);
+    if (!friend) return;
+
+    const blocked = await getBlocked(friendId);
+    if (blocked === 2) return;
+
+    await renderChatMessages(friend.id, friend.username);
+}
+
+
 
 export function addMessageToChat(
     from: string,
@@ -310,41 +351,54 @@ export function addMessageToChat(
 export function addDisappearMessage(content: string): void {
     const chat = document.getElementById('chatMessages') as HTMLElement;
     const div = document.createElement('div');
-    div.textContent = `${content}`;
+    div.textContent = content;
+    div.className = 'italic';
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+    console.log('inviteCheckStatus === ', content);
     setTimeout(() => {
         div.remove();
     }, 2000);
 }
 
 export async function sendMessage(friendId: number, content: string) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(
-            JSON.stringify({
-                type: 'send_message',
-                friendId,
-                content,
-            })
-        );
-    } else if (!socket || socket.readyState !== WebSocket.OPEN) {
-        console.warn('❌ WebSocket not connected, trying to reconnect...');
-        reconnectAndRetryMessage(friendId, content);
+    if (!content) return;
+
+    const ok = await ensureConnected();
+
+    if (!ok || !socket) {
+        addDisappearMessage(t('cht.noToken'));
+        return;
     }
-}
-export function reconnectAndRetryMessage(to: any, content: string) {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-        connectWebSocket();
-    }
-    setTimeout(() => {
-        if (content && socket && socket.readyState === WebSocket.OPEN) {
-            sendMessage(to, content);
-        }
-    }, 500);
+
+    sendWS('send_message', { friendId, content });
 }
 
-function waitForSocketOpen(socket: WebSocket, timeout = 3000): Promise<void> {
+function sendWS(type: string, payload: Record<string, any>): void {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.warn(`❌ WebSocket not ready. Cannot send ${type}`);
+        return;
+    }
+
+    const message = { type, ...payload };
+    socket.send(JSON.stringify(message));
+}
+
+async function ensureConnected(timeout = 3000): Promise<boolean> {
+    if (socket && socket.readyState === WebSocket.OPEN) return true;
+
+    await connectWebSocket();
+
+    try {
+        await waitForSocketOpen(socket!, timeout);
+        return true;
+    } catch {
+        console.warn('❌ WebSocket still not connected after retry.');
+        return false;
+    }
+}
+
+function waitForSocketOpen(socket: WebSocket, timeout = 2000): Promise<void> {
     return new Promise((resolve, reject) => {
         if (socket.readyState === WebSocket.OPEN) {
             resolve();
@@ -362,11 +416,58 @@ function waitForSocketOpen(socket: WebSocket, timeout = 3000): Promise<void> {
     });
 }
 
+async function renderChatControls(peerId: number, peerName: string): Promise<void> {
+    const chatControls = document.getElementById('chatControls') as HTMLDivElement;
+    chatControls.innerHTML = '';
+
+    const isBlocked = await getBlocked(peerId);
+    console.log('isBlocked = ', isBlocked);
+
+    const blockBtn = document.createElement('button');
+    if (isBlocked === 1 || isBlocked === 3) {
+        blockBtn.textContent = '🔓';
+        blockBtn.title = t('cht.unblock');
+        blockBtn.onclick = async () => {
+            await unblockUser(peerId);
+            await connectDialog(peerId, peerName); // Обновим интерфейс
+        };
+    } else {
+        blockBtn.textContent = '🚫';
+        blockBtn.title = t('cht.block');
+        blockBtn.onclick = async () => {
+            // if(await inviteCheckStatus(peerId)) return;
+            await blockUser(peerId);
+            await connectDialog(peerId, peerName);
+        };
+    }
+    chatControls.appendChild(blockBtn);
+
+    const inviteBtn = document.createElement('button');
+    inviteBtn.textContent = '🎮';
+    inviteBtn.title = t('cht.inviteToGame');
+    const friend = friends.find(f => f.id === peerId);
+    inviteBtn.onclick = async () => {
+        if (!friendId || await blockedCheck(friendId)) return;
+        if (!friend?.online) {
+            //console.log("He ist not online", friend?.online, friend)
+            addDisappearMessage("❌ " + peerName + " ist not online");
+            return;
+        }
+        else if (friendStatus === 0) {
+             addDisappearMessage("❌ " + peerName + " in another chat");
+            return;
+        }
+
+        await inviteFriend(friendId, peerName);
+    };
+    chatControls.appendChild(inviteBtn);
+}
+
 export async function connectDialog(
     peerId: number,
     peerName: string
 ): Promise<void> {
-    inviteStatus = 0;
+
     if(peerName === '')
     {
         const friend = friends.find(f => f.id === peerId);
@@ -390,99 +491,47 @@ export async function connectDialog(
             if (!token) throw new Error('No token');
 
             await connectWebSocket();
+
         }
 
         if (!socket) throw new Error('No socket');
 
         await waitForSocketOpen(socket);
 
-        if (friendId) {
-            sendconnect(friendId, '1');
+        messages = await getMessages(friendId);
+
+        if (friendId && await getBlocked(friendId) !== 3 && messages) {
+            if(messages[messages.length - 1].is_read === 1) {sendconnect(friendId, '4');}
+            else sendconnect(friendId, '1');
             refreshFriendsList();
         }
     } catch (err) {
-        alert('❌ Message not sent: WebSocket not connected.');
+        console.log('❌ Message not sent: WebSocket not connected.');
     }
 
-    if (await blockedCheck(friendId) === 2) {
-        console.log('blockedCheck(friendId) === 2');
-        const chatHeader = document.getElementById('chatHeader') as HTMLElement;
-        chatHeader.textContent = `Chat with ${peerName}`;
-        const chat = document.getElementById('chatMessages') as HTMLElement;
-        return;
-    }
 
-    const chatHeader = document.getElementById('chatHeader') as HTMLElement;
-    chatHeader.textContent = `Chat with ${peerName}`;
-    messages = await getMessages(peerId);
-    messages.forEach((msg, index) => {
-        const isLast = index === messages.length-1;
-        const sender =
-            msg.from_username === peerName ? msg.from_username : 'You';
-        if (msg.is_read && msg.from_username !== peerName)
-            addMessageToChat(sender, msg.content, 0);
-        else addMessageToChat(sender, msg.content, -1);
-        if(isLast && msg.content === 'An invitation to the game has been sent' && msg.is_invite === 1)
-        {
-            if(msg.from_username !== peerName && friendId)
-            {
-                makeButton(sender, 'Invite is cancel', 1);
-                inviteStatus = 1;
-            }
-            else if(msg.from_username === peerName && friendId)
-            {
-                makeButton(sender, 'Invite is decline', 2);
-                inviteStatus = 1;
-            }
-        }
-    });
 	const chatControls = document.getElementById('chatControls') as HTMLDivElement;
-chatControls.innerHTML = ''; // vorher leeren
+    chatControls.innerHTML = '';
 
-// --- Block/Unblock Button ---
-const blockBtn = document.createElement('button');
-const isBlocked = await blockedCheck(peerId) === 1;
-if (isBlocked) {
-    blockBtn.textContent = '🔓';
-    blockBtn.title = 'Unblock';
-    blockBtn.onclick = async () => {
-        await unblockUser(peerId);
-        await connectDialog(peerId, peerName); // Header neu rendern
-    };
-} else {
-    blockBtn.textContent = '🚫';
-    blockBtn.title = 'Block';
-    blockBtn.onclick = async () => {
-        await blockUser(peerId);
-        await connectDialog(peerId, peerName);
-    };
-}
-chatControls.appendChild(blockBtn);
+    await renderChatControls(peerId, peerName);
+    const res = await getBlocked(friendId);
 
-// --- Play/Invite Button ---
-const playBtn = document.createElement('button');
-playBtn.textContent = '🎮';
-playBtn.title = 'Invite to game';
-playBtn.onclick = async () => {
-    if (!friendId) return;
-    await inviteFriend(friendId, peerName);
-    inviteStatus = 1;
-    playBtn.disabled = true; // optional: Button nach Klick deaktivieren
-};
-chatControls.appendChild(playBtn);
+    if (res === 2 || res === 3) {
+            addDisappearMessage(t('cht.blockedYou'));
+            console.log('blockedCheck(friendId) === ', res);
+            const chatHeader = document.getElementById('chatHeader') as HTMLElement;
+            chatHeader.textContent = `${t('cht.chatWith')} ${peerName}`;
+            //const chat = document.getElementById('chatMessages') as HTMLElement;
+            return;
+    }
+    if (!messages) return;
+    await renderChatMessages(peerId, peerName);
 
 }
 
 async function sendconnect(friendId: number, content: string) {
-    console.log('second connect', friendId, content);
     if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(
-            JSON.stringify({
-                type: 'dialog_open',
-                friendId,
-                content,
-            })
-        );
+        sendWS('dialog_open', { friendId, content });
     } else if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn('❌ WebSocket disconnected');
     }
@@ -490,120 +539,18 @@ async function sendconnect(friendId: number, content: string) {
 
 export async function friendChat(content: string) {
     if (friendId) {
-        if (
-            await blockedCheck(friendId)) {
+        if (await blockedCheck(friendId)) {
             return;
         }
-        if (await inviteCheckStatus(friendId)) return;
         sendMessage(friendId, content);
-        addMessageToChat('You', content, friendStatus);
+        addMessageToChat(t('cht.you'), content, friendStatus);
     } else {
         const chat = document.getElementById('chatMessages') as HTMLElement;
         chat.innerHTML = '';
-        //addMessageToChat('', 'Select a chat partner', -1);
-        addDisappearMessage('Select a chat partner');
+        addDisappearMessage(t('cht.selectChatPartner'));
     }
 }
 
-async function blockedCheck(friendId: number): Promise<number> {
-    const temp = await getBlocked(friendId);
-    if (temp === 2) {
-        //console.log('blockedCheck  2')
-        //addMessageToChat('', '❌ You have been blocked!', -1);
-        addDisappearMessage('❌ You have been blocked!');
-        return 2;
-    }
-    else if (temp === 1){
-        //console.log('blocked  Check  1')
-        //addMessageToChat('', '❌ User is blocked!', -1);
-        addDisappearMessage('❌ User is blocked!');
-        return 1;
-    }
-    return 0;
-}
-
-export async function blockUser(blockedId: number) {
-    const content = 'block';
-    //console.log('inviteStatus = ', inviteStatus);
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        if (await inviteCheckStatus(blockedId)) return;
-        if (!friendId || friendId !== blockedId)
-        {
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'You have switched or not selected a user';
-            addMessageToChat('', 'Retry blocking!', -1);
-            setTimeout(() => {
-                connectDialog(blockedId, '');
-            }, 2500);
-            return;
-        }
-        sendMessage(blockedId, '🚫Blocked');
-        if (await getBlocked(friendId) === 2) {
-            //addMessageToChat('You', '🚫Blocked', friendStatus);
-            addDisappearMessage('🚫Blocked');
-        }
-        else{
-            addMessageToChat('You', '🚫Blocked', friendStatus);
-        }
-        socket.send(
-            JSON.stringify({
-                type: 'blocked',
-                blockedId,
-                content,
-            })
-        );
-    } else if (!socket || socket.readyState !== WebSocket.OPEN) {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            connectWebSocket();
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'Reconnecting...';
-            addMessageToChat('', 'Retry blocking!', -1);
-        }
-    }
-}
-
-export async function unblockUser(blockedId: number) {
-    const content = 'unblock';
-    console.log('blockedId = ', blockedId);
-    if (socket && socket.readyState === WebSocket.OPEN ) {
-        if (friendId !== blockedId)
-        {
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'You have switched or not selected a user';
-            addMessageToChat('', 'Retry unblocking!', -1);
-            setTimeout(() => {
-                connectDialog(blockedId, '');
-            }, 2500);
-            return;
-        }
-        sendMessage(blockedId, '🔓Unblocked');
-        //if (await getBlocked(blockedId) !== 2)
-        if (await getBlocked(friendId) === 2) {
-            //addMessageToChat('You', '🔓Unblocked', friendStatus);
-            addDisappearMessage('🔓Unblocked');
-        }
-        else{
-            addMessageToChat('You', '🔓Unblocked', friendStatus);
-        }
-        //addMessageToChat('You', '🔓Unblocked', friendStatus);
-        socket.send(
-            JSON.stringify({
-                type: 'blocked',
-                blockedId,
-                content,
-            })
-        );
-    } else if (!socket || socket.readyState !== WebSocket.OPEN) {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            connectWebSocket();
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'Reconnecting...';
-            addMessageToChat('', 'Retry unblocking!', -1);
-        }
-    }
-}
 
 export async function renderFriendsList(friends: Friend[]): Promise<void> {
     const list = document.getElementById('friendsList') as HTMLUListElement;
@@ -632,11 +579,17 @@ export async function renderFriendsList(friends: Friend[]): Promise<void> {
     avatar.className = 'w-8 h-8 rounded-full object-cover cursor-pointer';
 
     // Klick aufs Avatar öffnet Profil
-    avatar.onclick = () => {
+    avatar.onclick = async () => {
+        if (await blockedCheck(friend.id)) return;
+        const chatMessages = document.getElementById("chatMessages");
+        if (chatMessages) {
+        chatMessages.scrollTop = 0;
+        }
         openProfile(friend.id);
     };
 
     // Online-Punkt (absolute)
+    friend.online = statuses[i] ? true : false ;
     const isOnline = statuses[i] === 1;
     const statusDot = document.createElement('span');
     statusDot.className = `w-3 h-3 rounded-full border-2 border-[#0f0f2a] absolute bottom-0 right-0 ${
@@ -652,42 +605,14 @@ export async function renderFriendsList(friends: Friend[]): Promise<void> {
     nameSpan.textContent = friend.username;
     nameSpan.onclick = () => connectDialog(friend.id, friend.username);
 
-    // Block & Invite Buttons
-    const blockBtn = document.createElement('button');
-    if (friend.blocked) {
-        blockBtn.textContent = '🔓';
-        blockBtn.title = 'Unblock';
-        blockBtn.onclick = async () => {
-            await unblockUser(friend.id);
-            refreshFriendsList();
-        };
-    } else {
-        blockBtn.textContent = '🚫';
-        blockBtn.title = 'Block';
-        blockBtn.onclick = async () => {
-            await blockUser(friend.id);
-            refreshFriendsList();
-        };
-    }
-
-    const inviteBtn = document.createElement('button');
-    inviteBtn.textContent = '🎮';
-    inviteBtn.title = 'Invite';
-    inviteBtn.onclick = async () => {
-        await inviteFriend(friend.id, friend.username);
-    };
-
     const badge = document.createElement('span');
     badge.dataset.id = key;
     badge.className = 'unread-badge ml-auto';
     badge.textContent = friend.has_unread ? '📩' : '';
     friendBadgeById.set(key, badge);
 
-    // Append in order: avatarWrapper + name + buttons + badge
     li.appendChild(avatarWrapper);
     li.appendChild(nameSpan);
-    //li.appendChild(blockBtn);
-    //li.appendChild(inviteBtn);
     li.appendChild(badge);
 
     list.appendChild(li);
@@ -696,128 +621,124 @@ export async function renderFriendsList(friends: Friend[]): Promise<void> {
 
 }
 
-
 export async function refreshFriendsList(): Promise<void> {
     friends = await getFriends();
     renderFriendsList(friends);
 }
 
 async function inviteFriend(inviterId: number, username : string): Promise<void>{
-    if (friendId !== inviterId)
-        {
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'You have switched or not selected a user';
-            addMessageToChat('', 'Retry sending invite', -1);
-            setTimeout(() => {
-                connectDialog(inviterId, '');
-            }, 2500);
-            return;
-        }
+
     if (await blockedCheck(inviterId)) return;
-    console.log(' inviteStatus',  inviteStatus);
+
     if (socket && socket.readyState === WebSocket.OPEN) {
-        if (await inviteCheckStatus(inviterId)) return;
-        inviteStatus = 1;
-        connectDialog(inviterId, username);
-        sendMessage(inviterId, 'An invitation to the game has been sent');
-        socket.send(
-            JSON.stringify({
-                type: "invite_message",
-                to: inviterId,
-                from: currentId,
-                fromUsername: username,
-                content: 'sent',
-            })
-        );
+        addMessageToChat(t('cht.you'), t('cht.inviteSent'), friendStatus);
+        sendMessage(inviterId, t('cht.inviteSent'));
+        sendWS('invite_message', {
+            to: inviterId,
+            from: currentId,
+            fromUsername: username,
+            content: 'sent',
+        });
+
+        renderInviteButtons(1);
+
     } else if (!socket || socket.readyState !== WebSocket.OPEN) {
         const token = localStorage.getItem('auth_token');
         if (token) {
             connectWebSocket();
             const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = 'Reconnecting...';
-            addMessageToChat('', 'Retry sending invite!', -1);
+            chat.innerHTML = t('cht.reconnecting');
+            addMessageToChat('', t('cht.retryInvite'), -1);
         }
     }
 }
 
-async function inviteCheckStatus(inviterId: number): Promise<number>
-{
-    if (inviteStatus === 1 && inviterId === friendId){
-        //addMessageToChat('', 'Wait for a response or cancel the invite!', -1);
-        addDisappearMessage('Wait for a response or cancel the invite!');
-        return 1;
-    }
-    else if (inviteStatus === 2 && inviterId === friendId){
-        //addMessageToChat('', 'Accept or cancel the invite!', -1);
-        addDisappearMessage('Accept or cancel the invite!');
-        return 1;
-    }
-    return 0;
-}
+async function renderInviteButtons(isInvite: Number): Promise<void> {
 
-async function makeButton(username: string, content: string, statusInv: number): Promise<void> {
-    const chat = document.getElementById('chatMessages') as HTMLElement;
-    const container = document.createElement('div');
-    container.className = 'flex gap-2 mt-2'; // optional: Abstand zwischen Buttons
+    if (isInvite)
+    {
+        const inviteMode = document.getElementById("inviteModeModalCancel");
+        const cancelBtn = document.getElementById("cancelBtnNew");
 
-    // --- Accept Button ---
-    const acceptBtn = document.createElement('button');
-    if (statusInv === 2) {
-        acceptBtn.title = 'Accept Invite';
-        acceptBtn.classList.add('accept-btn'); // für CSS Styling
-        // z.B. Icon als Bild
-        const acceptIcon = document.createElement('img');
-        acceptIcon.src = '/assets/img/icon/accept.png'; // Pfad zum Accept-Icon
-        acceptIcon.alt = 'Accept';
-        acceptIcon.className = 'w-6 h-6'; // Größe anpassen
-        acceptBtn.appendChild(acceptIcon);
+        inviteMode?.classList.remove("hidden");
 
-        acceptBtn.onclick = () => {
-            // z.B. Spiel starten
-            console.log('Accept clicked for', friendId);
-        };
-        container.appendChild(acceptBtn);
-    }
+        const newCancelBtn = cancelBtn?.cloneNode(true) as HTMLElement;
+        cancelBtn?.replaceWith(newCancelBtn);
 
-    // --- Decline / Cancel Button ---
-    const declineBtn = document.createElement('button');
-    declineBtn.title = statusInv === 1 ? 'Cancel Invite' : 'Decline Invite';
-    declineBtn.classList.add('decline-btn');
-    const declineIcon = document.createElement('img');
-    declineIcon.src = '/assets/img/icon/cancel.png'; // Pfad zum Accept-Icon
-    declineIcon.alt = 'Cancel';
-    declineIcon.className = 'w-6 h-6';
-    declineBtn.appendChild(declineIcon);
+        const cBtn = document.getElementById("cancelBtnNew");
 
-    declineBtn.onclick = () => {
-        if (friendId) {
-            sendMessage(friendId, content);
-            refreshDialog(friendId);
-        }
-        addMessageToChat('You', content, -1);
-        inviteStatus = 0;
-
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(
-                JSON.stringify({
-                    type: "invite_message",
+        cBtn?.addEventListener("click", () => {
+            inviteMode?.classList.add("hidden");
+            sendMessage(friendId!, t('cht.inviteCancelled'));
+            addMessageToChat('You', t('cht.inviteCancelled'), friendStatus);
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                sendWS('invite_message', {
                     to: friendId,
                     from: currentId,
-                    fromUsername: username,
                     content: 'delete',
-                })
-            );
-        }
-        container.remove();
-    };
+                });
+            }
+        });
+    }
+    else{
+        const inviteMode = document.getElementById("inviteModeModal");
+        const startBtn = document.getElementById("startBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
 
-    container.appendChild(declineBtn);
-    chat.appendChild(container);
-    chat.scrollTop = chat.scrollHeight;
+        inviteMode?.classList.remove("hidden");
+
+        const newStartBtn = startBtn?.cloneNode(true) as HTMLElement;
+        const newCancelBtn = cancelBtn?.cloneNode(true) as HTMLElement;
+        startBtn?.replaceWith(newStartBtn);
+        cancelBtn?.replaceWith(newCancelBtn);
+
+        const sBtn = document.getElementById("startBtn");
+        const cBtn = document.getElementById("cancelBtn");
+
+        sBtn?.addEventListener("click", async () => {
+            const token = await getFreshToken();
+            console.log("🔥🔥🔥🔥🔥 userId", token );
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                sendWS('invite_message', {
+                    to: friendId,
+                    from: currentId,
+                    content: 'accept',
+                });
+            }
+
+            const p = new URLSearchParams();
+            p.set("mode", "remote");
+            p.set("via", "invite");
+            inviteMode?.classList.add("hidden");
+            setTimeout(() => {
+            navigateTo("game", p);
+            },500);
+        });
+
+        cBtn?.addEventListener("click", () => {
+            inviteMode?.classList.add("hidden");
+            sendMessage(friendId!, t('cht.inviteCancelled'));
+            addMessageToChat('You', t('cht.inviteCancelled'), friendStatus);
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                sendWS('invite_message', {
+                    to: friendId,
+                    from: currentId,
+                    content: 'delete',
+                });
+            }
+        });
+    }
 }
 
 async function openProfile(userId: number): Promise<void> {
-  const params = new URLSearchParams();
-  params.set('id', userId.toString());  // ID als String setzen
-  await navigateTo('friend_profile', params);
+    const friend = friends.find(f => f.id === userId);
+
+    const chat = document.getElementById("chatMessages") as HTMLElement;
+	chat.innerHTML = "";
+
+	const fakeBodyContainer = document.createElement("div");
+	fakeBodyContainer.id = "bodyContainer";
+	chat.appendChild(fakeBodyContainer);
+
+    await renderProfile(friend as any, userId, chat);
 }

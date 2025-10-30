@@ -4,7 +4,7 @@ import { getMatchHistory, getUserForProfile } from "../remote_storage/remote_sto
 import { render_header } from "./render_header.js";
 import { initTranslations, t } from "../constants/i18n.js"
 
-async function renderProfile(user: UserInfo, id: number) {
+export async function renderProfile(user: UserInfo, id: number, container: HTMLElement | null) {
 	const safePath = user.path ? `/api/get/getImage?filename=${encodeURIComponent(user.path)}` : './assets/img/default-user.png';
 
     await initTranslations();
@@ -25,8 +25,8 @@ async function renderProfile(user: UserInfo, id: number) {
 		</div>
 	`;
 
-	if (!bodyContainer) return;
-	bodyContainer.innerHTML = profileHTML;
+	if (!container) return;
+	container.innerHTML = profileHTML;
 
 	const profileInner = document.getElementById("profileInner");
 	const containerHeight = profileInner?.offsetHeight || 400;
@@ -34,7 +34,7 @@ async function renderProfile(user: UserInfo, id: number) {
 	const showHistoryBtn = document.getElementById("showHistoryBtn");
 	showHistoryBtn?.addEventListener("click", async () => {
 		const matchHistory = await getMatchHistory(Number(id));
-		renderMatchHistory(matchHistory || [], () => renderProfile(user, id), containerHeight);
+		renderMatchHistory(matchHistory || [], () => renderProfile(user, id, container), containerHeight);
 	});
 }
 
@@ -55,7 +55,7 @@ function renderMatchHistory(matches: any[], backToProfile: () => void, fixedHeig
 			<h2 class="text-xl font-semibold mb-4">${t('matchHis')}</h2>
 			<div class="space-y-4 overflow-y-auto" style="min-height: ${fixedHeight - 28 - 40 - 16 - 16}px; max-height: ${fixedHeight - 28 - 40 - 16 - 16}px;">
 				${matches.map(match => {
-					const maxRank = Math.min(...match.players.map((p: any) => p.rank)); 
+					const maxRank = Math.min(...match.players.map((p: any) => p.rank));
 					return `
 						<div class="border p-3 rounded bg-gray-50">
 							<p class="font-medium"><strong>${formatMatchType(match.match_type)}</strong> ${match.tournament_name ? `- ${match.tournament_name} (${t('round')} ${match.round})` : ''}</p>
@@ -92,7 +92,7 @@ export async function render_friend_profile(params: URLSearchParams | null) {
 	const user = await getUserForProfile(id);
 	if ('error' in user) return;
 
-	await renderProfile(user, Number(id));
+	await renderProfile(user, Number(id), bodyContainer);
 }
 
 function renderReadonlyField(field: string, value: string | number) {

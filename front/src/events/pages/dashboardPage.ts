@@ -1,4 +1,5 @@
 import { navigateTo } from "../../router/navigateTo.js";
+import { friendChat } from "../../websocket/ws.js";
 
 export async function setEventListenersDashboardPage() {
 	const playNowBtn = document.getElementById("playNowBtn");
@@ -22,4 +23,26 @@ export async function setEventListenersDashboardPage() {
 	localBtn?.addEventListener("click", () => { const p = new URLSearchParams(); p.set("mode","local"); navigateTo("game", p); });
 	remoteBtn?.addEventListener("click", () => navigateTo("matchmaking"));
 	startTournamentBtn?.addEventListener("click", () => navigateTo("tournament"));
+}
+
+export async function setEventListenersDashboardPageChat() {
+	const sendBtn = document.getElementById('sendBtn') as HTMLButtonElement;
+	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
+
+	function sendMessageHandler() {
+	    const content: string = chatInput.value.trim();
+	    if (content) {
+	        friendChat(content);
+	        chatInput.value = '';
+	    }
+	}
+
+	sendBtn.addEventListener('click', sendMessageHandler);
+
+	chatInput.addEventListener('keydown', (e) => {
+	    if (e.key === 'Enter') {
+	        e.preventDefault();
+	        sendMessageHandler();
+	    }
+	});
 }
