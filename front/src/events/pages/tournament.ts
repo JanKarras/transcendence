@@ -23,4 +23,10 @@ export async function setTournamentEventListeners(socket: WebSocket): Promise<vo
 		console.warn("🔴 Tournament WebSocket disconnected");
 		navigateTo("dashboard");
 	};
+
+	setInterval(() => {
+		if (socket.readyState === WebSocket.OPEN) {
+			socket.send(JSON.stringify({ type: "ping" }));
+		}
+	}, 30000);
 }

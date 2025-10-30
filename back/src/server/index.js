@@ -7,6 +7,7 @@ const fastifyWebsocket = require('@fastify/websocket');
 const gameController = require('../controllers/gameController');
 const tournamentController = require('../controllers/tournamentController');
 const friendController = require('../controllers/friendsWsController');
+const dashboardController = require('../controllers/dashboardWsController');
 const wsChat = require('../websocket/ws');
 const wsTournament = require('../websocket/tournament');
 
@@ -35,6 +36,7 @@ fastify.register(wsChat);
 fastify.register(gameController.chatWebSocketRoute);
 fastify.register(tournamentController.tournamentRoute);
 fastify.register(friendController.friendRoute);
+fastify.register(dashboardController.dashboardRoute);
 
 const start = async () => {
   try {
