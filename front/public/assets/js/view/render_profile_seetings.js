@@ -1,9 +1,10 @@
 import { bodyContainer, friendsBtn, friendsNumber, headernavs, profile, profileContainer, profileImg } from "../constants/constants.js";
-import { createTwoFaApp, getMatchHistory, getUser, logOutApi, saveProfileChanges } from "../remote_storage/remote_storage.js";
+import { createTwoFaApp, getMatchHistory, getUser, logOutApi, saveProfileChanges, verifyTwoFaCode } from "../remote_storage/remote_storage.js";
 import { showErrorMessage } from "../templates/popup_message.js";
 import { render_with_delay } from "../utils/render_with_delay.js";
 import { render_header } from "./render_header.js";
 import { t } from "../constants/i18n.js";
+let twoFaVerified = false;
 export async function render_profile_settings(params) {
     if (!bodyContainer || !profile || !headernavs || !profileContainer || !profileImg || !friendsBtn || !friendsNumber) {
         console.error("Missing required DOM elements");
@@ -40,9 +41,9 @@ export async function render_profile_settings(params) {
 		</div>
 
 		<div class="flex space-x-4 mt-4" id="matchHistoryContainer">
-			<button id="matchhis" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
+			<!--<button id="matchhis" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
 				${t('matchHis')}
-			</button>
+			</button>-->
 			<button id="twofaSettingsBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
 				${t('twofaSettings')}
 			</button>
@@ -181,6 +182,15 @@ export function renderTwoFASettings(user, backToProfile) {
 		<div id="authAppQRContainer" class="mt-4 hidden text-center">
 			<p class="text-gray-600 mb-2">${t('twofaScanQR')}</p>
 			<img id="authAppQR" src="" class="mx-auto w-48 h-48 border rounded" />
+
+			<div class="mt-2 flex flex-col items-center space-y-2">
+				<input id="twoFaCodeInput" type="text" maxlength="6" placeholder="Enter 6-digit code"
+					class="text-center border border-gray-300 rounded px-3 py-2 w-40 tracking-widest text-lg" />
+				<button id="verifyTwoFaCodeBtn" class="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600">
+					${t('verify')}
+				</button>
+				<p id="twoFaVerifyMessage" class="text-sm text-gray-600 mt-1"></p>
+			</div>
 		</div>
 
 		<!-- Buttons -->
@@ -225,7 +235,7 @@ export function renderTwoFASettings(user, backToProfile) {
             // QR-Code anfordern
             if (qrContainer && qrImg) {
                 qrContainer.classList.remove('hidden');
-                qrImg.src = ''; // clear vorherigen QR
+                qrImg.src = '';
                 const res = await createTwoFaApp();
                 if (res.success && res.qrCodeDataUrl) {
                     qrImg.src = res.qrCodeDataUrl;
@@ -257,7 +267,10 @@ export function renderTwoFASettings(user, backToProfile) {
     // Speichern
     saveBtn?.addEventListener('click', async () => {
         const isActive = toggle?.checked ?? false;
-        const selected = document.querySelector('input[name="twofaMethod"]:checked')?.value || 'email';
+        let selected = document.querySelector('input[name="twofaMethod"]:checked')?.value || 'email';
+        if (selected === 'authapp' && !twoFaVerified) {
+            selected = 'email';
+        }
         const formData = new FormData();
         formData.append('twofa_active', isActive ? '1' : '0');
         formData.append('twofa_method', isActive ? selected : '');
@@ -270,6 +283,28 @@ export function renderTwoFASettings(user, backToProfile) {
         }
     });
     cancelBtn?.addEventListener('click', backToProfile);
+    const verifyBtn = document.getElementById("verifyTwoFaCodeBtn");
+    const verifyInput = document.getElementById("twoFaCodeInput");
+    const verifyMsg = document.getElementById("twoFaVerifyMessage");
+    verifyBtn?.addEventListener("click", async () => {
+        const code = verifyInput?.value.trim();
+        if (!code || code.length !== 6) {
+            verifyMsg.textContent = t('twofaCodeInvalid') || "Please enter a 6-digit code.";
+            verifyMsg.className = "text-sm text-red-500";
+            return;
+        }
+        const data = await verifyTwoFaCode(code);
+        if (data.success) {
+            twoFaVerified = true;
+            verifyMsg.textContent = t('twofaCodeVerified') || "✅ Code verified successfully!";
+            verifyMsg.className = "text-sm text-green-600";
+        }
+        else {
+            twoFaVerified = false;
+            verifyMsg.textContent = t('twofaCodeWrong') || "❌ Invalid code.";
+            verifyMsg.className = "text-sm text-red-500";
+        }
+    });
 }
 function renderReadonlyField(field, value) {
     const key = "profileLabel." + field;
@@ -284,7 +319,6 @@ function renderReadonlyField(field, value) {
     // const key = "profileLabel." + field;
 }
 function renderEditableField(field, value, type = "text") {
-    // Mapping von Frontend-Feld zu Backend-Feld
     const backendFieldMap = {
         username: "username",
         firstName: "first_name",
@@ -293,11 +327,18 @@ function renderEditableField(field, value, type = "text") {
     };
     const backendName = backendFieldMap[field] || field;
     const label = t("profileLabel." + field) || field;
+    const isUsername = field === "username";
+    const disabledAttr = isUsername ? "disabled" : "";
+    const isAge = field === "age";
+    const extraAttrs = isAge ? 'min="0" max="99"' : "";
+    const extraClasses = isUsername
+        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+        : "bg-gray-100 text-gray-700 transition hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500";
     return `
 	<div class="w-full">
 	  <label class="block text-sm font-medium text-gray-600 mb-1">${label}</label>
-	  <input name="${backendName}" placeholder="${label}" value="${value}" type="${type}"
-		class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-700 transition hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+	  <input name="${backendName}" placeholder="${label}" value="${value}" type="${type}" ${disabledAttr} ${extraAttrs}
+		class="w-full px-4 py-3 border border-gray-300 rounded-md ${extraClasses}" />
 	</div>`;
 }
 function renderMatchHistorySettings(matches, backToProfile) {

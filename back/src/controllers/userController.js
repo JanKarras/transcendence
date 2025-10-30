@@ -142,94 +142,96 @@ exports.createUser = async (request, reply) => {
 
 const rawAllowed = (process.env.ALLOWED_IMAGE_TYPES || '').trim();
 const ALLOWED_IMAGE_MIME = rawAllowed
-  ? rawAllowed.split(',').map(s => s.trim().toLowerCase())
-  : ['image/png', 'image/jpeg', 'image/webp']; // default fallback
+	? rawAllowed.split(',').map(s => s.trim().toLowerCase())
+	: ['image/png', 'image/jpeg', 'image/webp']; // default fallback
 
 exports.updateUser = async function (req, reply) {
-  const userId = await userUtil.getUserIdFromRequest(req);
-  if (!userId) {
-    return reply.code(401).send({ success: false, error: "Not authenticated" });
-  }
+	const userId = await userUtil.getUserIdFromRequest(req);
+	if (!userId) {
+		return reply.code(401).send({ success: false, error: "Not authenticated" });
+	}
 
-  const parts = req.parts();
-  let firstName = null;
-  let lastName = null;
-  let age = null;
-  let imageName = null;
-  let twofaActive = null;
-  let twofa_method = null;
+	const parts = req.parts();
+	let firstName = null;
+	let lastName = null;
+	let age = null;
+	let imageName = null;
+	let twofaActive = null;
+	let twofa_method = null;
 
-  for await (const part of parts) {
-    console.log("Part:", part.fieldname, part.type, part.value);
+	for await (const part of parts) {
+		console.log("Part:", part.fieldname, part.type, part.value);
 
-    if (part.type === "file") {
-      const buffer = await part.toBuffer();
+		if (part.type === "file") {
+			const buffer = await part.toBuffer();
 
-      if (buffer.length > MAX_IMAGE_SIZE) {
-        return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
-      }
+			if (buffer.length > MAX_IMAGE_SIZE) {
+				return reply.code(400).send({ success: false, error: "Image too large. Max 5 MB" });
+			}
 
-      const type = await FileType.fileTypeFromBuffer(buffer);
-      if (!type || !ALLOWED_IMAGE_MIME.includes(type.mime)) {
-        return reply.code(400).send({ success: false, error: "Invalid image type" });
-      }
+			const type = await FileType.fileTypeFromBuffer(buffer);
+			if (!type || !ALLOWED_IMAGE_MIME.includes(type.mime)) {
+				return reply.code(400).send({ success: false, error: "Invalid image type" });
+			}
 
-      try {
-        await sharp(buffer).metadata();
-      } catch (err) {
-        return reply.code(400).send({ success: false, error: "File is not a valid image" });
-      }
+			try {
+				await sharp(buffer).metadata();
+			} catch (err) {
+				return reply.code(400).send({ success: false, error: "File is not a valid image" });
+			}
 
-      const uploadsDir = path.join(__dirname, '../../profile_images');
-      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+			const uploadsDir = path.join(__dirname, '../../profile_images');
+			if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-      const uniqueFilename = `${Date.now()}.${type.ext}`;
-      const fullPath = path.join(uploadsDir, uniqueFilename);
+			const uniqueFilename = `${Date.now()}.${type.ext}`;
+			const fullPath = path.join(uploadsDir, uniqueFilename);
 
-      fs.writeFileSync(fullPath, buffer);
-      imageName = uniqueFilename;
+			fs.writeFileSync(fullPath, buffer);
+			imageName = uniqueFilename;
 
-      console.log("✅ Image saved:", fullPath);
+			console.log("✅ Image saved:", fullPath);
+		}
 
-    } else if (part.type === "field") {
-      switch (part.fieldname) {
-        case "first_name":
-          if (!NAME_REGEX.test(part.value)) {
-            return reply.code(400).send({ success: false, error: "Invalid first name" });
-          }
-          firstName = part.value.trim();
-          break;
+		else if (part.type === "field") {
+			const val = typeof part.value === "string" ? part.value.trim() : "";
 
-        case "last_name":
-          if (!NAME_REGEX.test(part.value)) {
-            return reply.code(400).send({ success: false, error: "Invalid last name" });
-          }
-          lastName = part.value.trim();
-          break;
+			switch (part.fieldname) {
+				case "first_name":
+					firstName = val === "" ? "not provided" : val;
+					break;
 
-        case "age":
-          if (!/^\d+$/.test(part.value)) {
-            return reply.code(400).send({ success: false, error: "Invalid age" });
-          }
-          age = parseInt(part.value, 10);
-          break;
+				case "last_name":
+					lastName = val === "" ? "not provided" : val;
+					break;
 
-        case "twofa_active":
-          twofaActive = part.value === "1" ? 1 : 0;
-          break;
+				case "age":
+					if (val === "") {
+						age = null;
+						break;
+					}
+					if (!/^\d+$/.test(val)) {
+						return reply.code(400).send({ success: false, error: "Invalid age" });
+					}
+					age = parseInt(val, 10);
+					break;
 
-        case "twofa_method":
-          twofa_method = part.value;
-          break;
-      }
-    }
-  }
+				case "twofa_active":
+					twofaActive = val === "1" ? 1 : 0;
+					break;
 
-  console.log("Change data:", firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+				case "twofa_method":
+					twofa_method = val;
+					break;
+			}
+		}
+	}
 
-  await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
-  reply.send({ success: true });
+	console.log("Change data:", firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+
+	await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+	reply.send({ success: true });
 };
+
 
 exports.removeFriend = async function (req, reply) {
     const { friendUsername } = req.body;

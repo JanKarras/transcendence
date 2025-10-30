@@ -175,10 +175,90 @@ function connectUserToMatch(data) {
 	// console.log("Game State", match.gameState);
 }
 
+async function connectUserToMatchFromChat(data) {
+  const userId = data.userId;
+  const ws = data.ws;
+  // Проверка: уже есть матч?
+  if (gameStore.queue.has(userId)) {
+    console.log(`⚠️ Cleaning stale queue entry for ${userId}`);
+    gameStore.queue.delete(userId);
+    }
+  let match = gameStore.onGoingMatches.find( m => m.userId1 === userId || m.userId2 === userId );
+
+  if (match) {
+    // Обновляем подключение
+    if (match.userId1 === userId){
+      match.user1Connected = true; match.wsUser1 = ws;
+    }
+    else {
+      match.user2Connected = true; match.wsUser2 = ws;
+    }
+    const message = { type: "startGame", gameInfo: match.gameInfo, gameState: match.gameState };
+    // Если оба подключены и игра ещё не началась — отправить обоим
+    if (match.user1Connected && match.user2Connected && match.gameState !== GameState.STARTED) {
+       match.wsUser1.send(JSON.stringify(message));
+       match.wsUser2.send(JSON.stringify(message));
+       match.gameState = GameState.STARTED;
+       console.log('🎮 Match started between ${match.userId1} and ${match.userId2}');
+      } // Если игра уже началась — отправить текущему игроку повторно
+    if (match.gameState === GameState.STARTED) {
+      ws.send(JSON.stringify(message));
+      console.log("🔁 Re-sent startGame to reconnected user ${userId}");
+    } return;
+  }
+    // Если игрок уже в очереди — ничего не делаем
+  if (gameStore.queue.has(userId)) {
+    console.log("🕓 User ${userId} already in queue");
+    return;
+  }
+  // Проверка: есть ли другой игрок в очереди
+  const waitingEntry = Array.from(gameStore.queue.entries()).find(([otherId]) => otherId !== userId);
+  if (waitingEntry) {
+    const [waitingUserId, otherData] = waitingEntry; gameStore.queue.delete(waitingUserId);
+    // Создаём новый матч
+    match = await initRemoteMatch(otherData, data);
+    match.wsUser1 = otherData.ws;
+    match.wsUser2 = ws;
+    match.user1Connected = true;
+    match.user2Connected = true;
+    gameStore.onGoingMatches.push(match);
+    console.log("📩 Message from WS: match.gameInfo,  match.gameState, userId", match.gameInfo, match.gameState, userId);
+    const message = { type: "startGame", gameInfo: match.gameInfo, gameState: match.gameState };
+    setTimeout(() => {
+      try {
+        match.wsUser1.send(JSON.stringify(message));
+        console.log(`📤 Sent startGame to user1 (${match.userId1})`);
+    } catch (e) {
+        console.error(`❌ Failed to send to user1 (${match.userId1})`, e);
+    }
+
+    try {
+        match.wsUser2.send(JSON.stringify(message));
+        console.log(`📤 Sent startGame to user2 (${match.userId2})`);
+    } catch (e) {
+        console.error(`❌ Failed to send to user2 (${match.userId2})`, e);
+    }
+
+    match.gameState = GameState.STARTED;
+    }, 200);
+      console.log(`🎮 Match started between ${match.userId1} and ${match.userId2}`);
+    }
+  else {
+      // Никого нет — добавляем в очередь
+    gameStore.queue.set(userId, data);
+    console.log("🕓 User ${userId} added to queue");
+  }
+  console.log("🔄 connectUserToMatch called for", userId);
+  console.log("📦 Current queue:", Array.from(gameStore.queue.keys()));
+  console.log("📦 Current matches:", gameStore.onGoingMatches.map(m => [m.userId1, m.userId2]));
+}
+
+
 module.exports = {
     getMatchesWithPlayersByUserId,
     createMatch,
     getMatchByUserId,
     connectUserToMatch,
     createLocalMatch,
+	connectUserToMatchFromChat
 }

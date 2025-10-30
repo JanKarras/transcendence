@@ -69,9 +69,9 @@ export async function render_game(params: URLSearchParams | null) {
         <div id="usernameModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 ${showUsernameModal ? "" : "hidden"}">
           <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
             <h4 class="text-2xl font-bold text-white">${t('game.secondPlayerUsername')}</h4>
-            <input id="usernameInput" 
-                   type="text" 
-                   placeholder="username" 
+            <input id="usernameInput"
+                   type="text"
+                   placeholder="username"
                    class="px-4 py-2 rounded bg-gray-600 text-white text-center w-64" >
             <div class="flex gap-6 mt-4">
               <button id="submitUsernameBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded">${t('game.submit')}</button>
@@ -103,7 +103,7 @@ export async function render_game(params: URLSearchParams | null) {
 	canvas.height = 600;
 	const ctx = canvas.getContext('2d')!;
     usernameInput?.focus();
-    
+
     // Function to handle submission
     const handleUsernameSubmit = async () => {
         if (usernameInput && usernameInput.value.trim() !== "") {

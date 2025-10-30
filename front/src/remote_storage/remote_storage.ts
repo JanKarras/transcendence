@@ -1,4 +1,4 @@
-import { Friend, UserInfo, UserResponse, RequestInfo, MatchHistoryEntry, Stats } from "../constants/structs.js";
+import { Friend, UserInfo, UserResponse, RequestInfo, MatchHistoryEntry, Stats, VerifyTwoFaResponse } from "../constants/structs.js";
 
 export async function createUser(username: string, email: string, password: string) {
 	const body = JSON.stringify({ username, email, password })
@@ -465,6 +465,27 @@ export async function getStats(userId: number): Promise<Stats | undefined> {
     console.error("Error fetching stats:", err);
     return undefined;
   }
+}
+
+export async function verifyTwoFaCode(code: string): Promise<VerifyTwoFaResponse> {
+	try {
+		const res = await fetch("/api/set/verifyTwoFaCode", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ code }),
+		});
+
+		if (!res.ok) {
+			return { success: false, error: `Server returned ${res.status}` };
+		}
+
+		const data = (await res.json()) as VerifyTwoFaResponse;
+		return data;
+	} catch (err: any) {
+		return { success: false, error: "Network or server error" };
+	}
 }
 
 export const api = {

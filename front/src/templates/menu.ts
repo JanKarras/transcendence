@@ -13,27 +13,22 @@ export function getMenuEntries(currentPos: string): { label: string, onClick: ()
 	const basePos = currentPos.split('?')[0];
 
 	if (basePos === "dashboard") {
-		//entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
 	}
 	if (basePos === "profile") {
-		//entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
 	}
 	if (basePos === "friends") {
-		//entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 	}
 	if (basePos === "chat") {
-		//entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
 	}
 	if (basePos === "friend_profile") {
-		//entries.push({ label: `💬 ${t('chat')}`, onClick: () => navigateTo("chat") });
 		entries.push({ label: `🏠 ${t('dashboard2')}`, onClick: () => navigateTo("dashboard") });
 		entries.push({ label: `👤 ${t('profile')}`, onClick: () => navigateTo("profile") });
 		entries.push({ label: `👥 ${t('friends')}`, onClick: () => navigateTo("friends") });
@@ -55,7 +50,9 @@ export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 		label: `🚪 ${t('logout')}`,
 		onClick: () => {
 			logOutApi()
-			render_with_delay("login");
+			setTimeout(() => {
+				navigateTo('login');
+			}, 1000);
 		}
 
 	};

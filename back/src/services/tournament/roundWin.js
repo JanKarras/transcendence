@@ -1,6 +1,7 @@
 const tournamentUtils = require("./utils");
 const { createMatch } = require("../game/matchService");
-const { createTournamenHistory, getRecentMatches } = require("../../repositories/tournamentMatchHistoryRepository");
+const { createTournamenHistory, getRecentMatches, updateMatchRep } = require("../../repositories/tournamentMatchHistoryRepository");
+const { incrementTournamentWins } = require("../../repositories/statsRepository");
 
 async function handleRoundWin(userId, data) {
 	const tournament = tournamentUtils.findTournamentByUser(userId);
@@ -83,13 +84,13 @@ async function createRoundMatches(tournament, players, isConsolation) {
 
 	tournamentUtils.addSystemMessage(tournament, `${isConsolation ? "Consolation match" : "Next match"}: ${players[0].name} vs ${players[1].name}`);
 
-	player1.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
-	player2.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
 
-	setTimeout(() => {
-		player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
-		player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
-	}, 10000)
+	player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
+	player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
+	//setTimeout(() => {
+	//	player1.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
+	//	player2.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
+	//}, 10000)
 }
 
 
@@ -108,7 +109,6 @@ async function finishTournament(tournament) {
 		console.log("🧠 Adding system message: Tournament finished");
 		tournamentUtils.addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
 
-		// Find final and consolation matches
 		const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
 		const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
 
@@ -117,7 +117,6 @@ async function finishTournament(tournament) {
 			consolationMatch: consolationMatch ? { id: consolationMatch.id, winner: consolationMatch.winner?.name, loser: consolationMatch.loser?.name } : "❌ None"
 		});
 
-		// Compute results
 		const results = [
 			finalMatch?.winner,
 			finalMatch?.loser,
@@ -127,13 +126,25 @@ async function finishTournament(tournament) {
 
 		console.log("🏆 Results computed:", results.map(r => r.name));
 
+		const firstPlace = results[0];
+		if (firstPlace && (firstPlace.id || firstPlace.userId)) {
+			const userId = firstPlace.id || firstPlace.userId;
+			console.log(`🏅 Incrementing tournament win for user ${userId} (${firstPlace.name})`);
+			try {
+				incrementTournamentWins(userId);
+			} catch (err) {
+				console.error(`⚠️ Failed to increment tournamentWins for ${userId}:`, err.message);
+			}
+		} else {
+			console.warn("⚠️ No first-place player found, skipping tournament win increment.");
+		}
+
 		results.forEach((player, index) => {
 			const msg = `🥇${index + 1} Place: ${player.name}`;
 			console.log("💬 Adding system message:", msg);
 			tournamentUtils.addSystemMessage(tournament, msg);
 		});
 
-		// Notify all players
 		console.log("📡 Broadcasting 'tournamentFinished' to players...");
 		tournament.players.forEach(p => {
 			if (!p.ws) {
@@ -148,7 +159,6 @@ async function finishTournament(tournament) {
 			p.ws.send(JSON.stringify(payload));
 		});
 
-		// Save to database
 		console.log("💾 Calling createTournamenHistory()...");
 		const tournamentId = await createTournamenHistory(tournament);
 		console.log(`✅ Tournament history created: ID = ${tournamentId}`);
@@ -158,10 +168,9 @@ async function finishTournament(tournament) {
 			.map(p => p.id);
 		console.log("👥 Player IDs to update matches for:", playerIds);
 
-		// Update recent matches for each player
 		for (const playerId of playerIds) {
 			console.log(`🔁 Processing player ${playerId}...`);
-			const recentMatches = getRecentMatches(playerId);
+			const recentMatches = await getRecentMatches(playerId);
 			console.log(`📊 Found ${recentMatches.length} recent matches for player ${playerId}`);
 
 			for (let i = 0; i < recentMatches.length; i++) {
@@ -170,7 +179,7 @@ async function finishTournament(tournament) {
 				console.log(`📝 Updating match ${match.id} (round ${round}) → tournament ${tournamentId}`);
 
 				try {
-					await updateMatch(tournamentId, round, match.id);
+					await updateMatchRep(tournamentId, round, match.id);
 					console.log(`✅ Successfully updated match ${match.id}`);
 				} catch (err) {
 					console.error(`❌ Failed to update match ${match.id}:`, err.message);

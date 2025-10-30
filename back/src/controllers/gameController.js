@@ -142,12 +142,23 @@ exports.joinQueue = async (req, reply) => {
 }
 
 exports.waitForTheGame = async (req, reply) => {
+
     const userId = userUtils.getUserIdFromRequest(req);
     if (!userId) {
         return reply.status(400).send({ error: 'UserId required' });
     }
     const data = gameStore.connectedUsers.get(userId);
-    matchService.connectUserToMatch(data);
+
+    const { via } = req.body || {};
+	console.log("🎯🎯🎯🎯🎯🎯🎯🎯", via)
+    if (via === "invite") {
+        console.log(`🎯 Invite game detected for user ${userId}`);
+        matchService.connectUserToMatchFromChat(data);
+    } else {
+        console.log(`⚙️ Normal matchmaking for user ${userId}`);
+        matchService.connectUserToMatch(data);
+    }
+    // matchService.connectUserToMatch(data);
     console.log(`Waiting for the game to start by ${userId}`);
     reply.send({ message: "Waiting for the game to start" });
 }

@@ -87,3 +87,8 @@ export interface Stats {
   loses: number;
   tournamentWins: number ;
 }
+
+export interface VerifyTwoFaResponse {
+	success: boolean;
+	error?: string;
+}

@@ -16,6 +16,7 @@ import { removeEventListenerByClone } from '../utils/remove_eventlistener.js';
 import { render_with_delay } from '../utils/render_with_delay.js';
 import { navigateTo } from './history_views.js';
 import { initTranslations, t } from "../constants/i18n.js"
+import { getTournamentSocket } from '../websocket/wsTournamentService.js';
 
 export function getPos() {
 	const windowHash = window.location.hash.replace(/^#/, '');
@@ -136,6 +137,13 @@ export async function render_header() {
 			showMenu(items);
 		});
 		profileMenuListenerAttached = true;
+	}
+
+	const tournamentSocket = getTournamentSocket();
+	if (pos !== 'tournament' || pos !== 'tournament') {
+		if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
+			tournamentSocket.close();
+		}
 	}
 }
 

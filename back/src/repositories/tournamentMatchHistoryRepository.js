@@ -11,7 +11,8 @@ async function createTournamenHistory(tournament) {
 }
 
 async function getRecentMatches(playerId) {
-	const getRecentMatches = db.prepare(`
+	console.log(`🔍 Fetching recent matches for player ID ${playerId}...`);
+	const stmt = db.prepare(`
 		SELECT id, type, tournament_id, created_at
 		FROM matches
 		WHERE id IN (
@@ -20,11 +21,13 @@ async function getRecentMatches(playerId) {
 		ORDER BY created_at DESC
 		LIMIT 2;
 	`);
-	const recentMatches = getRecentMatches.all(playerId);
-	return recentMatches
+	const recentMatches = stmt.all(playerId);
+	console.log(`📋 Recent matches for player ID ${playerId}:`, recentMatches);
+	return recentMatches;
 }
 
-async function updateMatch(tournamentId, round, matchId) {
+
+async function updateMatchRep(tournamentId, round, matchId) {
 	const updateMatch = db.prepare(`
 		UPDATE matches
 		SET type = 'tournament',
@@ -38,5 +41,5 @@ async function updateMatch(tournamentId, round, matchId) {
 module.exports = {
 	createTournamenHistory,
 	getRecentMatches,
-	updateMatch
+	updateMatchRep
 }

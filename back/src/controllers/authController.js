@@ -11,6 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const logger = require('../logger/logger');
 const { sendChangesToAll } = require("../services/friends/sendChangesToAll");
 const userUtils = require("../utils/userUtil");
+const { authenticator } = require('otplib');
 
 exports.is_logged_in = async (req, reply) => {
 	reply.code(200).send({ loggedIn: true });
@@ -47,6 +48,7 @@ exports.login = async (request, reply) => {
 		}
 
 		if (!user.validated) {
+			mailService.sendEmailValidationMail(user.id, user.email);
 			return reply.code(403).send({ error: 'Account is not validated. Please confirm your email address.' });
 		}
 
@@ -199,5 +201,31 @@ exports.two_fa_api = async (request, reply) => {
 	} catch (err) {
 		console.error(err);
 		return reply.code(500).send({ success: false, error: 'Database error' });
+	}
+};
+
+
+exports.verifyTwoFaCode = async function (req, reply) {
+	try {
+		const userId = await userUtils.getUserIdFromRequest(req);
+		if (!userId) return reply.code(401).send({ success: false, error: "Unauthorized" });
+
+		const { code } = req.body;
+		if (!code || code.length !== 6) {
+			return reply.code(400).send({ success: false, error: "Invalid code format" });
+		}
+
+		const secret = await userRepository.getTwoFaSecret(userId);
+		if (!secret) return reply.code(400).send({ success: false, error: "No 2FA secret found" });
+
+		const isValid = authenticator.check(code, secret);
+		if (!isValid) {
+			return reply.code(400).send({ success: false, error: "Invalid code" });
+		}
+
+		return reply.send({ success: true });
+	} catch (err) {
+		console.error("2FA verification failed:", err);
+		return reply.code(500).send({ success: false, error: "Server error" });
 	}
 };
