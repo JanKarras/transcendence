@@ -26,24 +26,17 @@ export async function initTranslations() {
 // const translations: Record<string, any> = { eng, fr, de, ua, bel, nig };
 
 export function t(keyOrObj: any): string {
-    // If someone still passes the old { eng: "...", fr: "..." } object
     if (typeof keyOrObj === "object") {
-        console.log('object');
         return keyOrObj[LANGUAGE as keyof typeof keyOrObj] || keyOrObj.eng;
     }
 
-    // New style: string key ("login.title")
     if (typeof keyOrObj === "string") {
         const dict = translations[LANGUAGE] || translations["eng"];
         const keys = keyOrObj.split(".");
 
-        // console.log(translations);
-        // console.log(dict);
         let value: any = dict;
         for (const k of keys) {
-            // console.log(value);
             value = value?.[k];
-            // console.log(value);
             if (!value) break;
         }
 

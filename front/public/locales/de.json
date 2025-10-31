@@ -219,6 +219,29 @@
 	},
 	"tournament": {
 		"waitForNextRound": "Bitte warte, bis die nächste Runde startet..."
-	}
-
+	},
+    "cht": {
+      "notOnline": " nicht online",
+      "inAnotherChat": " in einem anderen Chat",
+      "blockedYou": "Der Benutzer hat Sie blockiert",
+      "selectChatPartner": "Wählen Sie einen Chatpartner aus",
+      "leftChat": "Der Benutzer hat den Chat verlassen",
+      "userBlocked": "Der Benutzer ist blockiert",
+      "retryBlock": "Blockieren erneut versuchen",
+      "retryUnblock": "Entsperren erneut versuchen",
+      "reconnecting": "Wiederverbinden",
+      "userSwitched": "Der Benutzer hat gewechselt",
+      "blocked": "Benutzer blockiert",
+      "unblocked": "Benutzer entsperrt",
+      "deliveryFail": "Nachrichtenzustellung fehlgeschlagen",
+      "chatWith": "Chat mit",
+      "you": "Sie",
+      "noToken": "Kein Token vorhanden",
+      "block": "Blockieren",
+      "unblock": "Entsperren",
+      "inviteToGame": "Zum Spiel einladen",
+      "inviteSent": "Die Einladung zum Spiel wurde gesendet",
+      "retryInvite": "Senden der Einladung erneut versuchen",
+      "inviteCancelled": "Die Einladung zum Spiel wurde abgebrochen"
+    }
 }

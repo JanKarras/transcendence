@@ -214,5 +214,29 @@
 	},
 	"tournament": {
 		"waitForNextRound": "Veuillez patienter jusqu'au début du prochain tour..."
-	}
+	},
+    "cht": {
+      "notOnline": " hors ligne",
+      "inAnotherChat": " dans un autre chat",
+      "blockedYou": "L’utilisateur vous a bloqué",
+      "selectChatPartner": "Sélectionnez un partenaire de discussion",
+      "leftChat": "L’utilisateur a quitté le chat",
+      "userBlocked": "L’utilisateur est bloqué",
+      "retryBlock": "Réessayer le blocage",
+      "retryUnblock": "Réessayer le déblocage",
+      "reconnecting": "Reconnexion",
+      "userSwitched": "L’utilisateur a changé",
+      "blocked": "Utilisateur bloqué",
+      "unblocked": "Utilisateur débloqué",
+      "deliveryFail": "Échec de la livraison du message",
+      "chatWith": "Discuter avec",
+      "you": "Vous",
+      "noToken": "Aucun jeton",
+      "block": "Bloquer",
+      "unblock": "Débloquer",
+      "inviteToGame": "Inviter au jeu",
+      "inviteSent": "L’invitation au jeu a été envoyée",
+      "retryInvite": "Réessayer d’envoyer l’invitation",
+      "inviteCancelled": "L’invitation au jeu a été annulée"
+    }
 }

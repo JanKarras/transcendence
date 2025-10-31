@@ -49,7 +49,7 @@ export async function connectWebSocket() {
 
     socket.onopen = () => {
 
-        console.log("open soket");
+        console.log("open socket");
         sendWS('dialog_open', { friendId, content: "4"});
 
     };
@@ -129,7 +129,7 @@ function handleChatBlock(msg: any) {
     }
 
     if (content === 'block' && userId === currentId) {
-        const newContent = t('cht.blocked_you');
+        const newContent = t('cht.blockedYou');
         if (socket && socket.readyState === WebSocket.OPEN) {
             const chat = document.getElementById('chatMessages') as HTMLElement;
             chat.innerHTML = '';
@@ -283,7 +283,7 @@ async function toggleBlockUser(
     if (await getBlocked(friendId) === 2) {
         addDisappearMessage(label);
     } else {
-        addMessageToChat('You', label, friendStatus);
+        addMessageToChat(t('cht.you'), label, friendStatus);
     }
 
     sendWS('blocked', { blockedId: targetId, content: action });
@@ -446,12 +446,11 @@ async function renderChatControls(peerId: number, peerName: string): Promise<voi
     inviteBtn.onclick = async () => {
         if (!friendId || await blockedCheck(friendId)) return;
         if (!friend?.online) {
-            //console.log("He ist not online", friend?.online, friend)
-            addDisappearMessage("❌ " + peerName + " ist not online");
+            addDisappearMessage("❌ " + peerName + t('cht.notOnline'));
             return;
         }
         else if (friendStatus === 0) {
-             addDisappearMessage("❌ " + peerName + " in another chat");
+             addDisappearMessage("❌ " + peerName + t('cht.inAnotherChat'));
             return;
         }
 
@@ -667,7 +666,7 @@ async function renderInviteButtons(isInvite: Number): Promise<void> {
         cBtn?.addEventListener("click", () => {
             inviteMode?.classList.add("hidden");
             sendMessage(friendId!, t('cht.inviteCancelled'));
-            addMessageToChat('You', t('cht.inviteCancelled'), friendStatus);
+            addMessageToChat(t('cht.you'), t('cht.inviteCancelled'), friendStatus);
             if (socket && socket.readyState === WebSocket.OPEN) {
                 sendWS('invite_message', {
                     to: friendId,
@@ -715,7 +714,7 @@ async function renderInviteButtons(isInvite: Number): Promise<void> {
         cBtn?.addEventListener("click", () => {
             inviteMode?.classList.add("hidden");
             sendMessage(friendId!, t('cht.inviteCancelled'));
-            addMessageToChat('You', t('cht.inviteCancelled'), friendStatus);
+            addMessageToChat(t('cht.you'), t('cht.inviteCancelled'), friendStatus);
             if (socket && socket.readyState === WebSocket.OPEN) {
                 sendWS('invite_message', {
                     to: friendId,
