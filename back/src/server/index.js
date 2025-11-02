@@ -8,8 +8,8 @@ const gameController = require('../controllers/gameController');
 const tournamentController = require('../controllers/tournamentController');
 const friendController = require('../controllers/friendsWsController');
 const dashboardController = require('../controllers/dashboardWsController');
+const chatController = require('../controllers/chatWsController');
 const wsChat = require('../websocket/ws');
-const wsTournament = require('../websocket/tournament');
 
 const BODY_LIMIT = 5001 * 1024;
 
@@ -32,11 +32,12 @@ fastify.setNotFoundHandler((request, reply) => {
   reply.code(404).send({ error: 'Not Found', message: `Route ${request.method} ${request.url} not found.` });
 });
 
-fastify.register(wsChat);
+//fastify.register(wsChat);
 fastify.register(gameController.chatWebSocketRoute);
 fastify.register(tournamentController.tournamentRoute);
 fastify.register(friendController.friendRoute);
 fastify.register(dashboardController.dashboardRoute);
+fastify.register(chatController.chatRoute);
 
 const start = async () => {
   try {

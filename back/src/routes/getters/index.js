@@ -23,6 +23,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/unread/:friendId',{ preHandler: authMiddleware }, messageController.getUnread);
 	fastify.get('/2fa/setup',{ preHandler: authMiddleware }, userController.twoFaSetUp);
 	fastify.get('/getStats', { preHandler: authMiddleware }, statisticsController.getStats);
+	fastify.get('/getFriendsData', { preHandler: authMiddleware }, userController.getFriendsData);
 };
 
 

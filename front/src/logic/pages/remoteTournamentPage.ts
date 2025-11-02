@@ -2,7 +2,7 @@ import { getFreshToken } from "../../api/getFreshToken.js";
 import { GameInfo } from "../../game/GameInfo.js";
 import { renderFrame } from "../../game/Renderer.js";
 import { displayNames, renderGameChat, renderRemoteTournamentPage, showCountdownForNextRound, showPodium, showWaitingForNextRound } from "../../render/pages/renderRemoteTournament.js";
-import { connect, getSocket } from "../../websocket/wsService.js";
+import { connectGameSocket, getGameSocket } from "../../websocket/wsGameService.js";
 import { getTournamentSocket } from "../../websocket/wsTournamentService.js";
 import { initTranslations } from "../gloabal/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
@@ -25,7 +25,7 @@ export async function remoteTournamentPage(params: URLSearchParams | null) {
 
 	await initTranslations();
 	await renderRemoteTournamentPage()
-	await connect();
+	await connectGameSocket();
 	connectGame();
 	canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	ctx = canvas.getContext('2d')!;
@@ -82,7 +82,7 @@ async function connectGame() {
 				showCountdownForNextRound();
 				break;
 			case 'endTournament':
-				const socket = getSocket();
+				const socket = getGameSocket();
 				try { socket?.close(); } catch {}
 			default:
 				break;
@@ -95,7 +95,7 @@ async function GameSocketEventListeners() {
 	const ctx = canvas.getContext('2d')!;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	console.log("GameSocketEventListenersCalled")
-	const socket = getSocket();
+	const socket = getGameSocket();
 	if (!socket) throw new Error("WebSocket is not connected");
 	const tournamentSocket = getTournamentSocket()
 	if (!tournamentSocket) throw new Error("WebSocket is not connected");
@@ -140,7 +140,7 @@ async function startSecondRound() {
 	const interValId = setInterval(async () => {
 		if (matchfound) {
 			clearInterval(interValId);
-			await connect();
+			await connectGameSocket();
 			GameSocketEventListeners();
 			gameOver = false;
 		}
@@ -179,7 +179,7 @@ function startCountdown() {
 }
 
 function enablePaddles() {
-	const socket = getSocket();
+	const socket = getGameSocket();
 	if (!socket) throw new Error("WebSocket is not connected");
 
 	window.addEventListener('keydown', (e) => {
@@ -219,7 +219,7 @@ function showWinner() {
 
 	console.log("round win pending...");
 
-	const socket = getSocket();
+	const socket = getGameSocket();
 	matchfound = false;
 
 	if (!socket) {

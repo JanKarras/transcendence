@@ -1,4 +1,4 @@
-export async function getBlocked(friendId: number) {
+export async function getBlocked(friendId: number | null) {
 	const res = await fetch(`/api/get/blocked/${friendId}`, {
 		method: 'GET',
 		credentials: 'include',

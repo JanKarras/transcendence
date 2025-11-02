@@ -285,3 +285,18 @@ exports.twoFaSetUp = async function (req, reply) {
         return reply.code(500).send({ error: "Failed to setup 2FA" });
     }
 };
+
+exports.getFriendsData = async function (req, reply) {
+    const { friendId } = req.query;
+
+    const userId = userUtil.getUserIdFromRequest(req);
+
+    const friends = await userRepository.getFriends(userId);
+
+    for (const friend of friends) {
+        if (friend.id === Number(friendId)) {
+            return reply.send(friend);
+        }
+    }
+    return reply.code(404).send({ error: "Friend not found" });
+}

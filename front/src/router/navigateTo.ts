@@ -2,16 +2,17 @@ import { is_logged_in_api } from "../api/isLoggedIn.js";
 import { initTranslations } from "../constants/i18n.js";
 import { t } from "../logic/gloabal/initTranslations.js";
 import { showErrorMessage } from "../logic/templates/popupMessage.js";
+import { getChatSocket } from "../websocket/wsChatService.js";
 import { getDashboardSocket } from "../websocket/wsDashboardServce.js";
 import { getFriendSocket } from "../websocket/wsFriendsService.js";
-import { getSocket } from "../websocket/wsService.js";
+import { getGameSocket } from "../websocket/wsGameService.js";
 import { getTournamentSocket } from "../websocket/wsTournamentService.js";
 import { protectedViews, View } from "./routerStore.js";
 import { renderView } from "./routerUtils.js";
 
 export async function navigateTo(view: View, params: URLSearchParams | null = null) {
 	if (view !== "game" && view !== "matchmaking") {
-		const socket = getSocket();
+		const socket = getGameSocket();
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.close(1000, "Navigated away from game");
 		}
@@ -29,12 +30,16 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
 		}
 	}
 
-	if (view !== 'dashboard') {
-		const dashboardSocket = getDashboardSocket();
-		if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
-			dashboardSocket.close(1000, "Navigated away from Dashboard");
-		}
+	const dashboardSocket = getDashboardSocket();
+	if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
+		dashboardSocket.close(1000, "Navigated away from Dashboard");
 	}
+	
+	const chatSocket = getChatSocket();
+	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+		chatSocket.close(1000, "Navigated away from chat");
+	}
+
 
 	await initTranslations();
 	if (protectedViews.includes(view)) {

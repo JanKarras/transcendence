@@ -3,11 +3,11 @@ import { getFreshToken } from "../api/getFreshToken.js";
 
 let socket: WebSocket | null = null;
 
-export function getSocket(): WebSocket | null {
+export function getGameSocket(): WebSocket | null {
     return socket;
 }
 
-export async function connect() {
+export async function connectGameSocket() {
     if (socket && socket.readyState === WebSocket.OPEN) {
         return socket;
     }

@@ -3,7 +3,7 @@ import { GameInfo } from "../../game/GameInfo.js";
 import { renderFrame } from "../../game/Renderer.js";
 import { renderGamePage } from "../../render/pages/renderGamePage.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { connect, getSocket } from "../../websocket/wsService.js";
+import { connectGameSocket, getGameSocket } from "../../websocket/wsGameService.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 let gameInfo : GameInfo;
@@ -29,7 +29,7 @@ export async function gamePage(params: URLSearchParams | null) {
 }
 
 export async function startLocalGame(username: string, ctx: CanvasRenderingContext2D): Promise<void> {
-	const socket = await connect();
+	const socket = await connectGameSocket();
 	if (!socket) return;
 
 	socket.onmessage = (event: MessageEvent) => handleGameMessage(event, ctx, "local");
@@ -46,7 +46,7 @@ export async function startLocalGame(username: string, ctx: CanvasRenderingConte
 }
 
 export async function startRemoteGame(ctx: CanvasRenderingContext2D, params: URLSearchParams | null): Promise<void> {
-	const socket = await connect();
+	const socket = await connectGameSocket();
 	if (!socket) return;
 
 	socket.onmessage = (event: MessageEvent) => handleGameMessage(event, ctx, "remote");
@@ -153,7 +153,7 @@ function showWinner(): void {
 }
 
 function enablePaddles(): void {
-	const socket = getSocket();
+	const socket = getGameSocket();
 	if (!socket || socket.readyState !== WebSocket.OPEN){
 		throw new Error("WebSocket is not connected");
 	}

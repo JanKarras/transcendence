@@ -1,8 +1,8 @@
 import { bodyContainer } from "../../constants/constants.js";
 import { MatchHistoryEntry, Stats } from "../../constants/structs.js";
 import { t } from "../../logic/gloabal/initTranslations.js";
-import { getChatSidebarHTML } from "../../logic/templates/chatSidebarTemplate.js";
 import { getMatchHistoryHTML } from "../../logic/templates/matchHistoryTemplate.js";
+import { getChatSidebarHTML } from "../templates/renderChatSideBar.js";
 
 export async function renderDashboard(params: URLSearchParams | null, stats: Stats | undefined, matchesFromHistory: MatchHistoryEntry[] | undefined) {
 	if (!bodyContainer) {

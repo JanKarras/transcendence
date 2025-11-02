@@ -1,7 +1,7 @@
 import { is_logged_in_api } from "../api/isLoggedIn.js";
 import { initTranslations, t } from "../logic/gloabal/initTranslations.js";
 import { showErrorMessage } from "../logic/templates/popupMessage.js";
-import { getSocket } from "../websocket/wsService.js";
+import { getGameSocket } from "../websocket/wsGameService.js";
 import { navigateTo } from "./navigateTo.js";
 import { protectedViews, View } from "./routerStore.js";
 import { getViewAndParamsFromHash, renderView } from "./routerUtils.js";
@@ -12,7 +12,7 @@ export function initRouter() {
 
 	if (currentPage !== "#game" && currentPage !== "#matchmaking") {
 		try {
-			const socket = getSocket();
+			const socket = getGameSocket();
 			if (socket && socket.readyState === WebSocket.OPEN) {
 				socket.close(1000, "Leaving game page");
 				console.log("🔴 WebSocket closed because user navigated away");

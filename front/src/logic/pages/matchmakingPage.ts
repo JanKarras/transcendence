@@ -2,7 +2,7 @@ import { getFreshToken } from "../../api/getFreshToken.js";
 import { setEventLsitenersForMatchmaking } from "../../events/pages/matchmakingPage.js";
 import { renderMatchmaking } from "../../render/pages/renderMatchmaking.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { connect } from "../../websocket/wsService.js";
+import { connectGameSocket } from "../../websocket/wsGameService.js";
 import { initTranslations } from "../gloabal/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
@@ -19,7 +19,7 @@ async function startMatchmaking() {
 	const token = await getFreshToken();
 	console.log(token)
 
-	const socket = await connect();
+	const socket = await connectGameSocket();
 
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);

@@ -2,7 +2,7 @@ import { bodyContainer } from "../../constants/constants.js";
 import { t } from "../../logic/gloabal/initTranslations.js";
 import { gameInfo } from "../../logic/pages/remoteTournamentPage.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { getSocket } from "../../websocket/wsService.js";
+import { getGameSocket } from "../../websocket/wsGameService.js";
 import { getTournamentSocket } from "../../websocket/wsTournamentService.js";
 
 let leaveButtonRect = { x: 0, y: 0, width: 200, height: 50 };
@@ -205,7 +205,7 @@ export function handleCanvasClick(event: MouseEvent) {
 		y >= leaveButtonRect.y &&
 		y <= leaveButtonRect.y + leaveButtonRect.height
 	) {
-		try { getSocket()?.close(); } catch {}
+		try { getGameSocket()?.close(); } catch {}
 		try { getTournamentSocket()?.close(); } catch {}
 		navigateTo('dashboard');
 

@@ -5,10 +5,10 @@ import { UserInfo } from "../../constants/structs.js";
 import { setEventListenersDashboardPage, setEventListenersDashboardPageChat } from "../../events/pages/dashboardPage.js";
 import { renderDashboard } from "../../render/pages/renderDashboard.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { connectWebSocket, refreshFriendsList } from "../../websocket/ws.js";
-import { connectDashboard, getDashboardSocket } from "../../websocket/wsDashboardServce.js";
+import { getDashboardSocket } from "../../websocket/wsDashboardServce.js";
 import { initTranslations } from "../gloabal/initTranslations.js";
 import { logOut } from "../gloabal/logOut.js";
+import { chatTemplate } from "../templates/chatSideBarTemplate/chatSidebarTemplate.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function dashboarPage(params: URLSearchParams | null) {
@@ -39,10 +39,10 @@ export async function dashboarPage(params: URLSearchParams | null) {
 }
 
 async function initChat() {
-	connectWebSocket();
-	refreshFriendsList();
+	//connectWebSocket();
+	//refreshFriendsList();
+	chatTemplate()
 	setEventListenersDashboardPageChat();
-
 }
 
 export function handleDashboardMessage(msg: MessageEvent, socket: WebSocket): void {

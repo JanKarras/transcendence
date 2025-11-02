@@ -1,6 +1,6 @@
 import { handleDashboardMessage } from "../../logic/pages/dashboardPage.js";
+import { friendChat } from "../../logic/templates/chatSideBarTemplate/chatSidebarUtils.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { friendChat } from "../../websocket/ws.js";
 import { connectDashboard } from "../../websocket/wsDashboardServce.js";
 
 export async function setEventListenersDashboardPage() {
