@@ -8,14 +8,14 @@ const db = new Database(dbPath);
 global.db = db;
 
 function runScriptsFromDir(dir) {
-  const absoluteDir = path.resolve(__dirname, dir);
-  const files = fs.readdirSync(absoluteDir);
+	const absoluteDir = path.resolve(__dirname, dir);
+	const files = fs.readdirSync(absoluteDir);
 
-  files.forEach(file => {
-    if (file.endsWith('.js')) {
-      require(path.join(absoluteDir, file));
-    }
-  });
+	files.forEach(file => {
+		if (file.endsWith('.js')) {
+			require(path.join(absoluteDir, file));
+		}
+	});
 }
 
 console.log('📂 Creating tables...');

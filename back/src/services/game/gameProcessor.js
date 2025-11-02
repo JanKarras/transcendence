@@ -5,91 +5,91 @@ const matchRepository = require("../../repositories/matchRepository");
 
 
 const intervalId = setInterval(() => {
-    mainGameLoop();
+	mainGameLoop();
 }, 1000/60)
 
 function mainGameLoop() {
-    for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
-        const match = gameStore.onGoingMatches[i];
-        switch (match.gameState) {
-            case GameState.NOT_STARTED:
-                checkForBothConnected(match);
-                break;
-            case GameState.BOTH_CONNECTED:
-                sendMessage(match, "startGame");
-                console.log(match.gameInfo);
-                match.gameState = GameState.STARTED;
-                break;
-            case GameState.STARTED:
-                isCountdownFinished(match)
-                break;
-            case GameState.FINISHED:
-                gameEngine.updateGameInfo(match)
-                sendMessage(match, "sendFrames");
-                break;
-            case GameState.ERROR:
-                sendWinner(match)
-                saveGameToMatchHistory(match)
-                eraseMatchFromOngoingMatches(i);
-                break;
-            case GameState.GAMEOVER:
-                sendMessage(match, "gameOver");
-                saveGameToMatchHistory(match);
-                match.wsUser1.close(1000, "Closed by user");
-                match.wsUser2.close(1000, "Closed by user");
-                eraseMatchFromOngoingMatches(i);             
-                break;
-            default:
-                break;
-        }
-    }
+	for (let i = 0; i < gameStore.onGoingMatches.length; i++) {
+		const match = gameStore.onGoingMatches[i];
+		switch (match.gameState) {
+			case GameState.NOT_STARTED:
+				checkForBothConnected(match);
+				break;
+			case GameState.BOTH_CONNECTED:
+				sendMessage(match, "startGame");
+				console.log(match.gameInfo);
+				match.gameState = GameState.STARTED;
+				break;
+			case GameState.STARTED:
+				isCountdownFinished(match)
+				break;
+			case GameState.FINISHED:
+				gameEngine.updateGameInfo(match)
+				sendMessage(match, "sendFrames");
+				break;
+			case GameState.ERROR:
+				sendWinner(match)
+				saveGameToMatchHistory(match)
+				eraseMatchFromOngoingMatches(i);
+				break;
+			case GameState.GAMEOVER:
+				sendMessage(match, "gameOver");
+				saveGameToMatchHistory(match);
+				match.wsUser1.close(1000, "Closed by user");
+				match.wsUser2.close(1000, "Closed by user");
+				eraseMatchFromOngoingMatches(i);             
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 function eraseMatchFromOngoingMatches(i) {
-    gameStore.onGoingMatches.splice(i, 1);
-    i--;
+	gameStore.onGoingMatches.splice(i, 1);
+	i--;
 }
 
 function checkForBothConnected(match) {
-    if (match.user1Connected && match.user2Connected) {
-        match.gameState = GameState.BOTH_CONNECTED;
-    }
+	if (match.user1Connected && match.user2Connected) {
+		match.gameState = GameState.BOTH_CONNECTED;
+	}
 }
 
 function isCountdownFinished(match) {
-    if (match.coutndownFinished1 && match.coutndownFinished2) {
-        gameEngine.resetBall(match.gameInfo.ball);
-        match.gameState = GameState.FINISHED;
-    }
+	if (match.coutndownFinished1 && match.coutndownFinished2) {
+		gameEngine.resetBall(match.gameInfo.ball);
+		match.gameState = GameState.FINISHED;
+	}
 }
 
 function setCountdownFinished(userId, mode) {
-    const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
-    if (mode === "local" && match) {
-        console.log("mode is local");
-        match.coutndownFinished1 = true;
-        match.coutndownFinished2 = true;
-    }
-    else {
-        if (match?.userId1 === userId) {
-            match.coutndownFinished1 = true;
-        } else if (match?.userId2 === userId) {
-            match.coutndownFinished2 = true;
-        }
-    }
+	const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
+	if (mode === "local" && match) {
+		console.log("mode is local");
+		match.coutndownFinished1 = true;
+		match.coutndownFinished2 = true;
+	}
+	else {
+		if (match?.userId1 === userId) {
+			match.coutndownFinished1 = true;
+		} else if (match?.userId2 === userId) {
+			match.coutndownFinished2 = true;
+		}
+	}
 }
 
 function sendMessage(match, type) {
-    const message = {
-        type: type,
-        gameInfo: match.gameInfo,
-        userId1 : match.userId1,
-        userId2 : match.userId2,
-        gameState : match.gameState
-    };
+	const message = {
+		type: type,
+		gameInfo: match.gameInfo,
+		userId1 : match.userId1,
+		userId2 : match.userId2,
+		gameState : match.gameState
+	};
 
-    match.wsUser1.send(JSON.stringify(message));
-    match.wsUser2.send(JSON.stringify(message));
+	match.wsUser1.send(JSON.stringify(message));
+	match.wsUser2.send(JSON.stringify(message));
 }
 
 
@@ -98,9 +98,9 @@ function sendWinner(match) {
 }
 
 function saveGameToMatchHistory(match) {
-    matchRepository.addMatchAndMatchPlayers(match);
+	matchRepository.addMatchAndMatchPlayers(match);
 }
 
 module.exports = {
-    setCountdownFinished,
+	setCountdownFinished,
 }

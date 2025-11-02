@@ -4,34 +4,34 @@ import { getFreshToken } from "../api/getFreshToken.js";
 let tournamentSocket: WebSocket | null = null;
 
 export function getFriendSocket(): WebSocket | null {
-    return tournamentSocket;
+	return tournamentSocket;
 }
 
 export async function connectFriend(): Promise<WebSocket> {
-    if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
-        return tournamentSocket;
-    }
+	if (tournamentSocket && tournamentSocket.readyState === WebSocket.OPEN) {
+		return tournamentSocket;
+	}
 
-    const token = await getFreshToken();
-    if (!token) throw new Error("No auth token found");
+	const token = await getFreshToken();
+	if (!token) throw new Error("No auth token found");
 
-    const wsUrl = `wss://${location.host}/ws/friends?token=${token}`;
-    tournamentSocket = new WebSocket(wsUrl);
+	const wsUrl = `wss://${location.host}/ws/friends?token=${token}`;
+	tournamentSocket = new WebSocket(wsUrl);
 
-    await new Promise<void>((resolve, reject) => {
-        tournamentSocket!.onopen = () => {
-            console.log(`✅ Friend WebSocket connected to ${wsUrl}`);
-            resolve();
-        };
-        tournamentSocket!.onerror = (err) => reject(err);
-    });
+	await new Promise<void>((resolve, reject) => {
+		tournamentSocket!.onopen = () => {
+			console.log(`✅ Friend WebSocket connected to ${wsUrl}`);
+			resolve();
+		};
+		tournamentSocket!.onerror = (err) => reject(err);
+	});
 
-    return tournamentSocket!;
+	return tournamentSocket!;
 }
 
 export function closeFriendSocket() {
-    if (tournamentSocket) {
-        tournamentSocket.close();
-        tournamentSocket = null;
-    }
+	if (tournamentSocket) {
+		tournamentSocket.close();
+		tournamentSocket = null;
+	}
 }

@@ -20,6 +20,4 @@ module.exports = async function (fastify, opts) {
 	fastify.post('/game/start',{ preHandler: authMiddleware }, gameController.startTheGame);
 	fastify.post('/game/create',{ preHandler: authMiddleware }, gameController.createLocalGame);
 	fastify.post('/verifyTwoFaCode',{ preHandler: authMiddleware }, authController.verifyTwoFaCode);
-	// fastify.post('/invitation/invite', { preHandler: authMiddleware }, gameController.createInvitation);
-	// fastify.post('/invitation/accept', { preHandler: authMiddleware }, gameController.acceptInvitation);
 };

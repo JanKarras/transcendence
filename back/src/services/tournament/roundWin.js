@@ -87,10 +87,6 @@ async function createRoundMatches(tournament, players, isConsolation) {
 
 	player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
 	player2.ws.send(JSON.stringify({ type: "startSecondRound" }));
-	//setTimeout(() => {
-	//	player1.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
-	//	player2.ws.send(JSON.stringify({ type: "firstRoundFinished" }));
-	//}, 10000)
 }
 
 

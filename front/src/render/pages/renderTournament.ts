@@ -109,7 +109,6 @@ export async function renderRemoteTournament(
 	const startBtn = document.getElementById("startTournamentBtn") as HTMLButtonElement;
 	if (startBtn) startBtn.disabled = !ready;
 
-	// Add event listeners for empty slots
 	players.forEach((p) => {
 		if (!p.id || p.status === "left") {
 			document.getElementById(`player${p.slot}Card`)?.addEventListener("click", () =>

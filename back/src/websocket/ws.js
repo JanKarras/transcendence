@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const clients = new Map(); // userId -> ws
-const activeDialog = new Map(); // userId -> friendId
+const clients = new Map();
+const activeDialog = new Map();
 
 module.exports = async function chatWebSocketRoute(fastify) {
   fastify.get('/chat', { websocket: true }, (ws, req) => {
@@ -53,9 +53,6 @@ module.exports = async function chatWebSocketRoute(fastify) {
     ws.on('close', () => handleDisconnect(senderId));
   });
 
-  // ──────────────────────────────
-  // HANDLERS
-  // ──────────────────────────────
 
   function handleDialogOpen(senderId, { friendId, content }) {
     if (content === '2') {
@@ -204,9 +201,7 @@ module.exports = async function chatWebSocketRoute(fastify) {
     clients.delete(userId);
   }
 
-  // ──────────────────────────────
-  // HELPERS
-  // ──────────────────────────────
+
 
   function sendToClient(userId, payload) {
     const clientWs = clients.get(userId);

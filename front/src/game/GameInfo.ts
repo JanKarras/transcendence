@@ -5,19 +5,18 @@ import { PaddleSizes } from './GameConfig.js';
 import type {Player} from './Player.js'
 
 export interface GameInfo {
-  ball: Ball;
-  paddleLeft: Paddle;
-  paddleRight: Paddle;
-  playerLeft: Player;
-  playerRight: Player;
-  end: boolean;
+	ball: Ball;
+	paddleLeft: Paddle;
+	paddleRight: Paddle;
+	playerLeft: Player;
+	playerRight: Player;
+	end: boolean;
 }
 
 export function createInitialState( paddleSize: PaddleSizeOption = 'medium',  ): GameInfo {
 	const baseSpeed = { x: 5, y: 4 }
 	const angle = (Math.random() - 0.5) * (Math.PI / 2);
 
-	// Randomize horizontal direction (left/right)
 	const direction = Math.random() > 0.5 ? 1 : -1;
 
 	return {

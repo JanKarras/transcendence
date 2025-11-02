@@ -226,7 +226,6 @@ export async function connectDialog(
 			console.log('blockedCheck(friendId) === ', res);
 			const chatHeader = document.getElementById('chatHeader') as HTMLElement;
 			chatHeader.textContent = `${t('cht.chatWith')} ${peerName}`;
-			//const chat = document.getElementById('chatMessages') as HTMLElement;
 			return;
 	}
 	if (!messages) return;
@@ -236,68 +235,68 @@ export async function connectDialog(
 
 export async function sendconnect(friendId: number, content: string) {
 	const socket = await getChatSocket();
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        sendChatWsMsg('dialog_open', { friendId, content });
-    } else if (!socket || socket.readyState !== WebSocket.OPEN) {
-        console.warn('❌ WebSocket disconnected');
-    }
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		sendChatWsMsg('dialog_open', { friendId, content });
+	} else if (!socket || socket.readyState !== WebSocket.OPEN) {
+		console.warn('❌ WebSocket disconnected');
+	}
 }
 
 export async function blockUser(id: number) {
-    return toggleBlockUser(id, 'block');
+	return toggleBlockUser(id, 'block');
 }
 
 export async function unblockUser(id: number) {
-    return toggleBlockUser(id, 'unblock');
+	return toggleBlockUser(id, 'unblock');
 }
 
 export async function toggleBlockUser(
-    targetId: number,
-    action: 'block' | 'unblock'
+	targetId: number,
+	action: 'block' | 'unblock'
 ) {
 	const socket = await getChatSocket();
-    const msg = action === 'block' ? t('cht.retryBlock') : t('cht.retryUnblock');
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            connectChat();
-            const chat = document.getElementById('chatMessages') as HTMLElement;
-            chat.innerHTML = t('cht.reconnecting');
-            addMessageToChat('', msg, -1);
-        }
-        return;
-    }
+	const msg = action === 'block' ? t('cht.retryBlock') : t('cht.retryUnblock');
+	if (!socket || socket.readyState !== WebSocket.OPEN) {
+		const token = localStorage.getItem('auth_token');
+		if (token) {
+			connectChat();
+			const chat = document.getElementById('chatMessages') as HTMLElement;
+			chat.innerHTML = t('cht.reconnecting');
+			addMessageToChat('', msg, -1);
+		}
+		return;
+	}
 
-    if (!friendId || friendId !== targetId) {
-        const chat = document.getElementById('chatMessages') as HTMLElement;
-        chat.innerHTML = t('cht.userSwitched');
-        addMessageToChat('', msg, -1);
-        setTimeout(() => connectDialog(targetId, ''), 2500);
-        return;
-    }
+	if (!friendId || friendId !== targetId) {
+		const chat = document.getElementById('chatMessages') as HTMLElement;
+		chat.innerHTML = t('cht.userSwitched');
+		addMessageToChat('', msg, -1);
+		setTimeout(() => connectDialog(targetId, ''), 2500);
+		return;
+	}
 
-    const label = action === 'block' ? t('cht.blocked') : t('cht.unblocked');
-    sendMessage(targetId, label);
-    console.log("Satatus Block = ", await getBlocked(friendId));
-    if (await getBlocked(friendId) === 2) {
-        addDisappearMessage(label);
-    } else {
-        addMessageToChat(t('cht.you'), label, friendStatus);
-    }
+	const label = action === 'block' ? t('cht.blocked') : t('cht.unblocked');
+	sendMessage(targetId, label);
+	console.log("Satatus Block = ", await getBlocked(friendId));
+	if (await getBlocked(friendId) === 2) {
+		addDisappearMessage(label);
+	} else {
+		addMessageToChat(t('cht.you'), label, friendStatus);
+	}
 
-    sendChatWsMsg('blocked', { blockedId: targetId, content: action });
+	sendChatWsMsg('blocked', { blockedId: targetId, content: action });
 }
 
 export async function closeDialog() {
-    setFriendId(0);
-    const chatHeader = document.getElementById('chatHeader') as HTMLElement;
-    if (chatHeader) chatHeader.textContent = t('cht.selectChatPartner');
-    const chat = document.getElementById('chatMessages') as HTMLElement;
-    if (chat) chat.innerHTML = t('cht.leftChat');
-    const chatControls = document.getElementById('chatControls') as HTMLDivElement;
-    if (chatControls) chatControls.innerHTML = '';
-    const inviteMode = document.getElementById("inviteModeModal");
-    if (inviteMode) inviteMode?.classList.add("hidden");
-    const inviteModeCancel = document.getElementById("inviteModeModalCancel");
-    if (inviteModeCancel) inviteModeCancel?.classList.add("hidden");
+	setFriendId(0);
+	const chatHeader = document.getElementById('chatHeader') as HTMLElement;
+	if (chatHeader) chatHeader.textContent = t('cht.selectChatPartner');
+	const chat = document.getElementById('chatMessages') as HTMLElement;
+	if (chat) chat.innerHTML = t('cht.leftChat');
+	const chatControls = document.getElementById('chatControls') as HTMLDivElement;
+	if (chatControls) chatControls.innerHTML = '';
+	const inviteMode = document.getElementById("inviteModeModal");
+	if (inviteMode) inviteMode?.classList.add("hidden");
+	const inviteModeCancel = document.getElementById("inviteModeModalCancel");
+	if (inviteModeCancel) inviteModeCancel?.classList.add("hidden");
 }

@@ -42,8 +42,6 @@ export async function dashboarPage(params: URLSearchParams | null) {
 }
 
 async function initChat() {
-	//connectWebSocket();
-	//refreshFriendsList();
 	chatTemplate()
 	setEventListenersDashboardPageChat();
 }

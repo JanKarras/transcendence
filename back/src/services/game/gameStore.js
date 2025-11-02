@@ -1,9 +1,9 @@
 const onGoingMatches = [];
-const queue = new Map(); // userId -> { userId, ws, remoteAddress }
-const connectedUsers = new Map(); // userId -> { userId, ws, remoteAddress }
+const queue = new Map();
+const connectedUsers = new Map();
 
 module.exports = {
-    onGoingMatches,
-    queue,
-    connectedUsers,
+	onGoingMatches,
+	queue,
+	connectedUsers,
 }

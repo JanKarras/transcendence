@@ -8,7 +8,7 @@ exports.chatRoute = async (fastify, options) => {
 		const { token } = request.query;
 		const userId = userUtils.getUserIdFromToken(token);
 
-        handleConnect(ws, userId);
+		handleConnect(ws, userId);
 
 		ws.on('message', (msg) => handleWsMessage(ws, userId, msg));
 		ws.on('close', (code, reason) => handleWsClose(ws, userId, code, reason));

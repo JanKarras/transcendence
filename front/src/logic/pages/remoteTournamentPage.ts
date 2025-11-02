@@ -107,7 +107,6 @@ async function GameSocketEventListeners() {
 
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
-		//console.log("msg from server game", data)
 		switch (data.type) {
 			case 'startGame':
 				gameState = data.gameState;

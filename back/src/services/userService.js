@@ -3,24 +3,24 @@ const fs = require("fs");
 const path = require("path");
 
 function getUserByEmailOrUsername(username) {
-    let user = userRepository.getUserByUsername(username);
-    if (!user) {
-        user = userRepository.getUserByEmail(username);
-    }
-    return user;
+	let user = userRepository.getUserByUsername(username);
+	if (!user) {
+		user = userRepository.getUserByEmail(username);
+	}
+	return user;
 }
 
 function updateUser(firstName, lastName, age, imageName, userId, twofa_active, twofa_method) {
-    if (firstName) {
-        userRepository.updateUserFirstName(firstName, userId);
-    }
-    if (lastName) {
-        userRepository.updateUserLastName(lastName, userId);
-    }
-    if (age !== null) {
-        userRepository.updateUserAge(age, userId);
-    }
-    if (imageName) {
+	if (firstName) {
+		userRepository.updateUserFirstName(firstName, userId);
+	}
+	if (lastName) {
+		userRepository.updateUserLastName(lastName, userId);
+	}
+	if (age !== null) {
+		userRepository.updateUserAge(age, userId);
+	}
+	if (imageName) {
 		const oldUser = userRepository.getUserById(userId);
 		if (oldUser && oldUser.path && oldUser.path !== "std_user_img.png") {
 			try {
@@ -43,6 +43,6 @@ function updateUser(firstName, lastName, age, imageName, userId, twofa_active, t
 }
 
 module.exports = {
-    getUserByEmailOrUsername,
-    updateUser,
+	getUserByEmailOrUsername,
+	updateUser,
 }

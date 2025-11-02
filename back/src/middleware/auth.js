@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken');
 const logger = require('../logger/logger');
 const JWT_SECRET = process.env.JWT_SECRET
-const db = require("../db");
+const userRepository = require('../repositories/userRepository');
 const { sendChangesToAll } = require('../services/friends/sendChangesToAll');
 
+
+
 function updateLastSeen(userId) {
-  db.prepare(`UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?`).run(userId);
+	userRepository.updateLastSeen(userId);
 }
 
 async function authMiddleware(request, reply) {

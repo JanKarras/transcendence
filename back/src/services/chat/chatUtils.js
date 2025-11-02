@@ -14,17 +14,17 @@ function broadcast(payload) {
 }
 
 function sendToClient(userId, payload) {
-    const clientWs = clients.get(userId);
+	const clientWs = clients.get(userId);
 
-    if (clientWs && clientWs.readyState === clientWs.OPEN) {
-    	try {
-    		clientWs.send(JSON.stringify(payload));
-    		return true;
-    	} catch (e) {
-    		logEvent('error', userId, 'WS send err', e.message);
-    	}
-    }
-    return false;
+	if (clientWs && clientWs.readyState === clientWs.OPEN) {
+		try {
+			clientWs.send(JSON.stringify(payload));
+			return true;
+		} catch (e) {
+			logEvent('error', userId, 'WS send err', e.message);
+		}
+	}
+	return false;
   }
 
 function logEvent(level, userId, event, details = '') {

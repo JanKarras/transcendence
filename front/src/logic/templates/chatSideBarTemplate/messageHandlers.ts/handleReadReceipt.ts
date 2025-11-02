@@ -2,9 +2,9 @@ import { friendId, friendStatus, setFriendStatus } from "../chatSidebarTemplateS
 
 export function handleReadReceipt(msg: any) {
 
-    if (msg.readerId === friendId) {
-        setFriendStatus(msg.content === '1' ? 1 : 0);
-    }
-    if (msg.content === '2') setFriendStatus(0);
+	if (msg.readerId === friendId) {
+		setFriendStatus(msg.content === '1' ? 1 : 0);
+	}
+	if (msg.content === '2') setFriendStatus(0);
 
 }

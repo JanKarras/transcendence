@@ -4,11 +4,9 @@ const websocket = require('@fastify/websocket');
 const fastify = Fastify({ logger: true });
 
 const start = async () => {
-  // Register muss innerhalb einer async Funktion awaiten
   await fastify.register(websocket);
 
   fastify.get('/echo', { websocket: true }, (ws, request) => {
-  // ws ist direkt das WebSocket-Objekt
   const remoteAddress = request.socket.remoteAddress;
   console.log('🟢 WS connected from', remoteAddress);
 

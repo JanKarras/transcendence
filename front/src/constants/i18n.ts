@@ -1,47 +1,39 @@
 import { LANGUAGE } from "./gloabal.js";
-// import eng from "../locales/en.json"
-// import fr from "../locales/fr.json"
-// import de from "../locales/de.json"
-// import ua from "../locales/ua.json"
-// import bel from "../locales/bel.json"
-// import nig from "../locales/nig.json"
 
 const translations: Record<string, any> = {};
 
 export async function initTranslations() {
-    if (!translations[LANGUAGE]) {
+	if (!translations[LANGUAGE]) {
 		console.log(`Loading translations for language: ${LANGUAGE}`);
-        const res = await fetch(`/locales/${LANGUAGE}.json`);
+		const res = await fetch(`/locales/${LANGUAGE}.json`);
 		if (!res.ok) {
 			console.warn(`Could not load translations for language: ${LANGUAGE}, falling back to English.`);
 			const fallbackRes = await fetch(`./locales/eng.json`);
 			translations["eng"] = await fallbackRes.json();
 			return;
 		}
-        // const res = await fetch(`/assets/js/locales/${LANGUAGE}.json`);
-        translations[LANGUAGE] = await res.json();
-    }
+		translations[LANGUAGE] = await res.json();
+	}
 }
 
-// const translations: Record<string, any> = { eng, fr, de, ua, bel, nig };
 
 export function t(keyOrObj: any): string {
-    if (typeof keyOrObj === "object") {
-        return keyOrObj[LANGUAGE as keyof typeof keyOrObj] || keyOrObj.eng;
-    }
+	if (typeof keyOrObj === "object") {
+		return keyOrObj[LANGUAGE as keyof typeof keyOrObj] || keyOrObj.eng;
+	}
 
-    if (typeof keyOrObj === "string") {
-        const dict = translations[LANGUAGE] || translations["eng"];
-        const keys = keyOrObj.split(".");
+	if (typeof keyOrObj === "string") {
+		const dict = translations[LANGUAGE] || translations["eng"];
+		const keys = keyOrObj.split(".");
 
-        let value: any = dict;
-        for (const k of keys) {
-            value = value?.[k];
-            if (!value) break;
-        }
+		let value: any = dict;
+		for (const k of keys) {
+			value = value?.[k];
+			if (!value) break;
+		}
 
-        return value || keyOrObj;
-    }
+		return value || keyOrObj;
+	}
 
-    return String(keyOrObj);
+	return String(keyOrObj);
 }

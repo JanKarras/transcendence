@@ -10,7 +10,7 @@ function handleDialogOpen(userId, ws, data) {
 		const prevFriendId = activeDialog.get(senderId);
 		activeDialog.delete(senderId);
 
-	  	if (prevFriendId) {
+		if (prevFriendId) {
 			sendToClient(prevFriendId, {
 				type: 'read_receipt',
 				readerId: senderId,
@@ -37,12 +37,12 @@ function handleDialogOpen(userId, ws, data) {
 				type: 'peer_dialog_open',
 				peerId: senderId,
 			});
-	  	}
+		}
 		sendToClient(friendId, {
 			type: 'read_receipt',
 			readerId: senderId,
 			content: '1',
-	  	});
+		});
 	}
 }
 

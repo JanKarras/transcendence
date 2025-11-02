@@ -4,7 +4,11 @@ import { t } from "../../logic/gloabal/initTranslations.js";
 import { getMatchHistoryHTML } from "../../logic/templates/matchHistoryTemplate.js";
 import { getChatSidebarHTML } from "../templates/renderChatSideBar.js";
 
-export async function renderDashboard(params: URLSearchParams | null, stats: Stats | undefined, matchesFromHistory: MatchHistoryEntry[] | undefined) {
+export async function renderDashboard(
+	params: URLSearchParams | null,
+	stats: Stats | undefined,
+	matchesFromHistory: MatchHistoryEntry[] | undefined
+) {
 	if (!bodyContainer) {
 		console.error("Body container not found");
 		return;
@@ -39,8 +43,10 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 								<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
 									${t('playDesc')}
 								</p>
-								<button id="playNowBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white
-									bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+								<button
+									id="playNowBtn"
+									class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300"
+								>
 									${t('playNowBtn')}
 								</button>
 							</div>
@@ -59,8 +65,10 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 								<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
 									${t('tournamentDesc')}
 								</p>
-								<button id="startTournamentBtn" class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white
-									bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300">
+								<button
+									id="startTournamentBtn"
+									class="w-full text-center inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300"
+								>
 									${t('tournamentBtn')}
 								</button>
 							</div>
@@ -76,6 +84,7 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 								${t('wonGames')}
 							</p>
 						</a>
+
 						<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
 							<h5 id="tourn" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 								${stats?.loses}
@@ -84,6 +93,7 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 								${t('lostGames')}
 							</p>
 						</a>
+
 						<a class="flex flex-col items-center justify-center px-3 py-3 rounded-lg shadow-sm bg-[#0e0e25]">
 							<h5 id="matches" class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 								${stats?.tournamentWins}
@@ -95,39 +105,68 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 					</div>
 				</div>
 
-				<div id="modeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
+				<div
+					id="modeModal"
+					class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden"
+				>
 					<div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
 						<h4 class="text-3xl font-bold text-white">
 							${t('game.chooseMode')}
 						</h4>
 						<div class="flex gap-12 mt-4">
-							<button id="localBtn" class="w-[40%] px-6 py-3 bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white flex items-center justify-center">
+							<button
+								id="localBtn"
+								class="w-[40%] px-6 py-3 bg-[#48ac3c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white flex items-center justify-center"
+							>
 								${t('game.local')}
 							</button>
-							<button id="remoteBtn" class="w-[40%] px-6 py-3 bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white flex items-center justify-center">
+							<button
+								id="remoteBtn"
+								class="w-[40%] px-6 py-3 bg-[#6a047c] rounded-lg hover:bg-[#3b8b30] focus:ring-4 focus:outline-none focus:ring-green-300 text-white flex items-center justify-center"
+							>
 								${t('game.remote')}
 							</button>
 						</div>
 					</div>
 				</div>
-				<div id="inviteModeModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
-              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
-                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
-                <div class="flex gap-12 mt-4">
-                  <button id="startBtn" class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded">${t('startMatch')}</button>
-                  <button id="cancelBtn" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
-                </div>
-			  </div>
-			</div>
-			<!--  Invite  one cansel-->
-			<div id="inviteModeModalCancel" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden">
-              <div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
-                <!-- <h4 class="text-3xl font-bold text-white">${t('game.chooseMode')}</h4> -->
-                <div class="flex gap-12 mt-4">
-                  <button id="cancelBtnNew" class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded">${t('game.cancel')}</button>
-                </div>
-			  </div>
-			</div>
+
+				<div
+					id="inviteModeModal"
+					class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden"
+				>
+					<div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+						<div class="flex gap-12 mt-4">
+							<button
+								id="startBtn"
+								class="px-6 py-3 bg-purple-600 hover:bg-green-700 text-white rounded"
+							>
+								${t('startMatch')}
+							</button>
+							<button
+								id="cancelBtn"
+								class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded"
+							>
+								${t('game.cancel')}
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div
+					id="inviteModeModalCancel"
+					class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 hidden"
+				>
+					<div class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 text-center">
+						<div class="flex gap-12 mt-4">
+							<button
+								id="cancelBtnNew"
+								class="px-6 py-3 bg-blue-600 hover:bg-red-700 text-white rounded"
+							>
+								${t('game.cancel')}
+							</button>
+						</div>
+					</div>
+				</div>
 			</main>
 
 			<aside class="w-96 p-4 overflow-y-auto">
@@ -136,6 +175,7 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 		</div>
 	`;
 }
+
 
 export async function showNewRequestBadge() {
 	const friendsMenuItem = document.getElementById("menu-friends");
