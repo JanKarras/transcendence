@@ -1,6 +1,7 @@
 const userRepo = require("../../repositories/userRepository");
 const requestRepo = require("../../repositories/requestRepository");
 const { sendChanges } = require("./sendChanges");
+const { notifyDashboard } = require("./notifyDashboard");
 
 async function declineFriendRequest(userId, ws, data) {
 	const { requestId }  = data;
@@ -10,6 +11,8 @@ async function declineFriendRequest(userId, ws, data) {
 	requestRepo.updateRequestStatusById("declined", requestId);
 
 	sendChanges(request.sender_id, request.receiver_id);
+
+	notifyDashboard(request.receiver_id, 2);
 }
 
 module.exports = {

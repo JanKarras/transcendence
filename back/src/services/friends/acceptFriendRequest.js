@@ -1,6 +1,7 @@
 const userRepo = require("../../repositories/userRepository");
 const requestRepo = require("../../repositories/requestRepository");
 const { sendChanges } = require("./sendChanges");
+const { notifyDashboard } = require("./notifyDashboard");
 
 async function acceptFriendRequest(userId, ws, data) {
 	const { requestId }  = data;
@@ -12,6 +13,8 @@ async function acceptFriendRequest(userId, ws, data) {
 	userRepo.addFriend(request.sender_id, request.receiver_id);
 
 	sendChanges(request.sender_id, request.receiver_id);
+
+	notifyDashboard(request.receiver_id, 2);
 }
 
 module.exports = {

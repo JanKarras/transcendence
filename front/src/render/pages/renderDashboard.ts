@@ -136,3 +136,27 @@ export async function renderDashboard(params: URLSearchParams | null, stats: Sta
 		</div>
 	`;
 }
+
+export async function showNewRequestBadge() {
+	const friendsMenuItem = document.getElementById("menu-friends");
+	if (!friendsMenuItem) return;
+
+	friendsMenuItem.classList.add("relative"); 
+
+	let badge = document.getElementById("friends-request-badge");
+	if (badge) return;
+
+	badge = document.createElement("span");
+	badge.id = "friends-request-badge";
+	badge.textContent = "💌";
+	badge.className =
+		"absolute top-3 right-3 text-lg animate-bounce drop-shadow-md";
+
+	friendsMenuItem.appendChild(badge);
+}
+
+
+export function hideNewRequestBadge() {
+	const badge = document.getElementById("friends-request-badge");
+	if (badge) badge.remove();
+}

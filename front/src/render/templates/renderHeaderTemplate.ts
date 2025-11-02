@@ -6,6 +6,8 @@ import { logOut } from "../../logic/gloabal/logOut.js";
 import { removeEventListenerByClone } from "../../logic/gloabal/removeEventListenerByClone.js";
 import { getPos } from "../../logic/templates/headerTemplate.js";
 import { buildMenuItems, getMenuEntries, showMenu } from "../../logic/templates/menuTemplate.js";
+import { hideNewRequestBadge, showNewRequestBadge } from "../pages/renderDashboard.js";
+import { getUser } from "../../api/getUser.js";
 
 const pagesWithHiddenHeader = [
 	"login",
@@ -66,11 +68,24 @@ export async function renderHeader(pos: string, userData: UserResponse | false) 
 
 	removeEventListenerByClone(MENU_CONTAINER_ID);
 	if (!profileMenuListenerAttached && profileContainer) {
-		profileContainer.addEventListener("click", (e) => {
+		profileContainer.addEventListener("click", async (e) => {
 			e.stopPropagation();
 			const pos = getPos();
 			const items = buildMenuItems(getMenuEntries(pos));
 			showMenu(items);
+
+			const userData = await getUser();
+
+			if (userData) {
+				
+				const pendingRequests = userData.requests?.received?.filter((r) => r.type === "friend" && r.status === "nothandled") ?? [];
+				if (pendingRequests.length > 0) {
+					showNewRequestBadge();
+				} else { 
+					hideNewRequestBadge();
+				}
+			}
+
 		});
 		profileMenuListenerAttached = true;
 	}

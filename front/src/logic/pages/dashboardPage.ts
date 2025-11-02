@@ -3,7 +3,7 @@ import { getStats } from "../../api/getStats.js";
 import { getUser } from "../../api/getUser.js";
 import { UserInfo } from "../../constants/structs.js";
 import { setEventListenersDashboardPage, setEventListenersDashboardPageChat } from "../../events/pages/dashboardPage.js";
-import { renderDashboard } from "../../render/pages/renderDashboard.js";
+import { hideNewRequestBadge, renderDashboard, showNewRequestBadge } from "../../render/pages/renderDashboard.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { getDashboardSocket } from "../../websocket/wsDashboardServce.js";
 import { initTranslations } from "../gloabal/initTranslations.js";
@@ -26,16 +26,19 @@ export async function dashboarPage(params: URLSearchParams | null) {
 
 	const user : UserInfo = userData.user;
 
+	console.log("User Data:", userData);
+
 	const matchesFromHistory = await getMatchHistory(user.id);
-
+	
 	const stats = await getStats(user.id);
-
+	
 	await renderDashboard(params, stats, matchesFromHistory);
-
+	
 	await setEventListenersDashboardPage();
-
+	
 	initChat();
-
+	
+	
 }
 
 async function initChat() {
@@ -52,6 +55,12 @@ export function handleDashboardMessage(msg: MessageEvent, socket: WebSocket): vo
 	switch (message.type) {
 		case "invitedToTournament":
 			showTournamentModal(message.data);
+			break;
+		case "newRequest":
+			showNewRequestBadge();
+			break;
+		case "removedRequest":
+			hideNewRequestBadge();
 			break;
 	}
 }
