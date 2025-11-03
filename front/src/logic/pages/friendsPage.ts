@@ -14,6 +14,14 @@ export async function friendsPage(params: URLSearchParams | null) {
 
 	await renderFriendsPage();
 	await connect();
+	console.log(params);
+	const p = params?.get("tab");
+	if (p === "requests")
+	{
+		const contentContainer = document.getElementById("friends-content");
+		if (contentContainer )
+			contentContainer.setAttribute("data-active-tab", "requests");
+	}	
 }
 
 async function connect() {

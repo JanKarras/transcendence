@@ -2,6 +2,8 @@ import { bodyContainer } from "../../constants/constants.js";
 import { MatchHistoryEntry, Stats } from "../../constants/structs.js";
 import { t } from "../../logic/global/initTranslations.js";
 import { getMatchHistoryHTML } from "../../logic/templates/matchHistoryTemplate.js";
+import { hideMenu } from "../../logic/templates/menuTemplate.js";
+import { navigateTo } from "../../router/navigateTo.js";
 import { getChatSidebarHTML } from "../templates/renderChatSideBar.js";
 
 export async function renderDashboard(
@@ -193,6 +195,13 @@ export async function showNewRequestBadge() {
 		"absolute top-3 right-3 text-lg animate-bounce drop-shadow-md";
 
 	friendsMenuItem.appendChild(badge);
+	badge.addEventListener("click", (e) => {
+		e.stopPropagation();
+		const p = new URLSearchParams();
+		p.set("tab", "requests"); 
+		navigateTo("friends", p);
+		hideMenu();
+	});
 }
 
 
