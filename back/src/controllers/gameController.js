@@ -72,7 +72,6 @@ function disconnectUser(userId) {
 
 	if (!match.user1Connected && !match.user2Connected) {
 		gameStore.onGoingMatches = gameStore.onGoingMatches.filter(m => m !== match);
-		console.log(`Both users disconnected. Removing match ${match.userId1} vs ${match.userId2}`);
 	}
 }
 
@@ -92,7 +91,6 @@ function reconnectUser(data) {
 
 	try {
 		data.ws.send(JSON.stringify(gameStatePayload));
-		console.log(`User ${data.userId} reconnected and game state sent`);
 	} catch (err) {
 		console.error("Failed to send game state to reconnecting user:", err);
 	}
@@ -103,7 +101,6 @@ setInterval(() => {
 		const ws = data.ws;
 
 		if (ws.isAlive === false) {
-			console.log(`❌ User ${userId} is unresponsive, terminating`);
 			ws.terminate();
 			gameStore.queue.delete(userId);
 			gameStore.connectedUsers.delete(userId);
@@ -122,7 +119,6 @@ exports.joinQueue = async (req, reply) => {
 	}
 
 	gameService.tryMatch(userId);
-	console.log(`Waiting for joining the game ${userId}`);
 	reply.send({ message: "Waiting for joining the game" });
 }
 
@@ -136,13 +132,10 @@ exports.waitForTheGame = async (req, reply) => {
 
 	const { via } = req.body || {};
 	if (via === "invite") {
-		console.log(`🎯 Invite game detected for user ${userId}`);
 		matchService.connectUserToMatchFromChat(data);
 	} else {
-		console.log(`⚙️ Normal matchmaking for user ${userId}`);
 		matchService.connectUserToMatch(data);
 	}
-	console.log(`Waiting for the game to start by ${userId}`);
 	reply.send({ message: "Waiting for the game to start" });
 }
 
@@ -153,7 +146,6 @@ exports.startTheGame = async (req, reply) => {
 		return reply.status(400).send({ error: 'UserId required' });
 	}
 	gameProcessor.setCountdownFinished(userId, mode);
-	console.log("Game started lod");
 	reply.send({ message: "Game started" });
 }
 
@@ -167,7 +159,6 @@ exports.createLocalGame = async (req, reply) => {
 	const userData = gameStore.connectedUsers.get(userId);
 	matchService.createLocalMatch(userData, username);
 
-	console.log("Local game created");
 	reply.send({ message: "Local game created" });
 }
 
@@ -198,7 +189,6 @@ exports.createInvitation = async (req, reply) => {
 		return reply.status(400).send({ error: 'UserId required' });
 	}
 	invitationService.invite(userId, other);
-	console.log(`Waiting for friend to accept the invitation ${userId}`);
 	reply.send({ message: "Waiting for friend to accept the invitation" });
 }
 
@@ -208,6 +198,5 @@ exports.acceptInvitation = async (req, reply) => {
 		return reply.status(400).send({ error: 'UserId required' });
 	}
 	invitationService.accept(userId, other);
-	console.log(`Waiting for friend to accept the invitation by ${userId}`);
 	reply.send({ message: "Waiting for friend to accept the invitation" });
 }

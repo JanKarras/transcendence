@@ -8,7 +8,7 @@ function getUserById(userId) {
 		return null;
 	}
 
-	safeDBExecute(() => {
+	return safeDBExecute(() => {
 		return db.prepare(`
 			SELECT username, path
 			FROM users

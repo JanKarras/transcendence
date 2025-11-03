@@ -1,10 +1,13 @@
 const userUtilsRepo = require('../../repositories/userUtilsRepository');
 const userRepo = require('../../repositories/userRepository');
 const reqRepo = require('../../repositories/requestRepository');
+const { compareSync } = require('bcrypt');
 
 async function collectFriendsData(userId) {
 	const userData = await userUtilsRepo.getUserById(userId);
 	const allUsers = await userRepo.getAllUsers();
+	console.log("All users:", allUsers);
+	console.log("User data:", userData);
 	if (!userData || !allUsers) return null;
 
 	const allFriends = await userRepo.getFriends(userId);
