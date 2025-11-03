@@ -21,7 +21,6 @@ async function connect() {
 
 	socket.onmessage = (msg) => {
 		const message = JSON.parse(msg.data.toString());
-		console.log("📩 WS message:", message);
 
 		switch (message.type) {
 			case "friendsUpdate":

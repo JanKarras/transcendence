@@ -13,13 +13,11 @@ export async function setChatEventlistenersForSocket() {
 	const socket = await getChatSocket()
 
 	if (!socket) {
-		console.log("No chat socket available");
 		return;
 	}
 
 	socket.onmessage = (event: MessageEvent) => {
 		const msg = JSON.parse(event.data.toString());
-		console.log("Received message:", msg);
 		switch (msg.type) {
 			case 'init':
 				handleInit(msg);

@@ -26,8 +26,6 @@ export async function dashboarPage(params: URLSearchParams | null) {
 
 	const user : UserInfo = userData.user;
 
-	console.log("User Data:", userData);
-
 	const matchesFromHistory = await getMatchHistory(user.id);
 	
 	const stats = await getStats(user.id);
@@ -48,7 +46,6 @@ async function initChat() {
 
 export function handleDashboardMessage(msg: MessageEvent, socket: WebSocket): void {
 	const message = JSON.parse(msg.data.toString());
-	console.log("Message Dashboard WS: ", message);
 
 	switch (message.type) {
 		case "invitedToTournament":
@@ -65,7 +62,6 @@ export function handleDashboardMessage(msg: MessageEvent, socket: WebSocket): vo
 
 
 async function showTournamentModal(data: { gameId: number }) {
-	console.log("Tournament Invite:", data);
 
 	const existing = document.getElementById("tournamentInviteModal");
 	if (existing) existing.remove();
@@ -114,12 +110,10 @@ async function showTournamentModal(data: { gameId: number }) {
 
 		overlay.remove();
 
-		console.log("✅ Tournament invite accepted → navigating with gameId", data.gameId);
 		navigateTo("tournament", p);
 	});
 
 	declineBtn.addEventListener("click", () => {
-		console.log("❌ Tournament invite declined");
 		overlay.remove();
 
 		const socket = getDashboardSocket();
@@ -128,7 +122,6 @@ async function showTournamentModal(data: { gameId: number }) {
 				type: "declineTournamentInvite",
 				data: { gameId: data.gameId }
 			}));
-			console.log("📤 Decline message sent for gameId:", data.gameId);
 		} else {
 			console.warn("⚠️ Dashboard WebSocket not open, cannot send decline message.");
 		}

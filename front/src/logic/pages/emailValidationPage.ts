@@ -42,7 +42,7 @@ export async function validateEmail(email: string) {
 		showSuccessMessage(t('emailValidated'));
 		renderWithDelay("login");
 	} else {
-		console.log(res.error);
+		console.error(res.error);
 		showErrorMessage(res.error)
 	}
 }

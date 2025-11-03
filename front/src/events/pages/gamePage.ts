@@ -37,7 +37,6 @@ export function setGameEventListeners(username : string | null | undefined, para
 	cancelUsernameBtn?.addEventListener("click", () => navigateTo("dashboard"));
 
 	if (currentMode === "remote") {
-		console.log("remotgame started", params)
 		startRemoteGame(ctx, params);
 	} else if (username) {
 		startLocalGame(username, ctx);

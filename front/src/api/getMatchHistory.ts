@@ -14,7 +14,6 @@ export async function getMatchHistory(userId: number): Promise<MatchHistoryEntry
 		}
 
 		const data: { matchHistory: MatchHistoryEntry[] } = await res.json();
-		console.log("Match History für User", userId, data.matchHistory);
 
 		return data.matchHistory;
 	} catch (err: any) {
