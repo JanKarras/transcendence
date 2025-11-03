@@ -16,6 +16,8 @@ front/public/assets/js
 
 front/public/assets/tailwind.css
 
+nginx/certs
+
 .cert
 .key
 
