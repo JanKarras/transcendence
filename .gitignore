@@ -16,4 +16,9 @@ front/public/assets/js
 
 front/public/assets/tailwind.css
 
+.cert
+.key
+
 .idea
+
+.env

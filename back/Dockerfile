@@ -14,10 +14,9 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
-
+RUN yarn install --production
 COPY . .
 
 EXPOSE 4000
 
-CMD ["yarn", "dev"]
+CMD ["yarn", "start"]

@@ -7,4 +7,9 @@ RUN apt-get update && \
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN mkdir -p /etc/nginx/certs
+
+COPY generate-certs.sh /usr/local/bin/generate-certs.sh
+RUN chmod +x /usr/local/bin/generate-certs.sh
+
+CMD ["/bin/bash", "-c", "/usr/local/bin/generate-certs.sh && nginx -g 'daemon off;'"]

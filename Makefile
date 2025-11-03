@@ -9,3 +9,4 @@ down:
 clean:
 	docker compose down --volumes --remove-orphans
 	docker system prune -a --volumes -f
+	rm -r nginx/certs/
