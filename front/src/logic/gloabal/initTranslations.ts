@@ -1,8 +1,9 @@
-import { LANGUAGE } from "../../constants/gloabal.js";
+import { getLanguage } from "../../constants/gloabal.js";
 
 const translations: Record<string, any> = {};
 
 export async function initTranslations() {
+	const LANGUAGE = getLanguage()
 	if (!translations[LANGUAGE]) {
 		const res = await fetch(`/locales/${LANGUAGE}.json`);
 		if (!res.ok) {
@@ -17,6 +18,7 @@ export async function initTranslations() {
 
 
 export function t(keyOrObj: any): string {
+	const LANGUAGE = getLanguage()
 	if (typeof keyOrObj === "object") {
 		return keyOrObj[LANGUAGE as keyof typeof keyOrObj] || keyOrObj.eng;
 	}

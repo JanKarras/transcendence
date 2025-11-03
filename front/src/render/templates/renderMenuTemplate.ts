@@ -30,8 +30,8 @@ export function renderMenu(items: MenuItem[]) {
 				img.className = "w-5 h-5";
 				btn.appendChild(img);
 				btn.appendChild(document.createTextNode(lang.label));
-				btn.addEventListener("click", () => {
-					setLanguage(lang.code);
+				btn.addEventListener("click", async () => {
+					await setLanguage(lang.code);
 					hideMenu();
 					reRenderCurrentView();
 				});

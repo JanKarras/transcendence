@@ -1,5 +1,5 @@
 import { MENU_CONTAINER_ID } from "../../constants/constants.js";
-import { LANGUAGE } from "../../constants/gloabal.js";
+import { getLanguage, LANGUAGE } from "../../constants/gloabal.js";
 import { renderMenu } from "../../render/templates/renderMenuTemplate.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { t } from "../gloabal/initTranslations.js";
@@ -47,9 +47,10 @@ export function getMenuEntries(currentPos: string): MenuItem[] {
 }
 
 export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
+
 	const langEntry: MenuItem = {
 		id: "menu-language",
-		label: `${t("languageLabel")} ${LANGUAGE.toUpperCase()}`,
+		label: `${t("languageLabel")} ${getLanguage().toUpperCase()}`,
 		onClick: () => {},
 	};
 
