@@ -16,7 +16,6 @@ export function sendChatWsMsg(type: string, payload: Record<string, any>): void 
 	}
 
 	const message = { type, data: payload };
-	console.log('➡️ Sending message:', message);
 	socket.send(JSON.stringify(message));
 }
 
@@ -54,7 +53,6 @@ export function addDisappearMessage(content: string): void {
 	div.className = 'italic';
 	chat.appendChild(div);
 	chat.scrollTop = chat.scrollHeight;
-	console.log('inviteCheckStatus === ', content);
 	setTimeout(() => {
 		div.remove();
 	}, 2000);
@@ -176,7 +174,7 @@ export async function connectDialog(
 		if (friend) {
 			peerName = friend.username;
 		} else {
-			console.log('Friend with this ID not found');
+			console.error('Friend with this ID not found');
 		}
 	}
 	if (friendId && friendId !== peerId) {
@@ -211,7 +209,7 @@ export async function connectDialog(
 			refreshFriendsList();
 		}
 	} catch (err) {
-		console.log('❌ Message not sent: WebSocket not connected.');
+		console.error('❌ Message not sent: WebSocket not connected.');
 	}
 
 
@@ -223,7 +221,6 @@ export async function connectDialog(
 
 	if (res === 2 || res === 3) {
 			addDisappearMessage(t('cht.blockedYou'));
-			console.log('blockedCheck(friendId) === ', res);
 			const chatHeader = document.getElementById('chatHeader') as HTMLElement;
 			chatHeader.textContent = `${t('cht.chatWith')} ${peerName}`;
 			return;
@@ -277,7 +274,6 @@ export async function toggleBlockUser(
 
 	const label = action === 'block' ? t('cht.blocked') : t('cht.unblocked');
 	sendMessage(targetId, label);
-	console.log("Satatus Block = ", await getBlocked(friendId));
 	if (await getBlocked(friendId) === 2) {
 		addDisappearMessage(label);
 	} else {

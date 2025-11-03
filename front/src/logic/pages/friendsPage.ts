@@ -24,7 +24,6 @@ async function connect() {
 
 		switch (message.type) {
 			case "friendsUpdate":
-				console.log("🟢 Neue Friends-Daten empfangen:", message.data);
 				friendsData = message.data as FriendsViewData;
 				renderActiveTab();
 				break;

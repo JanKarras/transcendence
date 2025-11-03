@@ -15,7 +15,6 @@ export async function gamePage(params: URLSearchParams | null) {
 
 	const modeParam = params?.get("mode");
 	let username = params?.get("username");
-	console.log(params)
 	currentMode = modeParam === "local" || modeParam === "remote" ? modeParam : null;
 
 	let showUsernameModal = false;
@@ -52,7 +51,6 @@ export async function startRemoteGame(ctx: CanvasRenderingContext2D, params: URL
 	socket.onmessage = (event: MessageEvent) => handleGameMessage(event, ctx, "remote");
 
 	const via = params?.get("via");
-	console.log("VIAA", via);
 
     const response = await fetch(`https://${window.location.host}/api/set/matchmaking/wait`, {
         method: "POST",
@@ -159,7 +157,6 @@ function enablePaddles(): void {
 	}
 	window.addEventListener("keydown", (e) => {
 		if (socket.readyState !== WebSocket.OPEN) return;
-		console.log(e)
 		switch (e.key) {
 			case "ArrowUp":
 				socket.send("movePaddleUp");

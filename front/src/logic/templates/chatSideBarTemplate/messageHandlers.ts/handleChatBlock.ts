@@ -5,7 +5,6 @@ import { addDisappearMessage, refreshDialog, retryMessage } from "../chatSidebar
 
 export function handleChatBlock(msg: any) {
 	const { friendId: userId, senderName: name, content } = msg;
-	console.log("Content12, friend, userid",content, friendId, userId);
 	if (content === 'unblock' && friendId) {
 		refreshDialog(friendId);
 		return;

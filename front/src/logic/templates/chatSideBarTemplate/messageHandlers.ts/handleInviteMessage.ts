@@ -13,16 +13,12 @@ export function handleInviteMessage(msg: any) {
 	}
 	if (content === 'accept'){
 
-
 		const p = new URLSearchParams();
 		p.set("mode", "remote");
 		p.set("via", "invite");
 		const inviteModeCancel = document.getElementById("inviteModeModalCancel");
 		inviteModeCancel?.classList.add("hidden");
-		console.log("🚦 Навигация в игру");
 		navigateTo("game", p);
-
-
 
 	}
 	if (userId === currentId && content === 'sent') {

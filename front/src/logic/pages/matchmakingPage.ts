@@ -17,13 +17,11 @@ export async function matchmakingPage(params: URLSearchParams | null) {
 
 async function startMatchmaking() {
 	const token = await getFreshToken();
-	console.log(token)
 
 	const socket = await connectGameSocket();
 
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
-		console.log("📩", data);
 
 		if (data.type === "matchFound") {
 			const params = new URLSearchParams();
@@ -41,5 +39,4 @@ async function startMatchmaking() {
 	});
 
 	const result = await response.json();
-	console.log("Waiting for game:", result);
 }

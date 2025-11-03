@@ -17,7 +17,6 @@ export async function tournamentPage(params: URLSearchParams | null) {
 
 	const gameId = params?.get("gameId");
 	if (gameId) {
-		console.log(gameId)
 		socket.send(JSON.stringify({
 			type: "joinGame",
 			data: { gameId: Number(gameId) }
@@ -41,7 +40,6 @@ export function sendChatMessage(socket: WebSocket, input: HTMLInputElement): voi
 
 export function handleTournamentMessage(msg: MessageEvent, socket: WebSocket): void {
 	const message = JSON.parse(msg.data.toString());
-	console.log("📩 WS:", message);
 
 	switch (message.type) {
 		case "tournamentCreated":

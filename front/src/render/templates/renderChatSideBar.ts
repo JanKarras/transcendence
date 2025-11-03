@@ -28,7 +28,7 @@ export async function getChatSidebarHTML(
 			<!-- Chat Messages -->
 			<div
 				id="chatMessages"
-				class="overflow-y-auto p-3 
+				class="overflow-y-auto p-3
 					bg-gradient-to-r from-[#8e00a8] to-[#7c0bac]
 					rounded-lg shadow-[0_0_10px_#174de1]
 					mb-2 min-h-[325px] max-h-[325px]"
@@ -41,13 +41,13 @@ export async function getChatSidebarHTML(
 				<textarea
 					id="chatInput"
 					placeholder="${t('enterMessage')}"
-					class="flex-1 p-2 rounded-lg border border-gray-200 bg-[#2c2c58] text-white 
+					class="flex-1 p-2 rounded-lg border border-gray-200 bg-[#2c2c58] text-white
 						focus:outline-none focus:ring-2 focus:ring-[#174de1] resize-none overflow-y-auto"
 					rows="1"
 				></textarea>
 				<button
 					id="sendBtn"
-					class="px-3 py-2 rounded-lg bg-[#5656aa] text-white hover:bg-[#7878cc] transition 
+					class="px-3 py-2 rounded-lg bg-[#5656aa] text-white hover:bg-[#7878cc] transition
 						flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<img class="h-6 w-6" src="./assets/img/send-32.png" alt="Send" />
@@ -203,7 +203,6 @@ export async function renderFriendsList(friends: Friend[]): Promise<void> {
 			}
 			openProfile(friend.id);
 		};
-		console.log(friend)
 		friend.online = statuses[i] ? true : false ;
 		const isOnline = statuses[i] === 1;
 		const statusDot = document.createElement('span');
@@ -239,7 +238,6 @@ export async function renderChatControls(peerId: number, peerName: string): Prom
 	chatControls.innerHTML = '';
 
 	const isBlocked = await getBlocked(peerId);
-	console.log('isBlocked = ', isBlocked);
 
 	const blockBtn = document.createElement('button');
 	if (isBlocked === 1 || isBlocked === 3) {
@@ -247,7 +245,7 @@ export async function renderChatControls(peerId: number, peerName: string): Prom
 		blockBtn.title = t('cht.unblock');
 		blockBtn.onclick = async () => {
 			await unblockUser(peerId);
-			await connectDialog(peerId, peerName); 
+			await connectDialog(peerId, peerName);
 		};
 	} else {
 		blockBtn.textContent = '🚫';
@@ -284,7 +282,7 @@ async function inviteFriend(inviterId: number, username : string): Promise<void>
 	if (await blockedCheck(inviterId)) return;
 
 	const socket = await getChatSocket();
-	
+
 	if (socket && socket.readyState === WebSocket.OPEN) {
 		addMessageToChat(t('cht.you'), t('cht.inviteSent'), friendStatus);
 		sendMessage(inviterId, t('cht.inviteSent'));

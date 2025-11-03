@@ -62,7 +62,6 @@ export async function renderRemoteTournamentPage() {
 }
 
 export function renderGameChat(messages: { text: string, type: "system" | "user" }[]) {
-	console.log("renderGameChat was acalled: ", messages);
 	let chatContainer = document.getElementById("gameChatContainer");
 	if (!chatContainer) {
 		chatContainer = document.createElement("div");

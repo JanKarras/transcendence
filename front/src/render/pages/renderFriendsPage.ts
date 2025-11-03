@@ -62,7 +62,6 @@ export function renderFriendsList(friendsData: FriendsViewData, online: boolean)
 	list.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
 
 	friends.forEach(friend => {
-		console.log(friends, friendsOnline);
 		const card = document.createElement("div");
 		card.className = "bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer";
 
@@ -383,7 +382,6 @@ export function renderFriendRequests(recvRequests: RequestInfo[], sendRequests: 
 					removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded ml-2";
 					removeBtn.addEventListener("click", e => {
 						e.stopPropagation();
-						console.log("test");
 						sendFriendSocketMessage("removeFriendRequest", { requestId : req.id });
 					});
 					right.appendChild(removeBtn);

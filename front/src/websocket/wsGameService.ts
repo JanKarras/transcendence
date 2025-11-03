@@ -13,7 +13,6 @@ export async function connectGameSocket() {
 	}
 
 	const token = await getFreshToken();
-	console.log(token);
 	if (!token) {
 		throw new Error("No auth token found");
 	}

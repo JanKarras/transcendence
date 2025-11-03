@@ -9,7 +9,6 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 
 	const stats = await getStats(friend.id);
 	const matchesFromHistory: any[] = await getMatchHistory(friend.id) || [];
-	console.log("matchhis", matchesFromHistory)
 	const overlay = document.createElement("div");
 	overlay.id = "friend-profile-modal";
 	overlay.className =
@@ -110,7 +109,6 @@ export async function showFriendProfileModal(friend: Friend): Promise<void> {
 
 		const matchHistoryBox = document.createElement("div");
 		matchHistoryBox.className = "text-white mt-6 bg-[#2c2c58] rounded-lg p-4 shadow-md";
-		console.log(matchesFromHistory);
 		matchHistoryBox.innerHTML = `
 			<h2 class="text-lg font-bold bg-gradient-to-br from-[#e100fc] to-[#0e49b0] bg-clip-text text-transparent mb-3">${t('matchHistoryTitle')}</h2>
 			<div class="space-y-3 max-h-[250px] overflow-y-auto pr-1">

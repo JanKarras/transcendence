@@ -61,13 +61,11 @@ async function connectGame() {
 
 	tournamentSocket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
-		console.log("msg from server tournament", data)
 		switch (data.type) {
 			case 'remoteTournamentUpdated':
 				renderGameChat(data.data.messages);
 				break;
 			case 'startSecondRound':
-				console.log("startSecondRound")
 				startSecondRound()
 				break;
 			case 'matchFound' :
@@ -75,7 +73,6 @@ async function connectGame() {
 				matchfound = true;
 				break
 			case 'tournamentFinished':
-				console.log("Tournament Finished", data.data)
 				showPodium(data.data.results);
 				break
 			case 'firstRoundFinished':
@@ -94,7 +91,6 @@ async function GameSocketEventListeners() {
 	const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const ctx = canvas.getContext('2d')!;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	console.log("GameSocketEventListenersCalled")
 	const socket = getGameSocket();
 	if (!socket) throw new Error("WebSocket is not connected");
 	const tournamentSocket = getTournamentSocket()
@@ -159,7 +155,6 @@ function startCountdown() {
 		} else {
 			clearInterval(interval);
 			countdownEl.classList.add('hidden');
-			console.log("route game start called")
 			const response = await fetch(`https://${window.location.host}/api/set/game/start`, {
 					method: "POST",
 					headers: {
@@ -196,7 +191,6 @@ function enablePaddles() {
 function gameLoop() {
 	renderFrame(ctx, gameInfo);
 	if (gameOver) {
-		console.log(gameInfo, gameOver)
 		showWinner();
 		return;
 	}
@@ -216,8 +210,6 @@ function showWinner() {
 		playerRight: gameInfo.playerRight,
 	};
 
-	console.log("round win pending...");
-
 	const socket = getGameSocket();
 	matchfound = false;
 
@@ -229,14 +221,12 @@ function showWinner() {
 	}
 
 	if (socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
-		console.log("Socket already closed or closing, sending roundWin immediately");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
 		showWaitingForNextRound();
 		return;
 	}
 
 	socket.addEventListener("close", () => {
-		console.log("Socket successfully closed, sending roundWin");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
 		showWaitingForNextRound();
 	});
