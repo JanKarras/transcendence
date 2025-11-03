@@ -1,16 +1,19 @@
 const db = require("../db");
 const { isInvalid } = require("../services/isValidService");
+const { safeDBExecute } = require("../services/safeDBExecute");
 
 function updateUserStatus(userId, status) {
 	if (isInvalid(userId, status)) {
 		console.error("❌ updateUserStatus: userId or status is undefined");
 		return;
 	}
-	db.prepare(`
-		INSERT INTO user_status (user_id, status)
-		VALUES (?, ?)
-		ON CONFLICT(user_id) DO UPDATE SET status = excluded.status
-	`).run(userId, status);
+	safeDBExecute(() => {
+		db.prepare(`
+			INSERT INTO user_status (user_id, status)
+			VALUES (?, ?)
+			ON CONFLICT(user_id) DO UPDATE SET status = excluded.status
+		`).run(userId, status);
+	}, { userId, status });
 }
 
 function blockUser(senderId, friendId) {
@@ -34,8 +37,10 @@ function getUsername(senderId) {
 		console.error("❌ getUsername: senderId invalid", { senderId });
 		return null;
 	}
-	const row = db.prepare('SELECT username FROM users WHERE id = ?').get(senderId);
-	return row ? row.username : null;
+	return safeDBExecute(() => {
+		const row = db.prepare('SELECT username FROM users WHERE id = ?').get(senderId);
+		return row ? row.username : null;
+	}, { senderId });
 }
 
 function markMessagesAsRead(friendId, userId) {

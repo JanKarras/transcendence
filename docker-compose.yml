@@ -37,4 +37,4 @@ services:
       - ./front:/app
       - /app/node_modules
     working_dir: /app
-    restart: unless-stopped
+    restart: "no"
