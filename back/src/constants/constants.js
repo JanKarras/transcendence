@@ -23,7 +23,8 @@ const CANVAS_HEIGHT = 600;
 const CANVAS_WIDTH = 800;
 const PADDLE_HEIGHT = 50;
 const PADDLE_WIDTH = 10;
-const PADDLE_SPEED = 5;
+const PADDLE_SPEED = 6;
+const MAX_ANGLE = Math.PI / 3;
 
 module.exports = {
 	MIN_INTERVAL,
@@ -37,4 +38,5 @@ module.exports = {
 	PADDLE_HEIGHT,
 	PADDLE_WIDTH,
 	PADDLE_SPEED,
+	MAX_ANGLE
 }

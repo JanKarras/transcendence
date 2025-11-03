@@ -1,4 +1,4 @@
-const { CANVAS_HEIGHT, CANVAS_WIDTH } = require("../../constants/constants");
+const { CANVAS_HEIGHT, CANVAS_WIDTH, MAX_ANGLE } = require("../../constants/constants");
 const matchService = require("./matchService");
 const gameStore = require("./gameStore");
 
@@ -121,7 +121,7 @@ function resetBall(ball) {
 	ball.speed = 5;
 	const direction = Math.random() < 0.5 ? -1 : 1;
 
-	const angle = (Math.random() * 2 - 1) * maxAngle; 
+	const angle = (Math.random() * 2 - 1) * MAX_ANGLE; 
 
 	ball.velocity.x = direction * ball.speed * Math.cos(angle);
 	ball.velocity.y = ball.speed * Math.sin(angle);
