@@ -1,7 +1,7 @@
 import { getUser } from "../../api/getUser.js";
 import { bodyContainer } from "../../constants/constants.js";
 import { Friend } from "../../constants/structs.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 import { getTournamentSocket } from "../../websocket/wsTournamentService.js";
 
 export async function renderTournamentPage(): Promise<void> {

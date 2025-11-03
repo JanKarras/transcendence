@@ -1,7 +1,7 @@
 import { getMatchHistory } from "../../api/getMatchHistory.js";
 import { getStats } from "../../api/getStats.js";
 import { Friend } from "../../constants/structs.js";
-import { t } from "../gloabal/initTranslations.js";
+import { t } from "../global/initTranslations.js";
 
 export async function showFriendProfileModal(friend: Friend): Promise<void> {
 	const existingModal = document.getElementById("friend-profile-modal");

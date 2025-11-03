@@ -1,8 +1,8 @@
 import { emailValidationApi } from "../../api/emailValidation.js";
 import { setEventListenersForEmailValidation } from "../../events/pages/emailValidation.js";
 import { renderEmailValidation } from "../../render/pages/renderEmailValidation.js";
-import { initTranslations, t } from "../gloabal/initTranslations.js";
-import { renderWithDelay } from "../gloabal/renderWithDelay.js";
+import { initTranslations, t } from "../global/initTranslations.js";
+import { renderWithDelay } from "../global/renderWithDelay.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 

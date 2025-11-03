@@ -1,4 +1,4 @@
-import { checkLoginAndNavigate } from "../logic/gloabal/checkLoginAndNavigate.js";
+import { checkLoginAndNavigate } from "../logic/global/checkLoginAndNavigate.js";
 import { initRouter } from "../router/initRouter.js";
 
 document.addEventListener("DOMContentLoaded", () => {

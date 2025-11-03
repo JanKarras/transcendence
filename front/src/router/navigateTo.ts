@@ -1,6 +1,6 @@
 import { is_logged_in_api } from "../api/isLoggedIn.js";
 import { initTranslations } from "../constants/i18n.js";
-import { t } from "../logic/gloabal/initTranslations.js";
+import { t } from "../logic/global/initTranslations.js";
 import { showErrorMessage } from "../logic/templates/popupMessage.js";
 import { getChatSocket } from "../websocket/wsChatService.js";
 import { getDashboardSocket } from "../websocket/wsDashboardServce.js";
@@ -34,7 +34,7 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
 	if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
 		dashboardSocket.close(1000, "Navigated away from Dashboard");
 	}
-	
+
 	const chatSocket = getChatSocket();
 	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 		chatSocket.close(1000, "Navigated away from chat");

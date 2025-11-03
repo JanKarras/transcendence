@@ -1,6 +1,6 @@
 import { navigateTo } from "../../router/navigateTo.js";
 import { connectFriend, getFriendSocket } from "../../websocket/wsFriendsService.js";
-import { initTranslations, t } from "../gloabal/initTranslations.js";
+import { initTranslations, t } from "../global/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 import { FriendsViewData } from "../../constants/structs.js";
 import { renderAddFriends, renderFriendRequests, renderFriendsList, renderFriendsPage } from "../../render/pages/renderFriendsPage.js";

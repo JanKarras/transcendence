@@ -1,5 +1,5 @@
 import { bodyContainer } from "../../constants/constants.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 
 export async function renderGamePage(mode : string | null | undefined, showUsernameModal : boolean) {
 	if (!bodyContainer) {

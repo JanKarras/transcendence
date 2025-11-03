@@ -1,5 +1,5 @@
 import { getChatSocket } from "../../../../websocket/wsChatService.js";
-import { t } from "../../../gloabal/initTranslations.js";
+import { t } from "../../../global/initTranslations.js";
 import { currentId, friendId } from "../chatSidebarTemplateStore.js";
 import { addDisappearMessage, refreshDialog, retryMessage } from "../chatSidebarUtils.js";
 

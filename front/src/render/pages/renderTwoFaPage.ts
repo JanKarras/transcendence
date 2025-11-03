@@ -1,5 +1,5 @@
 import { bodyContainer } from "../../constants/constants.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 
 export async function renderTwoFaPage(email: string | null, method: string | null) {
 	if (!bodyContainer) {
@@ -14,7 +14,7 @@ export async function renderTwoFaPage(email: string | null, method: string | nul
 				</h2>
 
 				<p class="mb-4 text-center text-gray-700">
-					${t("emailInstruction2")} 
+					${t("emailInstruction2")}
 					<span class="font-semibold">${email}</span>
 				</p>
 
@@ -53,7 +53,7 @@ export async function renderTwoFaPage(email: string | null, method: string | nul
 				</h2>
 
 				<p class="mb-4 text-gray-700">
-					${t("authAppInstruction")} 
+					${t("authAppInstruction")}
 					<span class="font-semibold">${email}</span>
 				</p>
 

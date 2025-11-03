@@ -1,5 +1,5 @@
 import { AVAILABLE_LANGUAGES } from "../../constants/language_vars.js";
-import { setLanguage } from "../../logic/gloabal/setLanguage.js";
+import { setLanguage } from "../../logic/global/setLanguage.js";
 import { getOrCreateMenuContainer, hideMenu, MenuItem } from "../../logic/templates/menuTemplate.js";
 import { reRenderCurrentView } from "../../router/routerUtils.js";
 

@@ -4,7 +4,7 @@ import { getMessages } from "../../../api/getMessages.js";
 import { renderChatControls, renderChatMessages, renderFriendsList } from "../../../render/templates/renderChatSideBar.js";
 import { renderProfile } from "../../../render/templates/renderProfile.js";
 import { connectChat, getChatSocket } from "../../../websocket/wsChatService.js";
-import { t } from "../../gloabal/initTranslations.js";
+import { t } from "../../global/initTranslations.js";
 import { friendId, friends, friendStatus, messages, setFriendId, setFriends, setMessages } from "./chatSidebarTemplateStore.js";
 
 export function sendChatWsMsg(type: string, payload: Record<string, any>): void {

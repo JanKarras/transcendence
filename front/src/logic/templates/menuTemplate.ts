@@ -2,8 +2,8 @@ import { MENU_CONTAINER_ID } from "../../constants/constants.js";
 import { getLanguage, LANGUAGE } from "../../constants/gloabal.js";
 import { renderMenu } from "../../render/templates/renderMenuTemplate.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { t } from "../gloabal/initTranslations.js";
-import { logOut } from "../gloabal/logOut.js";
+import { t } from "../global/initTranslations.js";
+import { logOut } from "../global/logOut.js";
 
 export interface MenuItem {
 	id?: string;

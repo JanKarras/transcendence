@@ -2,7 +2,7 @@ import { getBlocked } from "../../api/getBlocked.js";
 import { getFreshToken } from "../../api/getFreshToken.js";
 import { getMessages } from "../../api/getMessages.js";
 import { getStatus } from "../../api/getStatus.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 import { currentId, Friend, friendBadgeById, friendElById, friendId, friends, friendStatus, messages, setMessages } from "../../logic/templates/chatSideBarTemplate/chatSidebarTemplateStore.js";
 import { addDisappearMessage, addMessageToChat, blockedCheck, blockUser, connectDialog, openProfile, sendChatWsMsg, sendMessage, unblockUser } from "../../logic/templates/chatSideBarTemplate/chatSidebarUtils.js";
 import { navigateTo } from "../../router/navigateTo.js";

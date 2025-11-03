@@ -1,5 +1,5 @@
 import { bodyContainer } from "../../constants/constants.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 import { gameInfo } from "../../logic/pages/remoteTournamentPage.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { getGameSocket } from "../../websocket/wsGameService.js";

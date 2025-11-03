@@ -6,8 +6,8 @@ import { setEventListenersDashboardPage, setEventListenersDashboardPageChat } fr
 import { hideNewRequestBadge, renderDashboard, showNewRequestBadge } from "../../render/pages/renderDashboard.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { getDashboardSocket } from "../../websocket/wsDashboardServce.js";
-import { initTranslations } from "../gloabal/initTranslations.js";
-import { logOut } from "../gloabal/logOut.js";
+import { initTranslations } from "../global/initTranslations.js";
+import { logOut } from "../global/logOut.js";
 import { chatTemplate } from "../templates/chatSideBarTemplate/chatSidebarTemplate.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
@@ -27,16 +27,16 @@ export async function dashboarPage(params: URLSearchParams | null) {
 	const user : UserInfo = userData.user;
 
 	const matchesFromHistory = await getMatchHistory(user.id);
-	
+
 	const stats = await getStats(user.id);
-	
+
 	await renderDashboard(params, stats, matchesFromHistory);
-	
+
 	await setEventListenersDashboardPage();
-	
+
 	initChat();
-	
-	
+
+
 }
 
 async function initChat() {

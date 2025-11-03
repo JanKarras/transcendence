@@ -1,4 +1,4 @@
-import { t } from "../gloabal/initTranslations.js";
+import { t } from "../global/initTranslations.js";
 
 export async function getMatchHistoryHTML(matches: any[]) {
 	const formatMatchType = (type: string) => {

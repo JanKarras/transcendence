@@ -2,7 +2,7 @@ import { getUser } from "../../api/getUser.js";
 import { bodyContainer } from "../../constants/constants.js";
 import { UserInfo } from "../../constants/structs.js";
 import { setEventListenerProfilePage, setEventListenerTwoFaSettings } from "../../events/pages/profilePage.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 
 export async function renderProfile(params: URLSearchParams | null) {
 	if (!bodyContainer) return;

@@ -3,7 +3,7 @@ import { setEventLsitenersForMatchmaking } from "../../events/pages/matchmakingP
 import { renderMatchmaking } from "../../render/pages/renderMatchmaking.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { connectGameSocket } from "../../websocket/wsGameService.js";
-import { initTranslations } from "../gloabal/initTranslations.js";
+import { initTranslations } from "../global/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function matchmakingPage(params: URLSearchParams | null) {

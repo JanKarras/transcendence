@@ -1,9 +1,9 @@
 import { headernavs, MENU_CONTAINER_ID, profile, profileContainer, profileImg } from "../../constants/constants.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { Friend, UserInfo, UserResponse } from "../../constants/structs.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
-import { logOut } from "../../logic/gloabal/logOut.js";
-import { removeEventListenerByClone } from "../../logic/gloabal/removeEventListenerByClone.js";
+import { t } from "../../logic/global/initTranslations.js";
+import { logOut } from "../../logic/global/logOut.js";
+import { removeEventListenerByClone } from "../../logic/global/removeEventListenerByClone.js";
 import { getPos } from "../../logic/templates/headerTemplate.js";
 import { buildMenuItems, getMenuEntries, showMenu } from "../../logic/templates/menuTemplate.js";
 import { hideNewRequestBadge, showNewRequestBadge } from "../pages/renderDashboard.js";
@@ -77,11 +77,11 @@ export async function renderHeader(pos: string, userData: UserResponse | false) 
 			const userData = await getUser();
 
 			if (userData) {
-				
+
 				const pendingRequests = userData.requests?.received?.filter((r) => r.type === "friend" && r.status === "nothandled") ?? [];
 				if (pendingRequests.length > 0) {
 					showNewRequestBadge();
-				} else { 
+				} else {
 					hideNewRequestBadge();
 				}
 			}

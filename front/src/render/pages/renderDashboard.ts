@@ -1,6 +1,6 @@
 import { bodyContainer } from "../../constants/constants.js";
 import { MatchHistoryEntry, Stats } from "../../constants/structs.js";
-import { t } from "../../logic/gloabal/initTranslations.js";
+import { t } from "../../logic/global/initTranslations.js";
 import { getMatchHistoryHTML } from "../../logic/templates/matchHistoryTemplate.js";
 import { getChatSidebarHTML } from "../templates/renderChatSideBar.js";
 
@@ -181,7 +181,7 @@ export async function showNewRequestBadge() {
 	const friendsMenuItem = document.getElementById("menu-friends");
 	if (!friendsMenuItem) return;
 
-	friendsMenuItem.classList.add("relative"); 
+	friendsMenuItem.classList.add("relative");
 
 	let badge = document.getElementById("friends-request-badge");
 	if (badge) return;

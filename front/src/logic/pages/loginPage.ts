@@ -2,7 +2,7 @@ import { logInApi } from "../../api/logIn.js";
 import { setEventListenersForLoginPage } from "../../events/pages/loginPage.js";
 import { renderLoginPages } from "../../render/pages/renderLoginPage.js";
 import { navigateTo } from "../../router/navigateTo.js";
-import { initTranslations, t } from "../gloabal/initTranslations.js";
+import { initTranslations, t } from "../global/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 

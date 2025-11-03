@@ -1,5 +1,5 @@
 import { NOTIFICATION_CONTAINER_ID } from "../../constants/constants.js";
-import { t } from "../gloabal/initTranslations.js";
+import { t } from "../global/initTranslations.js";
 
 
 function getOrCreateContainer(): HTMLElement {

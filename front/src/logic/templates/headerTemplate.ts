@@ -1,5 +1,5 @@
 import { getUser } from "../../api/getUser.js";
-import { initTranslations } from "../../logic/gloabal/initTranslations.js";
+import { initTranslations } from "../global/initTranslations.js";
 import { renderHeader } from "../../render/templates/renderHeaderTemplate.js";
 
 export function getPos() {

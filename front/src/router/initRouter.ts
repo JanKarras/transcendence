@@ -1,5 +1,5 @@
 import { is_logged_in_api } from "../api/isLoggedIn.js";
-import { initTranslations, t } from "../logic/gloabal/initTranslations.js";
+import { initTranslations, t } from "../logic/global/initTranslations.js";
 import { showErrorMessage } from "../logic/templates/popupMessage.js";
 import { getGameSocket } from "../websocket/wsGameService.js";
 import { navigateTo } from "./navigateTo.js";

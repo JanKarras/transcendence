@@ -4,7 +4,7 @@ import { renderFrame } from "../../game/Renderer.js";
 import { displayNames, renderGameChat, renderRemoteTournamentPage, showCountdownForNextRound, showPodium, showWaitingForNextRound } from "../../render/pages/renderRemoteTournament.js";
 import { connectGameSocket, getGameSocket } from "../../websocket/wsGameService.js";
 import { getTournamentSocket } from "../../websocket/wsTournamentService.js";
-import { initTranslations } from "../gloabal/initTranslations.js";
+import { initTranslations } from "../global/initTranslations.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 export let gameInfo: GameInfo;

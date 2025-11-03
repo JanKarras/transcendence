@@ -1,8 +1,8 @@
 import { twoFaApi } from "../../api/twoFa.js";
 import { setEventListenersForTwoFaPage } from "../../events/pages/twoFaPage.js";
 import { renderTwoFaPage } from "../../render/pages/renderTwoFaPage.js";
-import { initTranslations, t } from "../gloabal/initTranslations.js";
-import { renderWithDelay } from "../gloabal/renderWithDelay.js";
+import { initTranslations, t } from "../global/initTranslations.js";
+import { renderWithDelay } from "../global/renderWithDelay.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 import { showErrorMessage, showSuccessMessage } from "../templates/popupMessage.js";
 
