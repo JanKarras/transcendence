@@ -1,4 +1,5 @@
 const db = require("../db");
+const { isInvalid } = require("../services/isValidService");
 
 async function createTournamenHistory(tournament) {
 	const insertTournament = db.prepare(`

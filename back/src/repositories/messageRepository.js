@@ -1,4 +1,5 @@
 const db = require("../db");
+const { isInvalid } = require("../services/isValidService");
 
 function getMessagesByUserIdAndFriendId(userId, friendId) {
 	return db.prepare(
