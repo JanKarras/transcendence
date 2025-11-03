@@ -1,5 +1,5 @@
 import { MENU_CONTAINER_ID } from "../../constants/constants.js";
-import { getLanguage, LANGUAGE } from "../../constants/gloabal.js";
+import { getLanguage, LANGUAGE } from "../../constants/global.js";
 import { renderMenu } from "../../render/templates/renderMenuTemplate.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { t } from "../global/initTranslations.js";
