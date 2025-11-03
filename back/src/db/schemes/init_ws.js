@@ -17,7 +17,7 @@ db.prepare(`
 		blocked_id INTEGER NOT NULL,
 		PRIMARY KEY (blocker_id, blocked_id)
 	);
-`);
+`).run();
 
 db.prepare(`
 	CREATE TABLE IF NOT EXISTS user_status (

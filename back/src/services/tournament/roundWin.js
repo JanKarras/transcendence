@@ -1,6 +1,6 @@
 const tournamentUtils = require("./utils");
 const { createMatch } = require("../game/matchService");
-const { createTournamenHistory, getRecentMatches, updateMatchRep } = require("../../repositories/tournamentMatchHistoryRepository");
+const { createTournamentHistory, getRecentMatches, updateMatchRep } = require("../../repositories/tournamentMatchHistoryRepository");
 const { incrementTournamentWins } = require("../../repositories/statsRepository");
 
 async function handleRoundWin(userId, data) {
@@ -155,8 +155,8 @@ async function finishTournament(tournament) {
 			p.ws.send(JSON.stringify(payload));
 		});
 
-		console.log("💾 Calling createTournamenHistory()...");
-		const tournamentId = await createTournamenHistory(tournament);
+		console.log("💾 Calling createTournamentHistory()...");
+		const tournamentId = await createTournamentHistory(tournament);
 		console.log(`✅ Tournament history created: ID = ${tournamentId}`);
 
 		const playerIds = tournament.players
