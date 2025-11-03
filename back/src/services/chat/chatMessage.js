@@ -16,8 +16,6 @@ async function handleWsMessage(ws, userId, msg) {
 		return ws.send(JSON.stringify({ type: "error", error: "User not found" }));
 	}
 
-	console.log(`📩 Received message from user ${userId}:`, data);
-
 	const handlers = {
 		dialog_open: handleDialogOpen,
 		blocked: handleBlock,

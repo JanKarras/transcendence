@@ -8,7 +8,6 @@ async function sendMail(to, subject, text) {
 		subject,
 		text,
 	});
-	console.log('Email sent:', info.messageId);
 }
 
 async function sendEmailValidationMail(userId, email) {

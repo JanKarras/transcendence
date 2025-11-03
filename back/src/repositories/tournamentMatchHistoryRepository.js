@@ -25,7 +25,6 @@ function getRecentMatches(playerId) {
 	}
 
 	return safeDBExecute(() => {
-		console.log(`🔍 Fetching recent matches for player ID ${playerId}...`);
 		const stmt = db.prepare(`
 			SELECT id, type, tournament_id, created_at
 			FROM matches
@@ -36,7 +35,6 @@ function getRecentMatches(playerId) {
 			LIMIT 2;
 		`);
 		const recentMatches = stmt.all(playerId);
-		console.log(`📋 Recent matches for player ID ${playerId}:`, recentMatches);
 		return recentMatches || [];
 	}, { playerId }, []);
 }

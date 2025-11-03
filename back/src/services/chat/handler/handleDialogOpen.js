@@ -3,7 +3,6 @@ const { sendToClient } = require("../chatUtils");
 const { activeDialog } = require("../chstWsStore");
 
 function handleDialogOpen(userId, ws, data) {
-	console.log(data)
 	const senderId = userId;
 	const { friendId, content } = data;
 	if (content === '2') {

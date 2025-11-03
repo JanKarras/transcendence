@@ -17,7 +17,6 @@ function mainGameLoop() {
 				break;
 			case GameState.BOTH_CONNECTED:
 				sendMessage(match, "startGame");
-				console.log(match.gameInfo);
 				match.gameState = GameState.STARTED;
 				break;
 			case GameState.STARTED:
@@ -37,7 +36,7 @@ function mainGameLoop() {
 				saveGameToMatchHistory(match);
 				match.wsUser1.close(1000, "Closed by user");
 				match.wsUser2.close(1000, "Closed by user");
-				eraseMatchFromOngoingMatches(i);             
+				eraseMatchFromOngoingMatches(i);
 				break;
 			default:
 				break;
@@ -66,7 +65,6 @@ function isCountdownFinished(match) {
 function setCountdownFinished(userId, mode) {
 	const match = gameStore.onGoingMatches.find(m => m.userId1 === userId || m.userId2 === userId);
 	if (mode === "local" && match) {
-		console.log("mode is local");
 		match.coutndownFinished1 = true;
 		match.coutndownFinished2 = true;
 	}

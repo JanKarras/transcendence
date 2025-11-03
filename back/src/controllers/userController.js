@@ -160,7 +160,6 @@ exports.updateUser = async function (req, reply) {
 	let twofa_method = null;
 
 	for await (const part of parts) {
-		console.log("Part:", part.fieldname, part.type, part.value);
 
 		if (part.type === "file") {
 			const buffer = await part.toBuffer();
@@ -189,7 +188,6 @@ exports.updateUser = async function (req, reply) {
 			fs.writeFileSync(fullPath, buffer);
 			imageName = uniqueFilename;
 
-			console.log("✅ Image saved:", fullPath);
 		}
 
 		else if (part.type === "field") {
@@ -225,8 +223,6 @@ exports.updateUser = async function (req, reply) {
 			}
 		}
 	}
-
-	console.log("Change data:", firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
 
 	await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
 	reply.send({ success: true });

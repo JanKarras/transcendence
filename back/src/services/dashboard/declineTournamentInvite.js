@@ -22,7 +22,6 @@ function declineTournamentInvite(userId, ws, data) {
 
 	broadcastTournamentUpdate(tournament);
 
-	console.log(`📨 Spieler ${userId} (${player.username}) hat die Einladung abgelehnt.`);
 }
 
 module.exports = {

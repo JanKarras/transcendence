@@ -17,16 +17,11 @@ function runScriptsFromDir(dir) {
 		}
 	});
 }
-
-console.log('📂 Creating tables...');
 runScriptsFromDir('./schemes');
 
-console.log('🌱 Running initial user seeds...');
 require('./seeds/init_user.js');
 
-console.log('🌱 Running match seeds...');
 require('./seeds/init_matches.js');
 
-console.log('✅ Database setup complete.');
 
 module.exports = db;

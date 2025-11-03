@@ -2,7 +2,6 @@ const existingMatches = db.prepare(`SELECT COUNT(*) as count FROM matches`).get(
 const existingTournaments = db.prepare(`SELECT COUNT(*) as count FROM tournaments`).get();
 
 if (existingMatches.count === 0 && existingTournaments.count === 0) {
-	console.log("ℹ️ Keine Matches/Tournaments vorhanden, lege Beispielspiele an...");
 
 	const jkarrasId = 1;
 
@@ -46,9 +45,6 @@ if (existingMatches.count === 0 && existingTournaments.count === 0) {
 	matchId = result.lastInsertRowid;
 	insertMatchPlayer.run(matchId, user1.id, 9, 3);
 	insertMatchPlayer.run(matchId, user2.id, 8, 4);
-
-	console.log("✅ Beispiel-Matches und Tournament erstellt: 1v1 Local, 1v1 Remote + Startup Cup");
-
 
 } else {
 	console.log("ℹ️ Matches/Tournaments existieren bereits, keine neuen erstellt.");

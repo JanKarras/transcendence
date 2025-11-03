@@ -30,7 +30,6 @@ async function createMatch(userData1, userData2) {
 }
 
 function createLocalMatch(userData1, username) {
-	console.log("createMatch");
 	const match = initLocalMatch(userData1, username);
 	match.wsUser1 = userData1.ws;
 	match.wsUser2 = userData1.ws;
@@ -133,7 +132,6 @@ function connectUserToMatch(data) {
 		m => m.userId1 === userId || m.userId2 === userId
 	);
 	if (!match) {
-		console.log("Could not find match for cennection.")
 		return;
 	}
 

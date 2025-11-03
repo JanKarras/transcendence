@@ -31,7 +31,6 @@ async function handleWsMessage(ws, userId, msg) {
 	}
 
 	const handler = handlers[data.type];
-	console.log(handler, "handler for", data.type);
 	if (handler) {
 		await handler(userId, ws, data.data);
 	} else {

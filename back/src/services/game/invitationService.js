@@ -5,7 +5,6 @@ const matchService = require("../../services/game/matchService");
 
 
 function createMatch(userData1, userData2) {
-	console.log("createMatch");
 	const matchData = matchService.initRemoteMatch(userData1, userData2);
 	gameStore.onGoingMatches.push(matchData);
 	userData1.ws.send(JSON.stringify({ type: "invitationAccepted", opponent: matchData.userId2 }));

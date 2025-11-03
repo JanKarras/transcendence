@@ -55,7 +55,7 @@ function paddleBounce(ball, paddle) {
 
 	let bounceAngle = normalized * (Math.PI / 3);
 
-	const MIN_ANGLE = 0.1;    
+	const MIN_ANGLE = 0.1;
 	const MAX_ANGLE = Math.PI / 2 - 0.1;
 	if (Math.abs(bounceAngle) < MIN_ANGLE) {
 		bounceAngle = (bounceAngle >= 0 ? MIN_ANGLE : -MIN_ANGLE);
@@ -121,7 +121,7 @@ function resetBall(ball) {
 	ball.speed = 5;
 	const direction = Math.random() < 0.5 ? -1 : 1;
 
-	const angle = (Math.random() * 2 - 1) * MAX_ANGLE; 
+	const angle = (Math.random() * 2 - 1) * MAX_ANGLE;
 
 	ball.velocity.x = direction * ball.speed * Math.cos(angle);
 	ball.velocity.y = ball.speed * Math.sin(angle);
@@ -130,9 +130,7 @@ function resetBall(ball) {
 
 
 function updateVelocity(userId, dir, side) {
-	console.log(gameStore.onGoingMatches);
 	const match = matchService.getMatchByUserId(userId);
-	console.log (dir);
 	if (!match)
 		return;
 	const state = match.gameInfo;
