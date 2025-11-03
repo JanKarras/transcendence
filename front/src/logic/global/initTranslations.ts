@@ -1,4 +1,4 @@
-import { getLanguage } from "../../constants/gloabal.js";
+import { getLanguage } from "../../constants/global.js";
 
 const translations: Record<string, any> = {};
 
