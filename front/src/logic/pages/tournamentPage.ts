@@ -21,14 +21,17 @@ export async function tournamentPage(params: URLSearchParams | null) {
 		return navigateTo("dashboard");
 	}
 
+	await renderTournamentPage();
+	
 	const gameId = params?.get("gameId");
 	if (gameId) {
 		socket.send(JSON.stringify({
 			type: "joinGame",
 			data: { gameId: Number(gameId) }
 		}));
+		const btn = document.getElementById("startTournamentBtn");
+		btn?.classList.add("hidden");
 	}
-	await renderTournamentPage();
 
 	await setTournamentEventListeners(socket);
 	if (!gameId) {
@@ -60,6 +63,10 @@ export function handleTournamentMessage(msg: MessageEvent, socket: WebSocket): v
 			const params = new URLSearchParams();
 			params.set("gameId", message.data.gameId);
 			navigateTo("remote_tournament_game", params);
+			break;
+		case "tournamentNotFound":
+			showErrorMessage("Tournament exists not anymore.");
+			navigateTo("dashboard");
 			break;
 	}
 }

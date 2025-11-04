@@ -65,7 +65,7 @@ exports.login = async (request, reply) => {
 					if (now - lastSent < MIN_INTERVAL) {
 						return reply.code(429).send({ error: 'Please wait before requesting another 2FA code.' });
 					}
-				}
+				} 
 
 				await mailService.sendTwoFAMail(user.id, user.email);
 
@@ -145,7 +145,6 @@ exports.emailValidation = async (request, reply) => {
 			return reply.code(410)
 				.send({ error: 'Verification code expired. A new code has been generated and sent to your email.' });
 		}
-
 		if (verification.code !== code) {
 			return reply.code(401).send({ error: 'Invalid verification code.' });
 		}

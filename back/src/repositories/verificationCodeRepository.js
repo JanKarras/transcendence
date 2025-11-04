@@ -11,9 +11,12 @@ function addVerificationCode(userId, code) {
 		return db.prepare(`
 			INSERT INTO verification_codes (user_id, code)
 			VALUES (?, ?)
+			ON CONFLICT(user_id)
+			DO UPDATE SET code = excluded.code
 		`).run(userId, code);
 	}, { userId, code }, null);
 }
+
 
 function getLastVerificationCodeByUserId(userId) {
 	if (isInvalid(userId)) {

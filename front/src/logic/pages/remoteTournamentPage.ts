@@ -69,7 +69,6 @@ async function connectGame() {
 				startSecondRound()
 				break;
 			case 'matchFound' :
-
 				matchfound = true;
 				break
 			case 'tournamentFinished':
@@ -173,15 +172,23 @@ function startCountdown() {
 }
 
 function enablePaddles() {
-	const socket = getGameSocket();
-	if (!socket) throw new Error("WebSocket is not connected");
 
 	window.addEventListener('keydown', (e) => {
+		const socket = getGameSocket();
+		if (!socket) throw new Error("WebSocket is not connected");
+		if (!socket || socket.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		if (e.key === 'ArrowUp') socket.send('movePaddleUp');
 		else if (e.key === 'ArrowDown') socket.send('movePaddleDown');
 	});
 
 	window.addEventListener('keyup', () => {
+		const socket = getGameSocket();
+		if (!socket) throw new Error("WebSocket is not connected");
+		if (!socket || socket.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		socket.send('stopPaddle');
 	});
 }

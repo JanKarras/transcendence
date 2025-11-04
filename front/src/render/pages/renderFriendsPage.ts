@@ -1,34 +1,46 @@
 import { bodyContainer } from "../../constants/constants.js";
 import { Friend, FriendsViewData, RequestInfo, UserInfo } from "../../constants/structs.js";
 import { t } from "../../logic/global/initTranslations.js";
-import { renderActiveTab, sendFriendSocketMessage } from "../../logic/pages/friendsPage.js";
+import { friendsData, renderActiveTab, sendFriendSocketMessage } from "../../logic/pages/friendsPage.js";
 import { showFriendProfileModal } from "../../logic/templates/friendProfileModal.js";
 export async function renderFriendsPage() {
-	if (!bodyContainer) {
-		return;
-	}
+	if (!bodyContainer) return;
 
 	bodyContainer.innerHTML = "";
 
 	const wrapper = document.createElement("div");
 	wrapper.className = "w-full h-full p-10 min-h-[200px]";
+
 	const tabNav = document.createElement("div");
 	tabNav.className = "flex gap-4 border-b mb-4";
+
 	const contentContainer = document.createElement("div");
 	contentContainer.id = "friends-content";
 	contentContainer.className = "mt-4";
 	contentContainer.setAttribute("data-active-tab", "online");
+
 	const tabs = [
 		{ id: "online", label: t("friendsLang.online"), icon: "🟢" },
 		{ id: "all", label: t("friendsLang.all"), icon: "👥" },
 		{ id: "add", label: t("friendsLang.add"), icon: "➕" },
-		{ id: "requests", label: t("friendsLang.requests"), icon: "✉️" },
+		{ id: "requests", label: t("friendsLang.requests"), icon: "✉️", count: 0 },
 	];
+
 	tabs.forEach((tab, index) => {
 		const btn = document.createElement("button");
-		btn.textContent = `${tab.icon} ${tab.label}`;
-		btn.className = "py-2 px-4 border-b-2 border-transparent hover:border-blue-400 text-white transition";
+		btn.className = "relative py-2 px-4 border-b-2 border-transparent hover:border-blue-400 text-white transition";
+
+		if (tab.count && tab.count > 0) {
+			btn.innerHTML = `${tab.icon} ${tab.label}
+				<span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-[1px]">
+					${tab.count}
+				</span>`;
+		} else {
+			btn.textContent = `${tab.icon} ${tab.label}`;
+		}
+
 		if (index === 0) btn.classList.add("border-blue-500", "font-semibold");
+
 		btn.addEventListener("click", () => {
 			Array.from(tabNav.children).forEach(child =>
 				child.classList.remove("border-blue-500", "font-semibold")
@@ -37,12 +49,13 @@ export async function renderFriendsPage() {
 			contentContainer.setAttribute("data-active-tab", tab.id);
 			renderActiveTab();
 		});
+
 		tabNav.appendChild(btn);
 	});
+
 	wrapper.appendChild(tabNav);
 	wrapper.appendChild(contentContainer);
 	bodyContainer.appendChild(wrapper);
-
 }
 
 export function renderFriendsList(friendsData: FriendsViewData, online: boolean) {

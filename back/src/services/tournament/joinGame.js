@@ -8,7 +8,10 @@ async function joinGame(userId, ws, data) {
 
 function joinTournament(gameId, userId, ws) {
 	const tournament = onGoingTournaments.get(gameId);
-	if (!tournament) return null;
+	if (!tournament) {
+		ws.send(JSON.stringify({ type: "tournamentNotFound" }));
+		return null;
+	}
 	for (let i = 0; i < tournament.players.length; i++) {
 		const player = tournament.players[i];
 		if (player.id === userId && player.status === "invited") {
