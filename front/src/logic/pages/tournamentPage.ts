@@ -4,6 +4,7 @@ import { navigateTo } from "../../router/navigateTo.js";
 import { connectTournament, getTournamentSocket } from "../../websocket/wsTournamentService.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
 import { showErrorMessage } from "../templates/popupMessage.js";
+import { t } from "../../logic/global/initTranslations.js";
 
 export async function tournamentPage(params: URLSearchParams | null) {
 	await headerTemplate();
@@ -17,7 +18,7 @@ export async function tournamentPage(params: URLSearchParams | null) {
 	
 	const socket = getTournamentSocket();
 	if (!socket) {
-		showErrorMessage("Failed to connect to tournament server.");
+		showErrorMessage(t('tournament.connectionFail'));
 		return navigateTo("dashboard");
 	}
 
@@ -56,7 +57,7 @@ export function handleTournamentMessage(msg: MessageEvent, socket: WebSocket): v
 			renderRemoteTournament(message.data.players, message.data.messages, message.data.ready);
 			break;
 		case "endTournament":
-			showErrorMessage(message.data.message || "Tournament ended.");
+			showErrorMessage(message.data.message || t('tournament.end'));
 			navigateTo("dashboard");
 			break;
 		case "tournamentStarting":
@@ -65,7 +66,7 @@ export function handleTournamentMessage(msg: MessageEvent, socket: WebSocket): v
 			navigateTo("remote_tournament_game", params);
 			break;
 		case "tournamentNotFound":
-			showErrorMessage("Tournament exists not anymore.");
+			showErrorMessage(t('tournament.notExist'));
 			navigateTo("dashboard");
 			break;
 	}

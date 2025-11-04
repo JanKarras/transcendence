@@ -15,7 +15,7 @@ export async function twoFaPage(params: URLSearchParams | null) {
 	const method = params?.get("method") || null;
 
 	if (!email || !method) {
-		showErrorMessage("Please use the link we send you to you'r email address");
+		showErrorMessage(t('twofaMailErr'));
 		renderWithDelay('login')
 		return;
 	}

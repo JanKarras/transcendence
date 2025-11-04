@@ -191,6 +191,7 @@
     "typeMessage": "Geben Sie eine Nachricht ein...",
 	"twofaSettings" : "Zwei-Faktor-Einstellungen",
 	"twofaEnable" : "Zwei-Faktor-Authentifizierung aktivieren/deaktivieren",
+    "twofaSaveError": "Error: Änderungen nicht gespeichtert", 
 	"twofaTitle" : "Zwei-Faktor-Authentifizierung",
 	"twofaSelectMethod" : "Authentifizierungsmethode wählen",
 	"twofaEmail" : "E-Mail",
@@ -198,6 +199,9 @@
 	"twofaScanQR" : "QR-Code scannen",
 	"save" : "Speichern",
 	"cancel" : "Abbrechen",
+    "profileSaveError": "Error: Änderungen nicht gespeichtert",
+    "twoFAFail": "Authentifizierung fehlgeschlagen",
+    "twofaMailErr": "Bitte nutze den Link, der an deine E-Mail-Adresse gesendet wurde.",
 	"friendsLang": {
 		"online": "Freunde online",
 		"all": "Alle Freunde",
@@ -230,7 +234,8 @@
         "confirmRemoveTitle": "Möchtest Du den Freund wirklich entfernen?"
 	},
 	"tournament": {
-		"waitForNextRound": "Bitte warte, bis die nächste Runde startet..."
+		"waitForNextRound": "Bitte warte, bis die nächste Runde startet...",
+        "notExist": "Turnier existiert nicht mehr."
 	},
     "cht": {
       "notOnline": " nicht online",

@@ -183,6 +183,7 @@
   },
   "twofaSettings": "Two-Factor Settings",
   "twofaEnable": "Enable/Disable Two-Factor Authentication",
+  "twofaSaveError": "Error: Changes not saved", 
   "twofaTitle": "Two-Factor Authentication",
   "twofaSelectMethod": "Select Authentication Method",
   "twofaEmail": "Email",
@@ -190,6 +191,9 @@
   "twofaScanQR": "Scan QR Code",
   "save": "Save",
   "cancel": "Cancel",
+  "profileSaveError": "Error: Changes not saved",
+  "twoFAFail": "Authentification failed",
+  "twofaMailErr": "Please use the link we sent you to your email address",
   "friendsLang": {
     "online": "Friends online",
     "all": "All friends",
@@ -222,7 +226,10 @@
     "confirmRemoveTitle": "Do you really want to remove your friend?"
   },
   "tournament": {
-    "waitForNextRound": "Please wait for the second round to start..."
+    "waitForNextRound": "Please wait for the second round to start...",
+    "notExist": "Tournament does not exist anymore.",
+    "end": "Tournament was ended.",
+    "connectionFail": "Failed to connect to tournament server."
   },
   "cht": {
     "notOnline": " is not online",
