@@ -30,5 +30,6 @@ function createRemote(hostId, ws) {
 }
 
 module.exports = {
-	createRemoteTournament
+	createRemoteTournament,
+	createRemote
 }
