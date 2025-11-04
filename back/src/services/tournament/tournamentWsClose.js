@@ -45,12 +45,14 @@ function playerLeftTournament(userId) {
 		}
 	} else {
 		const player = tournament.players.find(p => p.id === userId);
+		console.log(`Player left before tournament started: ${player ? player.username : 'Unknown player'}`);
 		if (!player) return;
 		player.status = "left";
 		player.ws = null;
 		tournamentServiceUtils.addSystemMessage(tournament, `${player.username} has left the tournament.`);
 		tournamentServiceUtils.checkTournamentReady(tournament);
 		tournamentServiceUtils.broadcastTournamentUpdate(tournament);
+		player.status = "invited";
 	}
 }
 

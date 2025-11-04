@@ -3,18 +3,20 @@ const { onGoingTournaments } = require("./tournamentStore");
 const tournamentUtils = require("./utils");
 const requests = require("../../repositories/requestRepository");
 const { tournamentInvite } = require("../dashboard/tournamentInvite");
+const { createRemote } = require("./createRemoteTournament");
 
 async function inviteToTournament(userId, ws, data) {
-	const tournamentData = await inviteToTournamentFun(userId, data.guestId, data.slot);
+	const tournamentData = await inviteToTournamentFun(userId, data.guestId, data.slot, ws);
 	tournamentUtils.broadcastTournamentUpdate(tournamentData);
 }
 
-async function inviteToTournamentFun(hostId, guestId, slot) {
+async function inviteToTournamentFun(hostId, guestId, slot, ws) {
 	const user = userUtils.getUser(guestId);
 
-	const tournament = onGoingTournaments.get(hostId);
+	let tournament = onGoingTournaments.get(hostId);
 	if (!tournament) {
-		return null;
+		console.warn(`⚠️ Tournament not found for hostId in inviteToTournamentFun: ${hostId}`);
+		tournament = createRemote(hostId, ws)
 	}
 
 	let player = null;

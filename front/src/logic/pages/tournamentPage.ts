@@ -10,11 +10,10 @@ export async function tournamentPage(params: URLSearchParams | null) {
 	await connectTournament();
 
 	const startTournamentBtn = document.getElementById("startTournamentBtn");
-	if (params)
-	{
+	if (params) {
 		startTournamentBtn?.classList.add("hidden")
 	}
-	
+
 	const socket = getTournamentSocket();
 	if (!socket) {
 		showErrorMessage("Failed to connect to tournament server.");
@@ -22,7 +21,7 @@ export async function tournamentPage(params: URLSearchParams | null) {
 	}
 
 	await renderTournamentPage();
-	
+
 	const gameId = params?.get("gameId");
 	if (gameId) {
 		socket.send(JSON.stringify({
