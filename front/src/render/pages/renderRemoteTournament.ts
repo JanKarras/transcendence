@@ -61,7 +61,12 @@ export async function renderRemoteTournamentPage() {
 		bodyContainer.innerHTML = html;
 }
 
-export function renderGameChat(messages: { text: string, type: "system" | "user" }[]) {
+export function renderGameChat(messages: {
+	text?: string;
+	type: "system" | "user";
+	key?: string;
+	vars?: Record<string, string>;
+}[]) {
 	let chatContainer = document.getElementById("gameChatContainer");
 	if (!chatContainer) {
 		chatContainer = document.createElement("div");
@@ -79,7 +84,7 @@ export function renderGameChat(messages: { text: string, type: "system" | "user"
 		const chatInput = document.createElement("input");
 		chatInput.id = "gameChatInput";
 		chatInput.className = "flex-1 px-3 py-2 rounded bg-gray-700 text-white focus:outline-none";
-		chatInput.placeholder = t('typeMessage');
+		chatInput.placeholder = t("typeMessage");
 		chatInputWrapper.appendChild(chatInput);
 
 		const chatSend = document.createElement("button");
@@ -97,10 +102,26 @@ export function renderGameChat(messages: { text: string, type: "system" | "user"
 	const chatMessages = document.getElementById("gameChatMessages")!;
 	chatMessages.innerHTML = "";
 
-	messages.forEach(msg => {
+	messages.forEach((msg, i) => {
+		let text = "";
+
+		if (msg.type === "system") {
+			if (msg.key) {
+
+				let vars = msg.vars || {};
+				if (vars.round) {
+					vars.round = t(vars.round);
+				}
+
+				text = t(msg.key, vars);
+			} else {
+				text = msg.text || "";
+			}
+		}
+
 		const div = document.createElement("div");
 		div.className = msg.type === "system" ? "text-gray-400 italic" : "text-white";
-		div.textContent = msg.text;
+		div.textContent = text;
 		chatMessages.appendChild(div);
 	});
 
@@ -121,6 +142,7 @@ export function renderGameChat(messages: { text: string, type: "system" | "user"
 		if (e.key === "Enter") chatSend.click();
 	};
 }
+
 
 export function showPodium(results: { player: { name: string }, place: number }[]) {
 	const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;

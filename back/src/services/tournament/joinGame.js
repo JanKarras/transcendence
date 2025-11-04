@@ -12,14 +12,13 @@ function joinTournament(gameId, userId, ws) {
 		ws.send(JSON.stringify({ type: "tournamentNotFound" }));
 		return null;
 	}
-	console.log(`✅ User ${userId} is attempting to join tournament ${gameId}`);
 	for (let i = 0; i < tournament.players.length; i++) {
 		const player = tournament.players[i];
-		console.log(`Checking player slot ${player.slot}: id=${player.id}, status=${player.status}`);
 		if (player.id === userId && player.status === "invited") {
 			player.status = "joined";
 			player.ws = ws;
-			tournamentUtils.addSystemMessage(tournament, `${player.username} joined the tournament.`);
+			tournamentUtils.addSystemMessage(tournament, "tournament.playerJoined", { username: player.username });
+
 			tournamentUtils.checkTournamentReady(tournament);
 			return tournament;
 		}

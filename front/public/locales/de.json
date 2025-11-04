@@ -230,7 +230,25 @@
         "confirmRemoveTitle": "Möchtest Du den Freund wirklich entfernen?"
 	},
 	"tournament": {
-		"waitForNextRound": "Bitte warte, bis die nächste Runde startet..."
+		"waitForNextRound": "Bitte warte, bis die nächste Runde startet...",
+		"inviteDeclined": "❌ {username} hat die Einladung abgelehnt.",
+		"userBusy": "❌ {username} ist beschäftigt.",
+		"playerInvited": "{username} wurde eingeladen.",
+		"playerJoined": "✅ {username} ist dem Turnier beigetreten.",
+		"roundStarting": "{round} startet gleich: {player1} gegen {player2}",
+		"roundFinished": "🏁 Runde beendet! {winner} hat gegen {loser} gewonnen 🎉",
+		"nextMatch": "Nächstes Match: {player1} gegen {player2}",
+		"consolationMatch": "Trostmatch: {player1} gegen {player2}",
+		"finished": "🏁 Turnier beendet! Ergebnisse werden berechnet...",
+		"placeResult": "🥇{place}. Platz: {username}",
+		"playerLeft": "🚪 {username} hat das Turnier verlassen.",
+		"playerDisconnected": "⚠️ Ein Spieler hat die Verbindung verloren. Das Turnier wurde abgebrochen.",
+		"hostEnded": "❌ Der Host hat das Turnier beendet.",
+		"allPlayersJoined": "✅ Alle Spieler sind beigetreten. Das Turnier kann gestartet werden!",
+    	"notReady": "⚠️ Das Turnier ist nicht mehr startbereit.",
+		"round1": "Erste Runde",
+  		"round2": "Zweite Runde"
+
 	},
     "cht": {
       "notOnline": " nicht online",

@@ -17,8 +17,9 @@ export async function initTranslations() {
 }
 
 
-export function t(keyOrObj: any): string {
-	const LANGUAGE = getLanguage()
+export function t(keyOrObj: any, vars: Record<string, string> = {}): string {
+	const LANGUAGE = getLanguage();
+
 	if (typeof keyOrObj === "object") {
 		return keyOrObj[LANGUAGE as keyof typeof keyOrObj] || keyOrObj.eng;
 	}
@@ -33,8 +34,13 @@ export function t(keyOrObj: any): string {
 			if (!value) break;
 		}
 
+		if (value && typeof value === "string") {
+			return value.replace(/{(\w+)}/g, (_, key) => vars[key] ?? `{${key}}`);
+		}
+
 		return value || keyOrObj;
 	}
 
 	return String(keyOrObj);
 }
+

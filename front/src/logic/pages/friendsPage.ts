@@ -14,7 +14,6 @@ export async function friendsPage(params: URLSearchParams | null) {
 
 	await renderFriendsPage();
 	await connect();
-	console.log(params);
 	const p = params?.get("tab");
 	if (p === "requests")
 	{

@@ -222,7 +222,24 @@
     "confirmRemoveTitle": "Do you really want to remove your friend?"
   },
   "tournament": {
-    "waitForNextRound": "Please wait for the second round to start..."
+    "waitForNextRound": "Please wait for the second round to start...",
+	"inviteDeclined": "❌ {username} has declined the invitation.",
+	"userBusy": "❌ {username} is busy.",
+	"playerInvited": "{username} has been invited.",
+	"playerJoined": "✅ {username} joined the tournament.",
+	"roundStarting": "{round} is about to start: {player1} vs {player2}",
+	"roundFinished": "🏁 Round finished! {winner} won against {loser} 🎉",
+	"nextMatch": "Next match: {player1} vs {player2}",
+    "consolationMatch": "Consolation match: {player1} vs {player2}",
+	"finished": "🏁 Tournament finished! Calculating final results...",
+	"placeResult": "🥇{place} Place: {username}",
+	"playerDisconnected": "⚠️ A player has disconnected. The tournament is cancelled.",
+	"playerLeft": "🚪 {username} has left the tournament.",
+	"allPlayersJoined": "✅ All players joined. Tournament is ready to start!",
+    "notReady": "⚠️ Tournament is no longer ready.",
+    "hostEnded": "❌ Host has ended the tournament.",
+	"round1": "First Round",
+  	"round2": "Second Round"
   },
   "cht": {
     "notOnline": " is not online",
@@ -253,5 +270,6 @@
     "appInstruction": "Enter the digits for login",
     "appVerify" : "Verify"
   }
+
 }
 
