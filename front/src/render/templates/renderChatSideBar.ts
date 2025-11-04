@@ -108,7 +108,7 @@ export async function renderInviteButtons(isInvite: Number): Promise<void> {
 
 		cBtn?.addEventListener("click", () => {
 			inviteMode?.classList.add("hidden");
-			sendMessage(friendId!, t('cht.inviteCancelled'));
+			sendMessage(friendId!, "SYS_MSG:cht.inviteCancelled");
 			addMessageToChat(t('cht.you'), t('cht.inviteCancelled'), friendStatus);
 			const socket = getChatSocket();
 			if (socket && socket.readyState === WebSocket.OPEN) {
@@ -157,7 +157,9 @@ export async function renderInviteButtons(isInvite: Number): Promise<void> {
 
 		cBtn?.addEventListener("click", () => {
 			inviteMode?.classList.add("hidden");
-			sendMessage(friendId!, t('cht.inviteCancelled'));
+			const lang = localStorage.getItem('lang');
+			console.log("Language selected: ", lang);
+			sendMessage(friendId!, "SYS_MSG:cht.inviteCancelled");
 			addMessageToChat(t('cht.you'), t('cht.inviteCancelled'), friendStatus);
 			const socket = getChatSocket();
 			if (socket && socket.readyState === WebSocket.OPEN) {
@@ -285,7 +287,7 @@ async function inviteFriend(inviterId: number, username : string): Promise<void>
 
 	if (socket && socket.readyState === WebSocket.OPEN) {
 		addMessageToChat(t('cht.you'), t('cht.inviteSent'), friendStatus);
-		sendMessage(inviterId, t('cht.inviteSent'));
+		sendMessage(inviterId, "SYS_MSG:cht.inviteSent");
 		sendChatWsMsg('invite_message', {
 			to: inviterId,
 			from: currentId,

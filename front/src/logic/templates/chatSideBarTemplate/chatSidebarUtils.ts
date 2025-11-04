@@ -31,6 +31,11 @@ export function addMessageToChat(
 	if (from === '') str = '';
 	if (friendStatus === 0) div.className = 'bg-gray-500';
 
+	if (content.startsWith("SYS_MSG:")) {
+		const key = content.replace("SYS_MSG:", "").trim();
+		content = t(key);
+	}
+
 	div.textContent = `${from}${str} ${content}`;
 	chat.appendChild(div);
 	chat.scrollTop = chat.scrollHeight;
@@ -203,7 +208,7 @@ export async function connectDialog(
 
 		setMessages(tmpMessages)
 
-		if (friendId && await getBlocked(friendId) !== 3 && messages) {
+		if (messages.length > 0 && friendId && await getBlocked(friendId) !== 3 ) {
 			if(messages[messages.length - 1].is_read === 1) {sendconnect(friendId, '4');}
 			else sendconnect(friendId, '1');
 			refreshFriendsList();
@@ -272,7 +277,7 @@ export async function toggleBlockUser(
 		return;
 	}
 
-	const label = action === 'block' ? t('cht.blocked') : t('cht.unblocked');
+	const label = action === 'block' ? "SYS_MSG:cht.blocked" : "SYS_MSG:cht.unblocked";
 	sendMessage(targetId, label);
 	if (await getBlocked(friendId) === 2) {
 		addDisappearMessage(label);
