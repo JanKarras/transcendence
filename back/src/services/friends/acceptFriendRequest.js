@@ -14,7 +14,9 @@ async function acceptFriendRequest(userId, ws, data) {
 	userRepo.addFriend(request.sender_id, request.receiver_id);
 
 	sendChanges(request.sender_id, request.receiver_id);
+
 	addMessage(request.sender_id, request.receiver_id, "You are now friends!");
+	
 	notifyDashboard(request.receiver_id, 2);
 }
 
