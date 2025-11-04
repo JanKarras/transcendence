@@ -21,7 +21,7 @@ export async function renderRemoteTournamentPage() {
 			<div class="flex items-center gap-8 relative">
 				<div class="flex flex-col items-center text-white">
 					<span id="playerLeftName" class="text-xl font-bold">Left Player</span>
-					<span class="text-sm">Controls: ↑ / ↓</span>
+					<span class="text-sm">${t('game.controls')}: ↑ / ↓</span>
 					<span id="playerLeftScore" class="text-2xl font-bold mt-2">0</span>
 				</div>
 
@@ -29,7 +29,7 @@ export async function renderRemoteTournamentPage() {
 
 				<div class="flex flex-col items-center text-white">
 					<span id="playerRightName" class="text-xl font-bold">Right Player</span>
-					<span class="text-sm">Controls: ↑ / ↓</span>
+					<span class="text-sm">${t('game.controls')}: ↑ / ↓</span>
 					<span id="playerRightScore" class="text-2xl font-bold mt-2">0</span>
 				</div>
 			</div>

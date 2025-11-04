@@ -7,6 +7,9 @@
     "tournamentTitle": "Turnier",
     "tournamentDesc": "Starte ein Turnier",
     "tournamentBtn": "Jetzt starten!",
+    "wonGames": "Gewonnene Spiele",
+    "lostGames": "Verlorene Spiele",
+    "wonTournaments": "Gewonnene Tourniere",
     "onlinePlayers": "Spieler online",
     "activeTournaments": "Aktive Turniere",
     "matchesToday": "Spiele heute",
@@ -126,6 +129,12 @@
         "noReceived": "Keine empfangenen Anfragen.",
         "noSent": "Keine gesendeten Anfragen."
     },
+    "friendProfile": {
+        "lastSeen": "Zuletzt online",
+        "wonGames": "Gewonnene Spiele",
+        "lostGames": "Verlorene Spiele",
+        "wonTournaments": "Gewonnene Tourniere"
+    },
     "no_id_msg": "Keine Benutzer-ID übergeben.",
     "missing_req_dom_elem": "Benötigtes DOM-Element fehlt.",
     "chat": "Chat",
@@ -140,7 +149,7 @@
     "backToProfile": "Zurück zum Profil",
     "trophy": "🏆",
     "matchHis": "Spielverlauf",
-    "selectChatPartner": "Waehle einen chat partner aus",
+    "selectChatPartner": "Wähle einen chat partner aus",
     "enterMessage": "Nachricht schreiben",
     "send": "verschicken",
     "game": {
@@ -152,15 +161,16 @@
         "cancel": "Abbrechen",
         "waitingForMatch": "Warten auf Spiel",
         "chooseMode": "Bitte wähle den Spielmodus",
-        "local": "local",
-        "remote": "remote",
+        "local": "lokal",
+        "remote": "online",
+        "controls" : "Tasten",
         "left": "Links",
         "right": "Rechts",
         "wins": "{username} gewinnt! 🎉",
         "tournament": {
             "local": "Lokales Turnier",
             "enterAliases": "Gib einen Alias für bis zu 3 lokale Spieler ein. Du bist Spieler 1.",
-            "start": "Start Turnier",
+            "start": "Turnier starten",
             "create": "Tournier erstellen",
             "invite": "Eingeladener Spieler",
             "selectFriend": "Lade Freunde ein",
@@ -206,6 +216,7 @@
 		"alreadyFriends": "Bereits Freunde",
 		"declinedRequest": "Du hast diese Anfrage abgelehnt",
 		"resendRequest": "🔁 Anfrage erneut senden",
+        "removeRequest" : "Anfrage entfernen",
 		"sendRequest": "➕ Freund hinzufügen",
 		"recvRequestsTitle": "📥 Empfangene Anfragen",
 		"noReceivedRequests": "Keine empfangenen Anfragen 😴",
@@ -215,7 +226,8 @@
 		"declined": "❌ Abgelehnt",
 		"pending": "⏳ Ausstehend",
 		"sentRequestsTitle": "📤 Gesendete Anfragen",
-		"noSentRequests": "Keine gesendeten Anfragen 📭"
+		"noSentRequests": "Keine gesendeten Anfragen 📭",
+        "confirmRemoveTitle": "Möchtest Du den Freund wirklich entfernen?"
 	},
 	"tournament": {
 		"waitForNextRound": "Bitte warte, bis die nächste Runde startet..."
@@ -243,5 +255,10 @@
       "inviteSent": "Die Einladung zum Spiel wurde gesendet",
       "retryInvite": "Senden der Einladung erneut versuchen",
       "inviteCancelled": "Die Einladung zum Spiel wurde abgebrochen"
+    },
+    "tfaApp": {
+        "appTitle": "Google Authenticator",
+        "appInstruction": "6-stelligen Code eingeben für ",
+        "appVerify" : "Verifizieren"
     }
 }

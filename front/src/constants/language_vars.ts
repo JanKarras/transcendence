@@ -1087,7 +1087,7 @@ export const lang = {
 	},
 
 	selectChatPartner: {
-		ger: "Waehle einen chat partner aus",
+		ger: "Wähle einen chat partner aus",
 		eng: "Select a chat partner",
 		nig: "Sélectionnez un partenaire de discussion",
 		fr: "Họrọ onye ị ga-akparịta ụka na ya",

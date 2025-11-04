@@ -108,7 +108,7 @@ export function showRemoveFriendModal(friend: Friend) {
 		<h2 class="text-lg font-semibold mb-3">${t("friendsLang.confirmRemoveTitle") || "Remove Friend?"}</h2>
 		<div class="flex justify-center gap-3">
 			<button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-1 rounded" data-action="cancel">${t("cancel") || "Cancel"}</button>
-			<button class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded" data-action="confirm">${t("remove") || "Remove"}</button>
+			<button class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded" data-action="confirm">${t("friendsLang.remove") || "Remove"}</button>
 		</div>
 	`;
 

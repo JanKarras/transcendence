@@ -9,6 +9,12 @@ export async function tournamentPage(params: URLSearchParams | null) {
 	await headerTemplate();
 	await connectTournament();
 
+	const startTournamentBtn = document.getElementById("startTournamentBtn");
+	if (params)
+	{
+		startTournamentBtn?.classList.add("hidden")
+	}
+	
 	const socket = getTournamentSocket();
 	if (!socket) {
 		showErrorMessage("Failed to connect to tournament server.");

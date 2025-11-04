@@ -16,14 +16,14 @@ export async function renderGamePage(mode : string | null | undefined, showUsern
 		<div class="flex items-center gap-8 relative">
 			<div class="flex flex-col items-center text-white">
 				<span id="playerLeftName" class="text-xl font-bold">${t('game.left')}</span>
-				<span id="playerLeftControls" class="text-sm">${mode === "local" ? "Controls: W / S" : "Controls: ↑ / ↓"}</span>
+				<span id="playerLeftControls" class="text-sm">${mode === "local" ? `${t('game.controls')}: W / S` : `${t('game.controls')}: ↑ / ↓`}</span>
 			</div>
 
 			<canvas id="gameCanvas" class="w-[800px] h-[600px] bg-[#0a001a]"></canvas>
 
 			<div class="flex flex-col items-center text-white">
 				<span id="playerRightName" class="text-xl font-bold">${t('game.right')}</span>
-				<span id="playerRightControls" class="text-sm">Controls: ↑ / ↓</span>
+				<span id="playerRightControls" class="text-sm">${t('game.controls')}: ↑ / ↓</span>
 			</div>
 		</div>
 
