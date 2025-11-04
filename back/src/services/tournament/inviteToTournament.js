@@ -30,7 +30,8 @@ async function inviteToTournamentFun(hostId, guestId, slot, ws) {
 	player.status = "invited";
 	const invited = await tournamentInvite(player, hostId);
 	if (!invited) {
-		tournamentUtils.addSystemMessage(tournament, `${user.username} ist beschäftigt.`);
+		tournamentUtils.addSystemMessage(tournament, "tournament.userBusy", { username: user.username });
+
 
 		player.id = null;
 		player.username = null;
@@ -40,7 +41,7 @@ async function inviteToTournamentFun(hostId, guestId, slot, ws) {
 		return tournament;
 	}
 
-	tournamentUtils.addSystemMessage(tournament, `${user.username} has been invited.`);
+	tournamentUtils.addSystemMessage(tournament, "tournament.playerInvited", { username: user.username });
 	requests.addTournamentRequest(hostId, guestId);
 
 	return tournament;

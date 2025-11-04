@@ -13,7 +13,7 @@ function declineTournamentInvite(userId, ws, data) {
 		return;
 	}
 
-	addSystemMessage(tournament, `❌ ${player.username} hat die Einladung abgelehnt.`);
+	addSystemMessage(tournament, "tournament.inviteDeclined", { username: player.username });
 
 	player.id = null;
 	player.username = null;

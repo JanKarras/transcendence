@@ -13,7 +13,11 @@ function handleWsClose(ws, userId, code, reason) {
 }
 
 function endTournament(tournament, userId) {
-	tournamentServiceUtils.addSystemMessage(tournament, `Host has ended the tournament.`);
+	tournamentServiceUtils.addSystemMessage(
+		tournament,
+		"tournament.hostEnded"
+	);
+
 	tournamentServiceUtils.broadcastTournamentUpdate(tournament);
 
 	setTimeout(() => {
@@ -35,7 +39,10 @@ function playerLeftTournament(userId) {
 	const tournament = tournamentServiceUtils.findTournamentByUser(userId);
 	if (!tournament) return;
 	if (tournament.started) {
-		tournamentServiceUtils.addSystemMessage(tournament, `A player has disconnected. Tournament is cancelled.`);
+		tournamentServiceUtils.addSystemMessage(
+			tournament,
+			"tournament.playerDisconnected"
+		);
 		tournamentServiceUtils.broadcastTournamentUpdate(tournament);
 		for (const player of tournament.players) {
 			const userId = player.id;
@@ -45,11 +52,14 @@ function playerLeftTournament(userId) {
 		}
 	} else {
 		const player = tournament.players.find(p => p.id === userId);
-		console.log(`Player left before tournament started: ${player ? player.username : 'Unknown player'}`);
 		if (!player) return;
 		player.status = "left";
 		player.ws = null;
-		tournamentServiceUtils.addSystemMessage(tournament, `${player.username} has left the tournament.`);
+		tournamentServiceUtils.addSystemMessage(
+			tournament,
+			"tournament.playerLeft",
+			{ username: player.username }
+		);
 		tournamentServiceUtils.checkTournamentReady(tournament);
 		tournamentServiceUtils.broadcastTournamentUpdate(tournament);
 		player.status = "invited";

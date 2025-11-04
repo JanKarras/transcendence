@@ -48,7 +48,15 @@ function findCurrentMatch(tournament, playerLeft, playerRight) {
 function updateMatch(tournament, match, winner, loser) {
 	match.winner = winner;
 	match.loser = loser;
-	tournamentUtils.addSystemMessage(tournament, `Round finished! ${winner.name} won against ${loser.name} 🎉`);
+	tournamentUtils.addSystemMessage(
+		tournament,
+		"tournament.roundFinished",
+		{
+			winner: winner.name,
+			loser: loser.name
+		}
+	);
+
 }
 
 async function startNextRound(tournament) {
@@ -82,7 +90,14 @@ async function createRoundMatches(tournament, players, isConsolation) {
 	tournament.matches.push(match);
 	await createMatch({ userId: player1.id, ws: player1.ws }, { userId: player2.id, ws: player2.ws });
 
-	tournamentUtils.addSystemMessage(tournament, `${isConsolation ? "Consolation match" : "Next match"}: ${players[0].name} vs ${players[1].name}`);
+	tournamentUtils.addSystemMessage(
+		tournament,
+		isConsolation ? "tournament.consolationMatch" : "tournament.nextMatch",
+		{
+			player1: players[0].name,
+			player2: players[1].name
+		}
+	);
 
 
 	player1.ws.send(JSON.stringify({ type: "startSecondRound" }));
@@ -95,7 +110,10 @@ async function finishTournament(tournament) {
 	try {
 		tournament.round = 2;
 
-		tournamentUtils.addSystemMessage(tournament, "🏁 Tournament finished! Calculating final results...");
+		tournamentUtils.addSystemMessage(
+			tournament,
+			"tournament.finished"
+		);
 
 		const finalMatch = tournament.matches.find(m => m.round === 1 && !m.isConsolation);
 		const consolationMatch = tournament.matches.find(m => m.round === 1 && m.isConsolation);
@@ -120,8 +138,14 @@ async function finishTournament(tournament) {
 		}
 
 		results.forEach((player, index) => {
-			const msg = `🥇${index + 1} Place: ${player.name}`;
-			tournamentUtils.addSystemMessage(tournament, msg);
+			tournamentUtils.addSystemMessage(
+				tournament,
+				"tournament.placeResult",
+				{
+					place: (index + 1).toString(),
+					username: player.name
+				}
+			);
 		});
 
 		tournament.players.forEach(p => {

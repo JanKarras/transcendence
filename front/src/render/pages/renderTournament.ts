@@ -118,15 +118,37 @@ export async function renderRemoteTournament(
 	});
 }
 
-export function renderChat(messages: { text: string; type: "system" | "user" }[]) {
+export function renderChat(messages: {
+	text?: string;
+	type: "system" | "user";
+	key?: string;
+	vars?: Record<string, string>;
+}[]) {
 	const chat = document.getElementById("chatMessages");
-	if (!chat) return;
+	if (!chat) {
+		console.warn("⚠️ [renderChat] chatMessages container not found!");
+		return;
+	}
+
 	chat.innerHTML = messages
-		.map(
-			(m) =>
-				`<div class="${m.type === "system" ? "text-gray-400 italic" : "text-white"}">${m.text}</div>`
-		)
+		.map((m, i) => {
+			let text = "";
+
+			if (m.type === "system") {
+				if (m.key) {
+					text = t(m.key, m.vars || {});
+				} else {
+					text = m.text || "";
+				}
+			} else {
+				text = m.text || "";
+			}
+
+			const cls = m.type === "system" ? "text-gray-400 italic" : "text-white";
+			return `<div class="${cls}">${text}</div>`;
+		})
 		.join("");
+
 	chat.scrollTop = chat.scrollHeight;
 }
 

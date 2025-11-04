@@ -7,8 +7,12 @@ function findTournamentByUser(userId) {
 	return null;
 }
 
-function addSystemMessage(tournament, text) {
-	tournament.messages.push({ type: "system", text });
+function addSystemMessage(tournament, key, vars = null) {
+	tournament.messages.push({
+		type: "system",
+		key,
+		vars
+	});
 }
 
 function addUserMessage(tournament, username, text) {
@@ -19,9 +23,9 @@ function checkTournamentReady(tournament) {
 	const allJoined = tournament.players.every(p => p.status === "joined");
 	tournament.ready = allJoined;
 	if (allJoined) {
-		addSystemMessage(tournament, "✅ All players joined. Tournament is ready to start!");
+		addSystemMessage(tournament, "tournament.allPlayersJoined");
 	} else {
-		addSystemMessage(tournament, "⚠️ Tournament is no longer ready.");
+		addSystemMessage(tournament, "tournament.notReady");
 	}
 	broadcastTournamentUpdate(tournament);
 }
@@ -38,7 +42,7 @@ function broadcastTournamentUpdate(tournament) {
 function deleteRemoteTournament(userId) {
 	const tournamentRemote = onGoingTournaments.get(userId);
 	if (tournamentRemote) {
-		addSystemMessage(tournamentRemote, `Host has ended the tournament.`);
+		addSystemMessage(tournamentRemote, "tournament.hostEnded");
 		broadcastTournamentUpdate(tournamentRemote);
 		setTimeout(() => {
 			for (let i = 1; i < tournamentRemote.players.length; i++) {
