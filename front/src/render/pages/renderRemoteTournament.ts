@@ -185,7 +185,7 @@ export function showPodium(results: { player: { name: string }, place: number }[
 	ctx.font = "22px Arial";
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
-	ctx.fillText("🏁 Spiel verlassen", btnX + btnWidth / 2, btnY + btnHeight / 2);
+	ctx.fillText(`🏁 ${t('game.tournament.leaveGame')}`, btnX + btnWidth / 2, btnY + btnHeight / 2);
 
 	canvas.addEventListener("click", handleCanvasClick);
 

@@ -176,8 +176,12 @@
       "start": "Start Tournament",
       "create": "Create Tournament",
       "invite": "Invite Player",
+      "joined": "Joined",
+      "invited": "Invited...",
+      "player": "Player",
       "selectFriend": "Select Friend to Invite",
       "willStartSoon": "Tournament will start soon",
+      "backToDashboard": "Back to dashboard",
       "alias": "Alias"
     }
   },

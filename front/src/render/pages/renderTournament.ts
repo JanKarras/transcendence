@@ -77,8 +77,8 @@ export async function renderRemoteTournament(
 	const playerCards = players.map((p) => {
 		if (p.id && p.status !== "left") {
 			const statusText =
-				p.status === "joined" ? "Joined" :
-				p.status === "invited" ? "Invited..." : "";
+				p.status === "joined" ? t('game.tournament.joined') :
+				p.status === "invited" ? t('game.tournament.invited') : "";
 			const statusColor =
 				p.status === "joined" ? "text-green-400" :
 				p.status === "invited" ? "text-yellow-400 animate-pulse" : "text-gray-400";
@@ -97,7 +97,7 @@ export async function renderRemoteTournament(
 							hover:bg-gray-700 cursor-pointer" id="player${p.slot}Card">
 					<span class="font-bold text-xl">${t("game.tournament.invite")}</span>
 					<div class="w-24 h-24 bg-gray-700 rounded-full flex justify-center items-center text-gray-400 text-3xl">+</div>
-					<span class="text-sm text-gray-400">Player ${p.slot}</span>
+					<span class="text-sm text-gray-400">${t('game.tournament.player')} ${p.slot}</span>
 				</div>
 			`;
 		}
