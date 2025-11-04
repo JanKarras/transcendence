@@ -152,10 +152,10 @@ export function renderTwoFaSettings(user: UserInfo, backToProfile: () => void) :
 			<p class="text-gray-600 mb-2">${t("twofaScanQR")}</p>
 			<img id="authAppQR" src="" class="mx-auto w-48 h-48 border rounded" />
 			<div class="mt-2 flex flex-col items-center space-y-2">
-				<input id="twoFaCodeInput" type="text" maxlength="6" placeholder="Enter 6-digit code"
+				<input id="twoFaCodeInput" type="text" maxlength="6" placeholder="${t('twofaPlaceholder')}"
 					class="text-center border border-gray-300 rounded px-3 py-2 w-40 tracking-widest text-lg" />
 				<button id="verifyTwoFaCodeBtn" class="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-					${t("verify")}
+					${t("tfaApp.appVerify")}
 				</button>
 				<p id="twoFaVerifyMessage" class="text-sm text-gray-600 mt-1"></p>
 			</div>

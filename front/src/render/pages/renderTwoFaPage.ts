@@ -49,11 +49,11 @@ export async function renderTwoFaPage(email: string | null, method: string | nul
 		bodyContainer.innerHTML = `
 			<div id="authAppValidationContainer" class="max-w-md p-6 bg-white rounded-lg shadow-lg text-center">
 				<h2 class="text-2xl font-bold mb-6 text-gray-800">
-					${t("2faApp.appTitle")}
+					${t("tfaApp.appTitle")}
 				</h2>
 
 				<p class="mb-4 text-gray-700">
-					${t("2faApp.appInstruction")}
+					${t("tfaApp.appInstruction")}
 					<span class="font-semibold">${email}</span>
 				</p>
 
@@ -70,7 +70,7 @@ export async function renderTwoFaPage(email: string | null, method: string | nul
 					id="submitAuthAppBtn"
 					class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
 				>
-					${t("2faApp.appVerify")}
+					${t("tfaApp.appVerify")}
 				</button>
 			</div>
 		`;

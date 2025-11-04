@@ -57,7 +57,7 @@ export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
 	const logoutEntry: MenuItem = {
 		id: "menu-logout",
 		label: `🚪 ${t("logout")}`,
-		onClick: () => logOut("You logged out"),
+		onClick: () => logOut(t('logoutMessage')),
 	};
 
 	return [...baseItems, langEntry, logoutEntry];

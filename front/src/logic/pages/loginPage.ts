@@ -32,13 +32,13 @@ export async function tryToLogIn(event: Event) {
 	if (res.success) {
 	if (res.requires2fa) {
 		if (res.method === 'email') {
-			showSuccessMessage(t('loginSuccess'));
+			showSuccessMessage(t('loginSuccess').replace("{username}", username));
 			const params = new URLSearchParams({ email: username, method: 'email' });
 			setTimeout(() => {
 				navigateTo('two_fa', params);
 			}, 1500);
 		} else if (res.method === 'authapp') {
-			showErrorMessage(t('loginSuccess'));
+			showErrorMessage(t('loginSuccess').replace("{username}", username));
 			const params = new URLSearchParams({ email: username, method: 'authapp' });
 			setTimeout(() => {
 				navigateTo('two_fa', params);
