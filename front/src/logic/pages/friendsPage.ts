@@ -21,7 +21,7 @@ export async function friendsPage(params: URLSearchParams | null) {
 		const contentContainer = document.getElementById("friends-content");
 		if (contentContainer )
 			contentContainer.setAttribute("data-active-tab", "requests");
-	}	
+	}
 }
 
 async function connect() {
@@ -61,6 +61,30 @@ export function renderActiveTab() {
 		return;
 	}
 
+	let pendingCount = 0;
+	if (friendsData?.recvRequest) {
+		pendingCount = friendsData.recvRequest.filter(r => r.status === "nothandled").length;
+	}
+
+	const tabNav = container.previousElementSibling;
+	if (tabNav) {
+		const requestTab = Array.from(tabNav.children).find(
+			btn => btn.textContent?.includes(t("friendsLang.requests")) || btn.textContent?.includes("✉️")
+		);
+
+		if (requestTab) {
+			const existingBadge = requestTab.querySelector(".friend-request-badge");
+			if (existingBadge) existingBadge.remove();
+
+			if (pendingCount > 0) {
+				const badge = document.createElement("span");
+				badge.className = "friend-request-badge absolute -top-1 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-[1px]";
+				badge.textContent = pendingCount.toString();
+				requestTab.appendChild(badge);
+			}
+		}
+	}
+
 	switch (activeTab) {
 		case "online":
 			renderFriendsList(friendsData, true);
@@ -69,7 +93,12 @@ export function renderActiveTab() {
 			renderFriendsList(friendsData, false);
 			break;
 		case "add":
-			renderAddFriends(friendsData.allUsers, friendsData.notFriends, friendsData.recvRequest, friendsData.sendRequest);
+			renderAddFriends(
+				friendsData.allUsers,
+				friendsData.notFriends,
+				friendsData.recvRequest,
+				friendsData.sendRequest
+			);
 			break;
 		case "requests":
 			renderFriendRequests(friendsData.recvRequest, friendsData.sendRequest);

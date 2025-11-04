@@ -112,7 +112,7 @@ export async function renderRemoteTournament(
 	players.forEach((p) => {
 		if (!p.id || p.status === "left") {
 			document.getElementById(`player${p.slot}Card`)?.addEventListener("click", () =>
-				openInviteModal(p.slot, friends, players)
+				openInviteModal(p.slot, players)
 			);
 		}
 	});
@@ -130,7 +130,11 @@ export function renderChat(messages: { text: string; type: "system" | "user" }[]
 	chat.scrollTop = chat.scrollHeight;
 }
 
-export function openInviteModal(slot: number, friends: Friend[], players: any[]): void {
+export async function openInviteModal(slot: number, players: any[]): Promise<void> {
+	const userData = await getUser();
+	if (!userData) return ;
+
+	const friends: Friend[] = userData.friends || [];
 	const modal = document.getElementById("inviteModal");
 	if (!modal) return;
 	modal.classList.remove("hidden");
