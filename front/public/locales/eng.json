@@ -189,7 +189,7 @@
   },
   "twofaSettings": "Two-Factor Settings",
   "twofaEnable": "Enable/Disable Two-Factor Authentication",
-  "twofaSaveError": "Error: Changes not saved", 
+  "twofaSaveError": "Error: Changes not saved",
   "twofaTitle": "Two-Factor Authentication",
   "twofaSelectMethod": "Select Authentication Method",
   "twofaEmail": "Email",

@@ -12,6 +12,7 @@ import { chatTemplate } from "../templates/chatSideBarTemplate/chatSidebarTempla
 import { headerTemplate } from "../templates/headerTemplate.js";
 
 export async function dashboarPage(params: URLSearchParams | null) {
+	await setStdLang();
 	window.location.hash = "#dashboard";
 	await headerTemplate();
 
@@ -42,6 +43,13 @@ export async function dashboarPage(params: URLSearchParams | null) {
 async function initChat() {
 	chatTemplate()
 	setEventListenersDashboardPageChat();
+}
+
+async function setStdLang() {
+	const lang = localStorage.getItem("lang");
+	if (!lang) {
+		localStorage.setItem("lang", "eng");
+	}
 }
 
 export function handleDashboardMessage(msg: MessageEvent, socket: WebSocket): void {
