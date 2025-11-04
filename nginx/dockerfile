@@ -1,9 +1,6 @@
-FROM debian:bullseye
+FROM nginx:stable-alpine
 
-RUN apt-get update && \
-    apt-get install -y nginx openssl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache openssl bash
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 

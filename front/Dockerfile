@@ -1,21 +1,14 @@
-FROM debian:bullseye
+FROM node:20-bullseye-slim AS build
 
-RUN apt-get update && \
-    apt-get install -y curl gnupg && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g yarn && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN corepack enable
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json yarn.lock ./
 
-RUN yarn install
+RUN --mount=type=cache,target=/root/.cache/yarn \
+    yarn install
 
 COPY . .
-
-EXPOSE 4001
 
 CMD ["yarn", "build"]
