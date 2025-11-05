@@ -254,7 +254,7 @@
     "playerDisconnected": "⚠️ A player has disconnected. The tournament is cancelled.",
     "playerLeft": "🚪 {username} has left the tournament.",
     "allPlayersJoined": "✅ All players joined. Tournament is ready to start!",
-    "notReady": "⚠️ Tournament is no longer ready.",
+    "notReady": "⚠️ Tournament not ready to start.",
     "hostEnded": "❌ Host has ended the tournament.",
   	"round1": "First Round",
   	"round2": "Second Round"
