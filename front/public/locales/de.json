@@ -263,7 +263,7 @@
         "playerDisconnected": "⚠️ Ein Spieler hat die Verbindung verloren. Das Turnier wurde abgebrochen.",
         "hostEnded": "❌ Der Host hat das Turnier beendet.",
         "allPlayersJoined": "✅ Alle Spieler sind beigetreten. Das Turnier kann gestartet werden!",
-        "notReady": "⚠️ Das Turnier ist nicht mehr startbereit.",
+        "notReady": "⚠️ Das Turnier ist noch nicht bereit zu starten.",
         "round1": "Erste Runde",
         "round2": "Zweite Runde"
     },
