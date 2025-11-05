@@ -198,7 +198,6 @@ exports.updateUser = async function (req, reply) {
 						firstName = null;
 						break;
 					}
-					console.log("first_name: ", val);
 					const sanitized = validatorUtil.sanitizeTextInput(val, {
 						maxLength: validatorUtil.MAX_NAME_LEN,
 						whitelistRegex: /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-.']+$/,
