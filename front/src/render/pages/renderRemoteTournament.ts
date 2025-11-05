@@ -195,7 +195,7 @@ export function showPodium(results: { player: { name: string }, place: number }[
 		ctx.fillText(emoji, pos.x + boxWidth / 2, y - 50);
 	});
 
-	const btnWidth = 200;
+	const btnWidth = 300;
 	const btnHeight = 50;
 	const btnX = w / 2 - btnWidth / 2;
 	const btnY = baseY + 20;
