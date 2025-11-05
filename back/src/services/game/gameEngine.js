@@ -1,4 +1,4 @@
-const { CANVAS_HEIGHT, CANVAS_WIDTH, MAX_ANGLE } = require("../../constants/constants");
+const { CANVAS_HEIGHT, CANVAS_WIDTH, MAX_ANGLE, PADDLE_SPEED } = require("../../constants/constants");
 const matchService = require("./matchService");
 const gameStore = require("./gameStore");
 
@@ -81,6 +81,7 @@ function handleCollisions(state) {
 		by < paddleLeft.position.y + paddleLeft.size.y
 	) {
 		paddleBounce(ball, paddleLeft);
+		increasePaddleSpeed(paddleLeft, paddleRight);
 	}
 
 	if (
@@ -89,7 +90,17 @@ function handleCollisions(state) {
 		by < paddleRight.position.y + paddleRight.size.y
 	) {
 		paddleBounce(ball, paddleRight);
+		increasePaddleSpeed(paddleLeft, paddleRight);
 	}
+}
+
+function increasePaddleSpeed(paddleLeft, paddleRight) {
+	paddleLeft.speed += 0.5
+	paddleRight.speed += 0.5
+}
+
+function restorePaddleSpeed(paddleLeft, paddleRight){
+	paddleLeft.speed = paddleRight.speed = PADDLE_SPEED 
 }
 
 function handleScoring(state) {
@@ -99,9 +110,11 @@ function handleScoring(state) {
 	if (bx < 0) {
 		state.playerRight.score++;
 		resetBall(ball);
+		restorePaddleSpeed(paddleLeft, paddleRight);
 	} else if (bx > CANVAS_WIDTH) {
 		state.playerLeft.score++;
 		resetBall(ball);
+		restorePaddleSpeed(paddleLeft, paddleRight);
 	}
 	if (state.playerLeft.score >= 3 || state.playerRight.score >= 3)
 		state.end = true;
