@@ -94,12 +94,12 @@ async function showTournamentModal(data: { gameId: number }) {
 	const acceptBtn = document.createElement("button");
 	acceptBtn.className =
 		"bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium mx-2";
-	acceptBtn.textContent = t('accept');
+	acceptBtn.textContent = t('game.tournament.accept');
 
 	const declineBtn = document.createElement("button");
 	declineBtn.className =
 		"bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-medium mx-2";
-	declineBtn.textContent = t('decline');
+	declineBtn.textContent = t('game.tournament.decline');
 
 	const btnContainer = document.createElement("div");
 	btnContainer.className = "flex justify-center";
