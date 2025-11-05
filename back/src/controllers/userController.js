@@ -112,24 +112,19 @@ exports.getBlocked = async (req, reply) => {
 
 exports.createUser = async (request, reply) => {
 	const { username, email, password } = request.body;
+	const result = validatorUtil.validateUserInput(username, email, password);
 
-	if (!username || !email || !password) {
-		return reply.code(400).send({ error: 'Missing credentials: username, email and password are required.' });
+	if (!result.valid) {
+		return reply.code(400).send({ error: result.errors.join(' ') });
 	}
-
-	if (!validator.isEmail(email)) {
-		return reply.code(400).send({ error: 'Invalid email address' });
-	}
-
-	const cleanUsername = validator.escape(username);
 
 	try {
-		const hashedPw = await passwordUtil.hashPassword(password);
-		const info = await userRepository.addUser(cleanUsername, email, hashedPw);
+		const hashedPw = await passwordUtil.hashPassword(result.password);
+		const info = await userRepository.addUser(result.username, result.email, hashedPw);
 		const userId = info.lastInsertRowid;
 
 		await statsRepository.addStats(userId, 0, 0, 0);
-		await mailService.sendEmailValidationMail(userId, email);
+		await mailService.sendEmailValidationMail(userId, result.email);
 
 		return reply.code(201).send({ message: 'User created successfully' });
 	} catch (err) {
@@ -160,7 +155,6 @@ exports.updateUser = async function (req, reply) {
 	let twofa_method = null;
 
 	for await (const part of parts) {
-
 		if (part.type === "file") {
 			const buffer = await part.toBuffer();
 
@@ -187,45 +181,84 @@ exports.updateUser = async function (req, reply) {
 
 			fs.writeFileSync(fullPath, buffer);
 			imageName = uniqueFilename;
-
-		}
-
-		else if (part.type === "field") {
+		} else if (part.type === "field") {
 			const val = typeof part.value === "string" ? part.value.trim() : "";
 
 			switch (part.fieldname) {
-				case "first_name":
-					firstName = val === "" ? "not provided" : val;
+				case "first_name": {
+					if (val === "") {
+						firstName = null;
+						break;
+					}
+					console.log("first_name: ", val);
+					const sanitized = validatorUtil.sanitizeTextInput(val, {
+						maxLength: validatorUtil.MAX_NAME_LEN,
+						whitelistRegex: /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-.']+$/,
+					});
+					if (sanitized === null) {
+						return reply.code(400).send({ success: false, error: "Invalid first name" });
+					}
+					firstName = sanitized;
 					break;
+				}
 
-				case "last_name":
-					lastName = val === "" ? "not provided" : val;
+				case "last_name": {
+					if (val === "") {
+						lastName = null;
+						break;
+					}
+					const sanitized = validatorUtil.sanitizeTextInput(val, {
+						maxLength: validatorUtil.MAX_NAME_LEN,
+						whitelistRegex: /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-.']+$/,
+					});
+					if (sanitized === null) {
+						return reply.code(400).send({ success: false, error: "Invalid last name" });
+					}
+					lastName = sanitized;
 					break;
+				}
 
-				case "age":
+				case "age": {
 					if (val === "") {
 						age = null;
 						break;
 					}
-					if (!/^\d+$/.test(val)) {
+					const sanitizedAge = validatorUtil.sanitizeAge(val);
+					if (sanitizedAge === null) {
 						return reply.code(400).send({ success: false, error: "Invalid age" });
 					}
-					age = parseInt(val, 10);
+					age = sanitizedAge;
 					break;
+				}
 
-				case "twofa_active":
+				case "twofa_active": {
 					twofaActive = val === "1" ? 1 : 0;
 					break;
+				}
 
-				case "twofa_method":
-					twofa_method = val;
+				case "twofa_method": {
+					if (val === "") {
+						twofa_method = null;
+						break;
+					}
+					const sanitizedMethod = validatorUtil.sanitizeTwoFaMethod(val);
+					if (sanitizedMethod === null) {
+						return reply.code(400).send({ success: false, error: "Invalid 2FA method" });
+					}
+					twofa_method = sanitizedMethod;
 					break;
+				}
 			}
 		}
 	}
 
-	await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
-	reply.send({ success: true });
+	try {
+		await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+		return reply.send({ success: true });
+	} catch (err) {
+		logger.error("updateUser failed:", err);
+		return reply.code(500).send({ success: false, error: "Internal server error" });
+	}
 };
 
 

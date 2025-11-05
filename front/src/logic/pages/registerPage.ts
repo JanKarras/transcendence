@@ -43,22 +43,20 @@ export async function registerUser(event: Event) {
 
 	const form = event.target as HTMLFormElement;
 
-	const username = (form.elements.namedItem("username") as HTMLInputElement).value
-	const email = (form.elements.namedItem("email") as HTMLInputElement).value
+	const username = (form.elements.namedItem("username") as HTMLInputElement).value.trim();
+	const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
 	const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 	const password2 = (form.elements.namedItem("password2") as HTMLInputElement).value;
 
 	await initTranslations();
+
 	if (password !== password2) {
-		showErrorMessage(t('passwordMismatch'));
-		return;
+		return showErrorMessage(t('passwordMismatch'));
 	}
 
 	const valid = passwordValidation(password);
-
 	if (!valid.valid) {
-		showErrorMessage(valid.error ?? t('unknownError'));
-		return
+		return showErrorMessage(valid.error ?? t('unknownError'));
 	}
 
 	const res = await createUser(username, email, password);
@@ -66,7 +64,22 @@ export async function registerUser(event: Event) {
 	if (res.success) {
 		showSuccessMessage(t('registerSuccess'));
 		renderWithDelay("login");
-	} else {
-		showErrorMessage(t('registerFailed').replace("{error}", res.error));
+		return;
 	}
+
+	let errorMessage = res.error || t('unknownError');
+
+	if (errorMessage.includes('Invalid email')) {
+		errorMessage = t('invalidEmail');
+	} else if (errorMessage.includes('Invalid username')) {
+		errorMessage = t('invalidUsername');
+	} else if (errorMessage.includes('Password')) {
+		errorMessage = t('invalidPassword');
+	} else if (errorMessage.includes('exists')) {
+		errorMessage = t('userExists');
+	} else if (errorMessage.includes('Missing credentials')) {
+		errorMessage = t('missingCredentials');
+	}
+
+	showErrorMessage(errorMessage);
 }
