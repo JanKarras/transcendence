@@ -11,6 +11,9 @@ export let gameInfo: GameInfo;
 export let gameState = 0;
 export let gameOver = false;
 export let matchfound = false;
+export let renderLoopActive = false;
+export let tournamentFinishedShown = false;
+
 
 export let canvas: HTMLCanvasElement;
 export let ctx : CanvasRenderingContext2D;
@@ -18,6 +21,8 @@ export let ctx : CanvasRenderingContext2D;
 export function resetGameState() {
 	gameOver = false;
 	matchfound = false;
+	renderLoopActive = false;
+	tournamentFinishedShown = false;
 }
 
 export async function remoteTournamentPage(params: URLSearchParams | null) {
@@ -72,6 +77,8 @@ async function connectGame() {
 				matchfound = true;
 				break
 			case 'tournamentFinished':
+				tournamentFinishedShown = true;
+				renderLoopActive = false;
 				showPodium(data.data.results);
 				break
 			case 'firstRoundFinished':
@@ -166,6 +173,7 @@ function startCountdown() {
 					credentials: "include"
 				});
 			enablePaddles();
+			renderLoopActive = true;
 			gameLoop();
 		}
 	}, 1000);
@@ -196,19 +204,28 @@ function enablePaddles() {
 
 
 function gameLoop() {
+	if (!renderLoopActive) return;
 	renderFrame(ctx, gameInfo);
+
 	if (gameOver) {
+		renderLoopActive = false;
 		showWinner();
 		return;
 	}
+
 	requestAnimationFrame(gameLoop);
 }
 
 function showWinner() {
 	const tournamentSocket = getTournamentSocket();
 
+	if (tournamentFinishedShown) {
+		console.log("⚠️ [showWinner] Tournament already finished — skipping.");
+		return;
+	}
+
 	if (!gameInfo) {
-		console.error("gameInfo not set");
+		console.error("❌ [showWinner] gameInfo not set!");
 		return;
 	}
 
@@ -220,23 +237,24 @@ function showWinner() {
 	const socket = getGameSocket();
 	matchfound = false;
 
-	if (!socket) {
-		console.warn("No game socket, sending immediately");
+	if (!socket || socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
+		console.warn("⚠️ [showWinner] Socket not open — sending roundWin immediately.");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
-		showWaitingForNextRound();
+		if (!tournamentFinishedShown) showWaitingForNextRound();
 		return;
 	}
 
-	if (socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
+	socket.onclose = () => {
+		if (tournamentFinishedShown) {
+			console.log("⚠️ [showWinner] Close ignored — tournament already finished.");
+			return;
+		}
+		console.log("🔌 [showWinner] Socket closed — sending roundWin.");
 		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
 		showWaitingForNextRound();
-		return;
-	}
+	};
 
-	socket.addEventListener("close", () => {
-		tournamentSocket?.send(JSON.stringify({ type: "roundWin", data: payload }));
-		showWaitingForNextRound();
-	});
-
+	console.log("🧩 [showWinner] Closing game socket...");
 	socket.close();
 }
+
