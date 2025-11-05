@@ -3,8 +3,6 @@ import { trans } from "./structs.js";
 export const AVAILABLE_LANGUAGES = [
 	{ code: "eng", label: "English", flag: "./assets/img/lang/gb-eng.webp" },
 	{ code: "de", label: "Deutsch", flag: "./assets/img/lang/de.webp" },
-	{ code: "nig", label: "Nigerian", flag: "./assets/img/lang/nig.webp" },
-	{ code: "fr", label: "Français", flag: "./assets/img/lang/fr.webp" },
 	{ code: "ua", label: "Українська", flag: "./assets/img/lang/ua.webp" },
 	{ code: "bel", label: "Беларуская", flag: "./assets/img/lang/bel.webp" },
 ];
