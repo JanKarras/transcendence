@@ -171,6 +171,10 @@
         "tournament": {
             "local": "Lokales Turnier",
             "enterAliases": "Gib einen Alias für bis zu 3 lokale Spieler ein. Du bist Spieler 1.",
+            "pendingInvitation": "Du wurdest zu einem Turnier eingeladen!",
+            "wantToAccept": "Möchtest Du die Einladung annehmen?", 
+            "accept": "Annehmen",
+            "decline": "Ablehnen", 
             "start": "Turnier starten",
             "create": "Tournier erstellen",
             "invite": "Eingeladener Spieler",

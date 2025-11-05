@@ -6,7 +6,7 @@ import { setEventListenersDashboardPage, setEventListenersDashboardPageChat } fr
 import { hideNewRequestBadge, renderDashboard, showNewRequestBadge } from "../../render/pages/renderDashboard.js";
 import { navigateTo } from "../../router/navigateTo.js";
 import { getDashboardSocket } from "../../websocket/wsDashboardServce.js";
-import { initTranslations } from "../global/initTranslations.js";
+import { initTranslations, t } from "../global/initTranslations.js";
 import { logOut } from "../global/logOut.js";
 import { chatTemplate } from "../templates/chatSideBarTemplate/chatSidebarTemplate.js";
 import { headerTemplate } from "../templates/headerTemplate.js";
@@ -85,21 +85,21 @@ async function showTournamentModal(data: { gameId: number }) {
 
 	const title = document.createElement("h2");
 	title.className = "text-xl font-semibold text-center mb-4";
-	title.textContent = "🏆 Du wurdest zu einem Turnier eingeladen!";
+	title.textContent = `🏆 ${t('game.tournament.pendingInvitation')}`;
 
 	const description = document.createElement("p");
 	description.className = "text-center text-gray-300 mb-6";
-	description.textContent = "Möchtest du die Einladung annehmen oder ablehnen?";
+	description.textContent = t('game.tournament.wantToAccept');
 
 	const acceptBtn = document.createElement("button");
 	acceptBtn.className =
 		"bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium mx-2";
-	acceptBtn.textContent = "Annehmen";
+	acceptBtn.textContent = t('accept');
 
 	const declineBtn = document.createElement("button");
 	declineBtn.className =
 		"bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-medium mx-2";
-	declineBtn.textContent = "Ablehnen";
+	declineBtn.textContent = t('decline');
 
 	const btnContainer = document.createElement("div");
 	btnContainer.className = "flex justify-center";
