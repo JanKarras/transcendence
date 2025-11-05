@@ -238,5 +238,15 @@
       "inviteSent": "Запрошення до гри надіслано",
       "retryInvite": "Повторити спробу надсилання запрошення",
       "inviteCancelled": "Запрошення до гри скасовано"
-    }
+    },
+    "friendProfile": {
+        "lastSeen": "Востаннє онлайн",
+        "wonGames": "Виграні ігри",
+        "lostGames": "Програні ігри",
+        "wonTournaments": "Виграні турніри"
+    },
+    "lastSeen": "Востаннє онлайн",
+    "wonGames": "Виграні ігри",
+    "lostGames": "Програні ігри",
+    "wonTournaments": "Виграні турніри"
 }
