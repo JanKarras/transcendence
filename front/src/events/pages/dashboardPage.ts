@@ -63,5 +63,5 @@ async function connectToDashboardSocket() {
 		if (socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify({ type: "ping" }));
 		}
-	}, 30000);
+	}, 3000);
 }

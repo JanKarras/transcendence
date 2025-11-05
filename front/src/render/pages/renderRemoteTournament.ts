@@ -101,7 +101,6 @@ export function renderGameChat(messages: {
 
 	const chatMessages = document.getElementById("gameChatMessages")!;
 	chatMessages.innerHTML = "";
-
 	messages.forEach((msg, i) => {
 		let text = "";
 
@@ -117,6 +116,8 @@ export function renderGameChat(messages: {
 			} else {
 				text = msg.text || "";
 			}
+		} else {
+			text = msg.text || "";
 		}
 
 		const div = document.createElement("div");
