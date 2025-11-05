@@ -30,6 +30,8 @@ export async function tournamentPage(params: URLSearchParams | null) {
 			data: { gameId: Number(gameId) }
 		}));
 		const btn = document.getElementById("startTournamentBtn");
+		const tournamentContent = document.getElementById("tournamentContent");
+		tournamentContent?.classList.add("pointer-events-none");
 		btn?.classList.add("hidden");
 	}
 

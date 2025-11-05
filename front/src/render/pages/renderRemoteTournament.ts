@@ -101,7 +101,6 @@ export function renderGameChat(messages: {
 
 	const chatMessages = document.getElementById("gameChatMessages")!;
 	chatMessages.innerHTML = "";
-
 	messages.forEach((msg, i) => {
 		let text = "";
 
@@ -117,6 +116,8 @@ export function renderGameChat(messages: {
 			} else {
 				text = msg.text || "";
 			}
+		} else {
+			text = msg.text || "";
 		}
 
 		const div = document.createElement("div");
@@ -207,7 +208,7 @@ export function showPodium(results: { player: { name: string }, place: number }[
 	ctx.font = "22px Arial";
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
-	ctx.fillText(`🏁 ${t('game.tournament.leaveGame')}`, btnX + btnWidth / 2, btnY + btnHeight / 2);
+	ctx.fillText(`🏁 ${t('game.tournament.backToDashboard')}`, btnX + btnWidth / 2, btnY + btnHeight / 2);
 
 	canvas.addEventListener("click", handleCanvasClick);
 
