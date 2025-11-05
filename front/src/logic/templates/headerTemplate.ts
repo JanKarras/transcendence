@@ -1,6 +1,7 @@
 import { getUser } from "../../api/getUser.js";
 import { initTranslations } from "../global/initTranslations.js";
-import { renderHeader } from "../../render/templates/renderHeaderTemplate.js";
+import { pagesWithHiddenHeader, renderHeader } from "../../render/templates/renderHeaderTemplate.js";
+import { UserResponse } from "../../constants/structs.js";
 
 export function getPos() {
 	const windowHash = window.location.hash.replace(/^#/, '');
@@ -10,8 +11,10 @@ export function getPos() {
 
 export async function headerTemplate() {
 	const pos = getPos();
-
-	const userData = await getUser();
+	let userData: UserResponse | false = false;
+	if (!pagesWithHiddenHeader.includes(pos)) {
+		userData = await getUser();
+	}
 
 	await initTranslations();
 

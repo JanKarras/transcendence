@@ -9,7 +9,7 @@ import { buildMenuItems, getMenuEntries, showMenu } from "../../logic/templates/
 import { hideNewRequestBadge, showNewRequestBadge } from "../pages/renderDashboard.js";
 import { getUser } from "../../api/getUser.js";
 
-const pagesWithHiddenHeader = [
+export const pagesWithHiddenHeader = [
 	"login",
 	"register",
 	"email_validation",
@@ -71,7 +71,7 @@ export async function renderHeader(pos: string, userData: UserResponse | false) 
 		profileContainer.addEventListener("click", async (e) => {
 			e.stopPropagation();
 			const pos = getPos();
-			const items = buildMenuItems(getMenuEntries(pos));
+			const items = buildMenuItems(getMenuEntries(pos), pos);
 			showMenu(items);
 
 			const userData = await getUser();

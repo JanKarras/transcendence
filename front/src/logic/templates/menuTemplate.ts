@@ -46,22 +46,30 @@ export function getMenuEntries(currentPos: string): MenuItem[] {
 	return entries;
 }
 
-export function buildMenuItems(baseItems: MenuItem[]): MenuItem[] {
+export function buildMenuItems(baseItems: MenuItem[], pos: string): MenuItem[] {
+	const menuItems = [...baseItems];
 
-	const langEntry: MenuItem = {
-		id: "menu-language",
-		label: `${t("languageLabel")} ${getLanguage().toUpperCase()}`,
-		onClick: () => {},
-	};
+	const langAllowedPositions = ['dashboard', 'profile', 'friends'];
+
+	if (langAllowedPositions.includes(pos)) {
+		const langEntry: MenuItem = {
+			id: "menu-language",
+			label: `${t("languageLabel")} ${getLanguage().toUpperCase()}`,
+			onClick: () => {},
+		};
+		menuItems.push(langEntry);
+	}
 
 	const logoutEntry: MenuItem = {
 		id: "menu-logout",
 		label: `🚪 ${t("logout")}`,
 		onClick: () => logOut(t('logoutMessage')),
 	};
+	menuItems.push(logoutEntry);
 
-	return [...baseItems, langEntry, logoutEntry];
+	return menuItems;
 }
+
 
 export function getOrCreateMenuContainer(): HTMLElement {
 	let container = document.getElementById(MENU_CONTAINER_ID);
