@@ -118,6 +118,14 @@ exports.createUser = async (request, reply) => {
 		return reply.code(400).send({ error: result.errors.join(' ') });
 	}
 
+	const existingUserEmail = await userRepository.getUserByEmail(result.email);
+	const existingUserUsername = await userRepository.getUserByUsername(result.username);
+	if (existingUserEmail) {
+		return reply.code(409).send({ error: 'Email already in use' });
+	} else if (existingUserUsername) {
+		return reply.code(409).send({ error: 'Username already in use' });
+	}
+
 	try {
 		const hashedPw = await passwordUtil.hashPassword(result.password);
 		const info = await userRepository.addUser(result.username, result.email, hashedPw);
@@ -190,7 +198,6 @@ exports.updateUser = async function (req, reply) {
 						firstName = null;
 						break;
 					}
-					console.log("first_name: ", val);
 					const sanitized = validatorUtil.sanitizeTextInput(val, {
 						maxLength: validatorUtil.MAX_NAME_LEN,
 						whitelistRegex: /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-.']+$/,

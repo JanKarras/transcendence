@@ -54,4 +54,5 @@ export async function tryToLogIn(event: Event) {
 		console.error('Login failed:', res.error);
 		showErrorMessage(t('loginFailed').replace("{error}", res.error));
 	}
+	console.log("Tried to log in with", username, password);
 }
