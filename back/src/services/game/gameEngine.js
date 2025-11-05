@@ -81,7 +81,7 @@ function handleCollisions(state) {
 		by < paddleLeft.position.y + paddleLeft.size.y
 	) {
 		paddleBounce(ball, paddleLeft);
-		increasePaddleSpeed(paddleLeft, paddleRight);
+		// increasePaddleSpeed(paddleLeft, paddleRight);
 	}
 
 	if (
@@ -90,7 +90,7 @@ function handleCollisions(state) {
 		by < paddleRight.position.y + paddleRight.size.y
 	) {
 		paddleBounce(ball, paddleRight);
-		increasePaddleSpeed(paddleLeft, paddleRight);
+		// increasePaddleSpeed(paddleLeft, paddleRight);
 	}
 }
 
@@ -110,11 +110,11 @@ function handleScoring(state) {
 	if (bx < 0) {
 		state.playerRight.score++;
 		resetBall(ball);
-		restorePaddleSpeed(paddleLeft, paddleRight);
+		// restorePaddleSpeed(paddleLeft, paddleRight);
 	} else if (bx > CANVAS_WIDTH) {
 		state.playerLeft.score++;
 		resetBall(ball);
-		restorePaddleSpeed(paddleLeft, paddleRight);
+		// restorePaddleSpeed(paddleLeft, paddleRight);
 	}
 	if (state.playerLeft.score >= 3 || state.playerRight.score >= 3)
 		state.end = true;
