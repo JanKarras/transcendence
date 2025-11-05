@@ -1,5 +1,6 @@
 const db = require("../db");
 const { isInvalid } = require("../services/isValidService");
+const { safeDBExecute } = require("../services/safeDBExecute");
 
 function createTournamentHistory(tournament) {
 	if (isInvalid(tournament)) {
