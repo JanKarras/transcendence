@@ -1,5 +1,5 @@
-export async function createUser(username: string, email: string, password: string) {
-	const body = JSON.stringify({ username, email, password })
+export async function createUser(username: string, alias: string, email: string, password: string) {
+	const body = JSON.stringify({ username, alias, email, password })
 	try {
 		const response = await fetch('/api/set/createUser', {
 			method: 'POST',

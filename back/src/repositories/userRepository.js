@@ -9,7 +9,7 @@ function getUserById(userId) {
 	}
 	return safeDBExecute(() => {
 		return db.prepare(`
-			SELECT id, username, first_name, last_name, age, path, last_seen, twofa_active, twofa_method
+			SELECT id, username, alias, first_name, last_name, age, path, last_seen, twofa_active, twofa_method
 			FROM users
 			WHERE id = ?
 		`).get(userId);
@@ -141,15 +141,15 @@ function getAllUsers() {
 	}, {}, []);
 }
 
-function addUser(cleanUsername, email, hashedPw) {
-	if (isInvalid(cleanUsername, email, hashedPw)) {
+function addUser(cleanUsername, alias, email, hashedPw) {
+	if (isInvalid(cleanUsername, alias, email, hashedPw)) {
 		console.error("❌ addUser: invalid params", { cleanUsername, email });
 		return null;
 	}
 	return safeDBExecute(() => {
-		return db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)')
-			.run(cleanUsername, email, hashedPw);
-	}, { cleanUsername, email }, null);
+		return db.prepare('INSERT INTO users (username, alias, email, password) VALUES (?, ?, ?, ?)')
+			.run(cleanUsername, alias, email, hashedPw);
+	}, { cleanUsername, alias, email }, null);
 }
 
 function getUserByEmail(email) {
@@ -170,6 +170,16 @@ function getUserByUsername(username) {
 	return safeDBExecute(() => {
 		return db.prepare('SELECT * FROM users WHERE username = ?').get(username);
 	}, { username }, null);
+}
+
+function getUserByAlias(alias) {
+    if (isInvalid(alias)) {
+        console.error("❌ getUserByAlias: invalid alias", { alias });
+        return null;
+    }
+    return safeDBExecute(() => {
+        return db.prepare('SELECT * FROM users WHERE alias = ?').get(alias);
+    }, { alias }, null);
 }
 
 function getUserIdByUsername(username) {
@@ -305,6 +315,7 @@ module.exports = {
 	addUser,
 	getUserByEmail,
 	getUserByUsername,
+    getUserByAlias,
 	updateUserAfterValidation,
 	updateUserAge,
 	updateUserImageName,

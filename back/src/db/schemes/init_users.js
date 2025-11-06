@@ -5,6 +5,7 @@ db.prepare(`
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		email TEXT NOT NULL UNIQUE,
 		username TEXT NOT NULL UNIQUE,
+		alias TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
 		validated BOOLEAN DEFAULT 0,
 		rights1 BOOLEAN DEFAULT 0,

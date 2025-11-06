@@ -4,21 +4,21 @@ const existingUsers = db.prepare("SELECT COUNT(*) as count FROM users").get();
 
 if (existingUsers.count === 0) {
 	const defaultUsers = [
-		{ username: "jkarras", email: "karras.jan@web.de", path: "jkarras.png" },
-		{ username: "rmatthes", email: "xxtrickz@web.de", path: "rmatthes.png" },
-		{ username: "atoepper", email: "atoepper@student.42wolfsburg.de", path: "atoepper.png" },
+		{ username: "jkarras", alias: "jkarras", email: "karras.jan@web.de", path: "jkarras.png" },
+		{ username: "rmatthes", alias: "rmatthes", email: "xxtrickz@web.de", path: "rmatthes.png" },
+		{ username: "atoepper", alias: "atoepper", email: "atoepper@student.42wolfsburg.de", path: "atoepper.png" },
 	];
 
 	const extraUsers = [];
 	for (let i = 1; i <= 10; i++) {
-		extraUsers.push({ username: `user${i}`, email: `user${i}@example.com`, path: "std_user_img.png" });
+		extraUsers.push({ username: `user${i}`, alias: `user${i}`, email: `user${i}@example.com`, path: "std_user_img.png" });
 	}
 
 	const hashedPassword = bcrypt.hashSync("password123", 10);
 
 	const insertUser = db.prepare(`
-		INSERT INTO users (username, email, password, validated, path)
-		VALUES (?, ?, ?, 1, ?)
+		INSERT INTO users (username, alias, email, password, validated, path)
+		VALUES (?, ?, ?, ?, 1, ?)
 	`);
 
 	const insertStats = db.prepare(`
@@ -34,7 +34,7 @@ if (existingUsers.count === 0) {
 	const userIds = [];
 
 	for (const user of defaultUsers) {
-		const result = insertUser.run(user.username, user.email, hashedPassword, user.path);
+		const result = insertUser.run(user.username, user.alias, user.email, hashedPassword, user.path);
 		userIds.push(result.lastInsertRowid);
 		insertStats.run(result.lastInsertRowid);
 	}
@@ -45,7 +45,7 @@ if (existingUsers.count === 0) {
 	insertFriend.run(userIds[2], userIds[0]);
 
 	for (const user of extraUsers) {
-		const result = insertUser.run(user.username, user.email, hashedPassword, user.path);
+		const result = insertUser.run(user.username, user.alias, user.email, hashedPassword, user.path);
 		insertStats.run(result.lastInsertRowid);
 	}
 

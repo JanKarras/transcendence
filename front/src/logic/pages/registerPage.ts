@@ -44,6 +44,7 @@ export async function registerUser(event: Event) {
 	const form = event.target as HTMLFormElement;
 
 	const username = (form.elements.namedItem("username") as HTMLInputElement).value.trim();
+	const alias = (form.elements.namedItem("alias") as HTMLInputElement).value.trim();
 	const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
 	const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 	const password2 = (form.elements.namedItem("password2") as HTMLInputElement).value;
@@ -59,7 +60,7 @@ export async function registerUser(event: Event) {
 		return showErrorMessage(valid.error ?? t('unknownError'));
 	}
 
-	const res = await createUser(username, email, password);
+	const res = await createUser(username, alias, email, password);
 
 	if (res.success) {
 		showSuccessMessage(t('registerSuccess'));
