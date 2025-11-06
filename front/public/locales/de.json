@@ -294,7 +294,8 @@
         "inviteToGame": "Zum Spiel einladen",
         "inviteSent": "Die Einladung zum Spiel wurde gesendet",
         "retryInvite": "Senden der Einladung erneut versuchen",
-        "inviteCancelled": "Die Einladung zum Spiel wurde abgebrochen"
+        "inviteCancelled": "Die Einladung zum Spiel wurde abgebrochen",
+        "nowFriends": "Ihr seid jetzt Freunde!"
     },
     "tfaApp": {
         "appTitle": "Google Authenticator",
