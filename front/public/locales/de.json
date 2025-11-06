@@ -250,7 +250,7 @@
         "confirmRemoveTitle": "Möchtest Du den Freund wirklich entfernen?"
     },
     "tournament": {
-        "waitForNextRound": "Bitte warte, bis die nächste Runde startet...",
+        "waitForNextRound": "Bitte warte auf das andere Spiel...",
         "notExist": "Turnier existiert nicht mehr.",
         "end": "Turnier wurde beendet.",
         "connectionFail": "Verbindung zum Turnierserver fehlgeschlagen.",
