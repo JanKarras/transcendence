@@ -27,6 +27,7 @@ export async function renderProfile(params: URLSearchParams | null) {
 				</label>
 
 				${renderReadonlyField("username", user.username)}
+				${renderReadonlyField("alias", user.alias)}
 				${renderReadonlyField("firstName", user.first_name || t("unknown"))}
 				${renderReadonlyField("lastName", user.last_name || t("unknown"))}
 				${renderReadonlyField("age", user.age !== null ? user.age : t("profileAgeUnknown"))}
@@ -52,6 +53,7 @@ export async function renderProfile(params: URLSearchParams | null) {
 				<input type="file" name="profileImage" id="fileInput" accept="image/*" class="hidden">
 
 				${renderEditableField("username", user.username)}
+				${renderEditableField("alias", user.alias)}
 				${renderEditableField("firstName", user.first_name || "")}
 				${renderEditableField("lastName", user.last_name || "")}
 				${renderEditableField("age", user.age || "", "number")}
@@ -76,6 +78,7 @@ export async function renderProfile(params: URLSearchParams | null) {
 function renderEditableField(field: string, value: string | number, type = "text") {
 	const backendFieldMap: Record<string, string> = {
 		username: "username",
+        alias: "alias",
 		firstName: "first_name",
 		lastName: "last_name",
 		age: "age"

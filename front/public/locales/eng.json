@@ -27,6 +27,7 @@
   "profileCancelBtn": "Cancel",
   "profileLabel": {
     "username": "Username",
+    "alias": "Alias",
     "firstName": "First Name",
     "lastName": "Last Name",
     "age": "Age",
@@ -37,6 +38,7 @@
   "inactive": "Inactive",
   "registerTitle": "Register",
   "registerUsername": "Username",
+  "registerAlias": "Alias",
   "registerEmail": "Email",
   "registerPassword": "Password",
   "registerPasswordConfirm": "Confirm Password",

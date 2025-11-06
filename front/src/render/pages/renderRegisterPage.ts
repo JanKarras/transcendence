@@ -16,6 +16,11 @@ export async function renderRegisterPage(params: URLSearchParams | null) {
 					<input type="text" name="username" required
 						class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 				</label>
+                <label class="block">
+					<span class="block mb-1 font-medium">${t('registerAlias')}</span>
+					<input type="text" name="alias" required
+						class="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+				</label>
 				<label class="block">
 					<span class="block mb-1 font-medium">${t('registerEmail')}</span>
 					<input type="email" name="email" required

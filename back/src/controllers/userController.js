@@ -111,8 +111,8 @@ exports.getBlocked = async (req, reply) => {
 };
 
 exports.createUser = async (request, reply) => {
-	const { username, email, password } = request.body;
-	const result = validatorUtil.validateUserInput(username, email, password);
+	const { username, alias, email, password } = request.body;
+	const result = validatorUtil.validateUserInput(username, alias, email, password);
 
 	if (!result.valid) {
 		return reply.code(400).send({ error: result.errors.join(' ') });
@@ -120,15 +120,18 @@ exports.createUser = async (request, reply) => {
 
 	const existingUserEmail = await userRepository.getUserByEmail(result.email);
 	const existingUserUsername = await userRepository.getUserByUsername(result.username);
+	const existingUserAlias = await userRepository.getUserByAlias(result.alias);
 	if (existingUserEmail) {
 		return reply.code(409).send({ error: 'Email already in use' });
 	} else if (existingUserUsername) {
 		return reply.code(409).send({ error: 'Username already in use' });
-	}
+	} else if (existingUserAlias) {
+        return reply.code(409).send({ error: 'Alias already in use' });
+    }
 
 	try {
 		const hashedPw = await passwordUtil.hashPassword(result.password);
-		const info = await userRepository.addUser(result.username, result.email, hashedPw);
+		const info = await userRepository.addUser(result.username, result.alias, result.email, hashedPw);
 		const userId = info.lastInsertRowid;
 
 		await statsRepository.addStats(userId, 0, 0, 0);
@@ -137,7 +140,7 @@ exports.createUser = async (request, reply) => {
 		return reply.code(201).send({ message: 'User created successfully' });
 	} catch (err) {
 		if (err.code === 'SQLITE_CONSTRAINT' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-			return reply.code(409).send({ error: 'Username or email already exists' });
+			return reply.code(409).send({ error: 'Username, alias or email already exists' });
 		}
 		return reply.code(500).send({ error: 'Database error' });
 	}

@@ -44,11 +44,12 @@ function validateFriendId(friendId) {
 	return Number.isInteger(friendId) && friendId > 0;
 }
 
-function validateUserInput(username, email, password) {
+function validateUserInput(username, alias, email, password) {
 	const errors = [];
 
-	if (!username || !email || !password) {
-		errors.push('Missing credentials: username, email and password are required.');
+    console.log(username, alias, email, password);
+	if (!username || !alias || !email || !password) {
+		errors.push('Missing credentials: username, alias, email and password are required.');
 		return { valid: false, errors };
 	}
 
@@ -69,6 +70,17 @@ function validateUserInput(username, email, password) {
 		errors.push('Username must be at least 3 characters long.');
 	}
 
+    const sanitizedAlias = sanitizeTextInput(alias, {
+        maxLength: MAX_NAME_LEN,
+        whitelistRegex: /^[A-Za-z0-9_.-]+$/,
+    });
+
+    if (!sanitizedAlias) {
+        errors.push('Invalid alias. Only letters, numbers, and ._- are allowed.');
+    } else if (sanitizedAlias.length < 3) {
+        errors.push('Alias must be at least 3 characters long.');
+    }
+
 	if (password.length < 8) {
 		errors.push('Password must be at least 8 characters long.');
 	}
@@ -84,6 +96,7 @@ function validateUserInput(username, email, password) {
 		valid: true,
 		errors: [],
 		username: sanitizedUsername,
+        alias: sanitizedAlias,
 		email,
 		password,
 	};
