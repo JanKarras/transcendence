@@ -242,7 +242,7 @@
     "confirmRemoveTitle": "Do you really want to remove your friend?"
   },
   "tournament": {
-    "waitForNextRound": "Please wait for the second round to start...",
+    "waitForNextRound": "Please wait for the other game...",
     "notExist": "Tournament does not exist anymore.",
     "end": "Tournament was ended.",
     "connectionFail": "Failed to connect to tournament server.",
