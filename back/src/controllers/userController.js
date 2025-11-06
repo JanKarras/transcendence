@@ -160,6 +160,7 @@ exports.updateUser = async function (req, reply) {
 	const parts = req.parts();
 	let firstName = null;
 	let lastName = null;
+	let alias = null;
 	let age = null;
 	let imageName = null;
 	let twofaActive = null;
@@ -196,6 +197,21 @@ exports.updateUser = async function (req, reply) {
 			const val = typeof part.value === "string" ? part.value.trim() : "";
 
 			switch (part.fieldname) {
+                case "alias": {
+                    if (val === "") {
+                        return reply.code(400).send({ success: false, error: "Invalid alias" });
+                    }
+                    const sanitized = validatorUtil.sanitizeTextInput(val, {
+                        maxLength: validatorUtil.MAX_NAME_LEN,
+                        whitelistRegex: /^[A-Za-z0-9_.-]{3,}$/,
+                    });
+                    if (sanitized === null) {
+                        return reply.code(400).send({ success: false, error: "Invalid alias" });
+                    }
+                    alias = sanitized;
+                    break;
+                }
+
 				case "first_name": {
 					if (val === "") {
 						firstName = null;
@@ -263,7 +279,7 @@ exports.updateUser = async function (req, reply) {
 	}
 
 	try {
-		await userService.updateUser(firstName, lastName, age, imageName, userId, twofaActive, twofa_method);
+		await userService.updateUser(firstName, lastName, alias, age, imageName, userId, twofaActive, twofa_method);
 		return reply.send({ success: true });
 	} catch (err) {
 		logger.error("updateUser failed:", err);

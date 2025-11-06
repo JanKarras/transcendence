@@ -10,7 +10,7 @@ function getUserByEmailOrUsername(username) {
 	return user;
 }
 
-function updateUser(firstName, lastName, age, imageName, userId, twofa_active, twofa_method) {
+function updateUser(firstName, lastName, alias, age, imageName, userId, twofa_active, twofa_method) {
 	if (firstName) {
 		userRepository.updateUserFirstName(firstName, userId);
 	}
@@ -20,6 +20,10 @@ function updateUser(firstName, lastName, age, imageName, userId, twofa_active, t
 	if (age !== null) {
 		userRepository.updateUserAge(age, userId);
 	}
+    const prevAlias = userRepository.getUserById(userId).alias;
+    if (alias !== prevAlias) {
+        userRepository.updateUserAlias(alias, userId);
+    }
 	if (imageName) {
 		const oldUser = userRepository.getUserById(userId);
 		if (oldUser && oldUser.path && oldUser.path !== "std_user_img.png") {

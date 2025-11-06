@@ -232,6 +232,16 @@ function updateUserAge(age, userId) {
 	}, { age, userId });
 }
 
+function updateUserAlias(alias, userId) {
+    if (isInvalid(alias, userId)) {
+        console.error("❌ updateUserAlias: invalid params", { alias, userId });
+        return;
+    }
+    safeDBExecute(() => {
+        db.prepare('UPDATE users SET alias = ? WHERE id = ?').run(alias, userId);
+    }, { alias, userId });
+}
+
 function updateUserImageName(imageName, userId) {
 	if (isInvalid(imageName, userId)) {
 		console.error("❌ updateUserImageName: invalid params", { imageName, userId });
@@ -321,6 +331,7 @@ module.exports = {
 	updateUserImageName,
 	updateUserFirstName,
 	updateUserLastName,
+    updateUserAlias,
 	getUserIdByUsername,
 	updateUserTwofaActive,
 	updateUserTwoFaMethod,
