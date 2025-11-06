@@ -1,17 +1,27 @@
 import { friendElById, friends } from "../chatSidebarTemplateStore.js";
 
 export function handleFriendStatus(msg: any) {
+	console.log("handleFriendStatus called")
 	const key = String(msg.userId);
+	console.log("Key:" , key, "friendElById", friendElById.get(key))
 	const li = friendElById.get(key);
 	const friend = friends.find(f => f.id === msg.userId);
-
-	if (!li) return;
+	if (!li) {
+		console.log("li not found");
+		return;
+	}
 
 	const avatarWrapper = li.querySelector<HTMLDivElement>('.relative');
-	if (!avatarWrapper) return;
-
+	if (!avatarWrapper) {
+		console.log("Can't find avatarWrapper");
+		return
+	}
 	const statusDot = avatarWrapper.querySelector<HTMLSpanElement>('span');
-	if (!statusDot) return;
+
+	if (!statusDot){
+		console.log("Can't find statusDot");
+		return;
+	}
 
 	const online = Number(msg.status);
 

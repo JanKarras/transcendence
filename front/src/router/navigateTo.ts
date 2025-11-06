@@ -29,15 +29,16 @@ export async function navigateTo(view: View, params: URLSearchParams | null = nu
 			friendSocket.close(1000, "Navigated away from friends");
 		}
 	}
+	if (view !== "dashboard") {
+		const dashboardSocket = getDashboardSocket();
+		if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
+			dashboardSocket.close(1000, "Navigated away from Dashboard");
+		}
 
-	const dashboardSocket = getDashboardSocket();
-	if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
-		dashboardSocket.close(1000, "Navigated away from Dashboard");
-	}
-
-	const chatSocket = getChatSocket();
-	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-		chatSocket.close(1000, "Navigated away from chat");
+		const chatSocket = getChatSocket();
+		if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+			chatSocket.close(1000, "Navigated away from chat");
+		}
 	}
 
 

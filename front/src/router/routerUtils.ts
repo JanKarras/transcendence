@@ -31,16 +31,17 @@ export function renderView(view: View, params: URLSearchParams | null = null) {
 			friendSocket.close(1000, "Navigated away from friends");
 		}
 	}
-
-	const dashboardSocket = getDashboardSocket();
-	if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
-		dashboardSocket.close(1000, "Navigated away from Dashboard");
+	if (view != "dashboard") {
+		const dashboardSocket = getDashboardSocket();
+		if (dashboardSocket && dashboardSocket.readyState === WebSocket.OPEN) {
+			dashboardSocket.close(1000, "Navigated away from Dashboard");
+		}
+		const chatSocket = getChatSocket();
+		if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+			chatSocket.close(1000, "Navigated away from chat");
+		}
 	}
 
-	const chatSocket = getChatSocket();
-	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-		chatSocket.close(1000, "Navigated away from chat");
-	}
 	if (renderer) {
 		renderer(params);
 		setCurrentView(view);
