@@ -26,7 +26,8 @@ export interface UserInfo {
 	path: string;
 	last_seen: string;
 	twofa_active: boolean;
-	twofa_method : string
+	twofa_method : string;
+	alias : string
 }
 
 export interface UserResponse {

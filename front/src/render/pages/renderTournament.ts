@@ -63,6 +63,7 @@ export async function renderRemoteTournament(
 		path: string | null;
 		slot: number;
 		status: "joined" | "invited" | "left" | null;
+		alias : string
 	}[],
 	messages: { text: string; type: "system" | "user" }[],
 	ready?: boolean
@@ -85,7 +86,7 @@ export async function renderRemoteTournament(
 
 			return `
 				<div class="bg-gray-800 rounded-lg p-4 flex flex-col items-center gap-2 text-white">
-					<span class="font-bold text-xl">${p.username}</span>
+					<span class="font-bold text-xl">${p.alias}</span>
 					<img src="/api/get/getImage?filename=${encodeURIComponent(p.path || "std_user_img.png")}"
 						 class="w-24 h-24 rounded-full object-cover">
 					<span class="text-sm ${statusColor}">${statusText}</span>

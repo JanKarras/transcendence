@@ -13,7 +13,7 @@ function declineTournamentInvite(userId, ws, data) {
 		return;
 	}
 
-	addSystemMessage(tournament, "tournament.inviteDeclined", { username: player.username });
+	addSystemMessage(tournament, "tournament.inviteDeclined", { username: player.alias });
 
 	player.id = null;
 	player.username = null;

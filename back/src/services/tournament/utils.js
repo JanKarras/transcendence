@@ -71,7 +71,8 @@ function getTournamentForFrontend(tournament) {
 			username: p.username,
 			path: p.path,
 			slot: p.slot,
-			status: p.status
+			status: p.status,
+			alias : p.alias
 		})),
 		messages: tournament.messages,
 		ready: tournament.ready || false

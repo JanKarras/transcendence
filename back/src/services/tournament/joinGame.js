@@ -17,7 +17,7 @@ function joinTournament(gameId, userId, ws) {
 		if (player.id === userId && player.status === "invited") {
 			player.status = "joined";
 			player.ws = ws;
-			tournamentUtils.addSystemMessage(tournament, "tournament.playerJoined", { username: player.username });
+			tournamentUtils.addSystemMessage(tournament, "tournament.playerJoined", { username: player.alias });
 
 			tournamentUtils.checkTournamentReady(tournament);
 			return tournament;

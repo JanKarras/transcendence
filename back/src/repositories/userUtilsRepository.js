@@ -10,7 +10,7 @@ function getUserById(userId) {
 
 	return safeDBExecute(() => {
 		return db.prepare(`
-			SELECT username, path
+			SELECT username, path, alias
 			FROM users
 			WHERE id = ?
 		`).get(userId);

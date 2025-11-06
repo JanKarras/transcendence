@@ -53,8 +53,8 @@ function updateMatch(tournament, match, winner, loser) {
 	match.loser = loser;
 	try {
 		tournamentUtils.addSystemMessage(tournament, "tournament.roundFinished", {
-			winner: winner.name,
-			loser: loser.name
+			winner: winner.alias,
+			loser: loser.alias
 		});
 	} catch {}
 }
@@ -99,7 +99,7 @@ async function createRoundMatches(tournament, players, isConsolation) {
 		tournamentUtils.addSystemMessage(
 			tournament,
 			isConsolation ? "tournament.consolationMatch" : "tournament.nextMatch",
-			{ player1: player1.name, player2: player2.name }
+			{ player1: player1.alias, player2: player2.alias }
 		);
 	} catch {}
 
@@ -136,7 +136,7 @@ async function finishTournament(tournament) {
 			tournamentUtils.addSystemMessage(
 				tournament,
 				"tournament.placeResult",
-				{ place: (index + 1).toString(), username: player.name }
+				{ place: (index + 1).toString(), username: player.alias }
 			);
 		});
 

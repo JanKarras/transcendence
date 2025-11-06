@@ -58,7 +58,7 @@ function playerLeftTournament(userId) {
 		tournamentServiceUtils.addSystemMessage(
 			tournament,
 			"tournament.playerLeft",
-			{ username: player.username }
+			{ username: player.alias }
 		);
 		tournamentServiceUtils.checkTournamentReady(tournament);
 		tournamentServiceUtils.broadcastTournamentUpdate(tournament);

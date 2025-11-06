@@ -28,20 +28,22 @@ async function inviteToTournamentFun(hostId, guestId, slot, ws) {
 	player.username = user.username;
 	player.path = user.path;
 	player.status = "invited";
+	player.alias = user.alias;
 	const invited = await tournamentInvite(player, hostId);
 	if (!invited) {
-		tournamentUtils.addSystemMessage(tournament, "tournament.userBusy", { username: user.username });
+		tournamentUtils.addSystemMessage(tournament, "tournament.userBusy", { username: user.alias });
 
 
 		player.id = null;
 		player.username = null;
 		player.path = null;
 		player.status = "empty";
+		player.alias = null
 
 		return tournament;
 	}
 
-	tournamentUtils.addSystemMessage(tournament, "tournament.playerInvited", { username: user.username });
+	tournamentUtils.addSystemMessage(tournament, "tournament.playerInvited", { username: user.alias });
 	requests.addTournamentRequest(hostId, guestId);
 
 	return tournament;

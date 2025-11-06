@@ -313,6 +313,28 @@ function updateLastSeen(userId) {
 	}, { userId });
 }
 
+function getAlias(username) {
+	if (isInvalid(username)) {
+		console.error("❌ getAlias: invalid username", { username });
+		return null;
+	}
+
+	try {
+		return safeDBExecute(() => {
+			const row = db.prepare(`SELECT alias FROM users WHERE username = ?`).get(username);
+			if (!row) {
+				console.warn(`⚠️ getAlias: no alias found for username='${username}'`);
+				return null;
+			}
+			return row.alias || null;
+		}, { username });
+	} catch (err) {
+		console.error("❌ getAlias: database error", err);
+		return null;
+	}
+}
+
+
 module.exports = {
 	getUserById,
 	getFriendsInfoByUserId,
@@ -338,6 +360,7 @@ module.exports = {
 	saveTwoFaSecret,
 	getTwoFaSecret,
 	logoutUser,
-	updateLastSeen
+	updateLastSeen,
+	getAlias
 }
 

@@ -12,10 +12,10 @@ function createRemote(hostId, ws) {
 	const user = userUtils.getUser(hostId);
 	const tournament = {
 		players: [
-			{ id: hostId, username: user.username, path: user.path, slot: 1, status: "joined", ws: ws },
-			{ id: null, username: null, path: null, slot: 2, status: null, ws: null },
-			{ id: null, username: null, path: null, slot: 3, status: null, ws: null },
-			{ id: null, username: null, path: null, slot: 4, status: null, ws: null },
+			{ id: hostId, username: user.username, path: user.path, slot: 1, status: "joined", ws: ws, alias : user.alias },
+			{ id: null, username: null, path: null, slot: 2, status: null, ws: null, alias : null },
+			{ id: null, username: null, path: null, slot: 3, status: null, ws: null, alias : null },
+			{ id: null, username: null, path: null, slot: 4, status: null, ws: null, alias : null },
 		],
 		messages: [],
 		matches: [],

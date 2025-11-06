@@ -6,6 +6,7 @@ const authController = require('../../controllers/authController');
 const userController = require('../../controllers/userController');
 const gameController = require('../../controllers/gameController');
 const statisticsController = require('../../controllers/statisticsController');
+const aliasController = require("../../controllers/aliasController")
 const authMiddleware = require('../../middleware/auth');
 
 module.exports = async function (fastify, opts) {
@@ -25,6 +26,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/2fa/setup',{ preHandler: authMiddleware }, userController.twoFaSetUp);
 	fastify.get('/getStats', { preHandler: authMiddleware }, statisticsController.getStats);
 	fastify.get('/getFriendsData', { preHandler: authMiddleware }, userController.getFriendsData);
+	fastify.get('/alias', { preHandler: authMiddleware }, aliasController.getAlias);
 };
 
 

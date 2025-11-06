@@ -69,12 +69,14 @@ async function initRemoteMatch(userData1, userData2) {
 		userId : userData1.userId,
 		name: user1.username || "Player1",
 		path: user1.path || "std_user_img.png",
+		alias : user1.alias,
 		score: 0,
 	};
 	const playerRight = {
 		userId : userData2.userId,
 		name: user2.username || "Player2",
 		path: user2.path || "std_user_img.png",
+		alias : user2.alias,
 		score: 0,
 	};
 	const gameInfo = await initGameInfo(playerLeft, playerRight);

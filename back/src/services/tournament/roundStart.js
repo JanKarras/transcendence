@@ -17,8 +17,8 @@ async function roundStart(userId, ws, data) {
 			"tournament.roundStarting",
 			{
 				round: roundKey,
-				player1: playerLeft?.name || "Player1",
-				player2: playerRight?.name || "Player2"
+				player1: playerLeft?.alias || "Player1",
+				player2: playerRight?.alias || "Player2"
 			}
 		);
 

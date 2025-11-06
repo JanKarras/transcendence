@@ -1,3 +1,4 @@
+import { getAlias } from "../../api/getAlias.js";
 import { bodyContainer } from "../../constants/constants.js";
 import { t } from "../../logic/global/initTranslations.js";
 import { gameInfo } from "../../logic/pages/remoteTournamentPage.js";
@@ -145,7 +146,7 @@ export function renderGameChat(messages: {
 }
 
 
-export function showPodium(results: { player: { name: string }, place: number }[]) {
+export function showPodium(results: { player: { name: string, alias : string }, place: number }[]) {
 	const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const ctx = canvas.getContext('2d')!;
 
@@ -188,7 +189,7 @@ export function showPodium(results: { player: { name: string }, place: number }[
 		ctx.fillStyle = "#fff";
 		ctx.font = "20px Arial";
 		ctx.textAlign = "center";
-		ctx.fillText(res.player.name, pos.x + boxWidth / 2, y - 20);
+		ctx.fillText(res.player.alias, pos.x + boxWidth / 2, y - 20);
 
 		ctx.font = "28px Arial";
 		const emoji = pos.place === 1 ? "🥇" : pos.place === 2 ? "🥈" : "🥉";
@@ -277,9 +278,13 @@ export function showCountdownForNextRound() {
 	}, 1000);
 }
 
-export function displayNames() {
-	(document.getElementById("playerLeftName") as HTMLElement).textContent = gameInfo.playerLeft.name;
-	(document.getElementById("playerRightName") as HTMLElement).textContent = gameInfo.playerRight.name;
+export async function displayNames() {
+	const alias1 = await getAlias(gameInfo.playerLeft.name);
+	const alias2 = await getAlias(gameInfo.playerRight.name);
+	if (alias1 && alias2) {
+		(document.getElementById("playerLeftName") as HTMLElement).textContent = alias1;
+		(document.getElementById("playerRightName") as HTMLElement).textContent = alias2;
+	}
 }
 
 export function showWaitingForNextRound() {
