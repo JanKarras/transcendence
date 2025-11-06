@@ -27,6 +27,7 @@ module.exports = async function (fastify, opts) {
 	fastify.get('/getStats', { preHandler: authMiddleware }, statisticsController.getStats);
 	fastify.get('/getFriendsData', { preHandler: authMiddleware }, userController.getFriendsData);
 	fastify.get('/alias', { preHandler: authMiddleware }, aliasController.getAlias);
+	fastify.get('/alias/:username', { preHandler: authMiddleware }, aliasController.getAlias);
 };
 
 
