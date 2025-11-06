@@ -15,7 +15,7 @@ async function acceptFriendRequest(userId, ws, data) {
 
 	sendChanges(request.sender_id, request.receiver_id);
 
-	addMessage(request.sender_id, request.receiver_id, "You are now friends!");
+	addMessage(request.sender_id, request.receiver_id, "SYS_MSG:cht.nowFriends");
 	
 	notifyDashboard(request.receiver_id, 2);
 }
