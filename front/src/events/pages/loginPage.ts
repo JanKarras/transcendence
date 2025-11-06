@@ -11,8 +11,7 @@ export async function setEventListenersForLoginPage() {
 
 	const submit = document.getElementById("loginForm");
 	if (submit) {
-		submit.addEventListener("submit", (event) => {
-			tryToLogIn(event);
-		});
+		submit.removeEventListener("submit", tryToLogIn)
+		submit.addEventListener("submit", tryToLogIn);
 	}
 }
